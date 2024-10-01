@@ -1,5 +1,11 @@
 This project (prototype) is built using NextJS
 ## Getting Started
+First install the necessary packages
+```bash
+npm install
+# or
+yarn
+```
 
 To run the project in development use one of the following commands:
 
