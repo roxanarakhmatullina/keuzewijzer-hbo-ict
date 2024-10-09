@@ -5,8 +5,9 @@
 
 test-python:
   stage: build
+  image: python:3.10
   script:
-    -print(hello world)
+    -print("hello world")
 
 # test-job1:
 #   stage: test
