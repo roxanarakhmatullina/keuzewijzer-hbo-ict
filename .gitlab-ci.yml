@@ -6,7 +6,7 @@
 test-python:
   stage: build
   script:
-    -print(hello World)!
+    print("hello World!")
 
 # test-job1:
 #   stage: test
