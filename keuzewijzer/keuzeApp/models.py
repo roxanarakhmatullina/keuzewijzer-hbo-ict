@@ -5,7 +5,7 @@ class Semester(models.Model):
      #x = models.FloatField()                 is this necessary??
      #y = models.FloatField()
      link = models.URLField(blank=True, null=True)
-     is_highlighted = models.BooleanField(default=False)
+     #is_highlighted = models.BooleanField(default=False)
 
      def __str__(self):
         return self.name
