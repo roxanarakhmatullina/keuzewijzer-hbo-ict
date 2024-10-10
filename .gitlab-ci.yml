@@ -8,13 +8,16 @@ test-python:
   image: python:3.10
   script:
     - python -c 'print("hello world")'
+  tags: 
+    - python-runner
 
 test-job1:
   stage: test
   image: ruby:2.7
   script:
-    - echo "This job tests something"
-
+    - ruby -e 'puts "hello world from ruby"'
+  tags: 
+    - ruby-runner
 # test-job2:
 #   stage: test
 #   script:
