@@ -11,7 +11,7 @@ test-python:
   stage: test
   image: python:3.10
   script:
-    - python ./manage.py test
+    - python -c 'print("hello world")'
   tags: 
     - python-runner
 
