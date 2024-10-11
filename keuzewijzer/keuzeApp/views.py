@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .models import Semester, Connection
-
 # Create your views here.
 
 def index(request):
     return HttpResponse("This is the default index view :)")
 
+'''  
 def semestersTest(request):
     semesters = Semester.objects.order_by("name")
 
@@ -19,5 +18,5 @@ def semestersTest(request):
         'sem_links': sem_links
     }
     return render(request, "test.html", context)
-
+'''
 
