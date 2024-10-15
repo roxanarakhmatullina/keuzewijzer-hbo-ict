@@ -17,8 +17,7 @@ test-python:
 
 build-image:
   stage: build
-  tags:
-    -  docker-client
+  image: docker:latest
   services:
     - docker:dind
   variables:
