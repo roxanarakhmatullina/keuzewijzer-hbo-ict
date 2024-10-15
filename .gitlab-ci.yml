@@ -20,7 +20,7 @@ build-image:
   tags:
     - docker-build
   services:
-    - $IMAGE_NAME:dockerDinD
+    - matzleeflang/keuzewijzer:dind
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
