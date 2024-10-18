@@ -12,6 +12,7 @@ test-python:
   image: python:3.10
   script:
     - python -c 'print("hello world")'
+    ##python manage.py test
   tags: 
     - python-runner
 
