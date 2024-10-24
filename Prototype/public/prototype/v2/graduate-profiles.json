@@ -1,0 +1,32 @@
+[
+  {
+    "id": "graduate-profile-1",
+    "name": "Software Engineering",
+    "color": "#ffc401"
+  },
+  {
+    "id": "graduate-profile-6",
+    "name": "Embedded Software Engineering",
+    "color": "#d91e10"
+  },
+  {
+    "id": "graduate-profile-2",
+    "name": "UX Design",
+    "color": "#0fb01a"
+  },
+  {
+    "id": "graduate-profile-3",
+    "name": "Business IT & Management",
+    "color": "#f08800"
+  },
+  {
+    "id": "graduate-profile-4",
+    "name": "Applied Data Science & AI",
+    "color": "#0060c0"
+  },
+  {
+    "id": "graduate-profile-5",
+    "name": "Cloud & Security Engineering",
+    "color": "#8c05d0"
+  }
+]

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import {NODE_HEIGHT, NODE_WIDTH} from "@/providers/SemesterProvider";
+import { NODE_HEIGHT, NODE_WIDTH } from "@/providers/SemesterProvider";
 
 const getEdgeCoordinates = (node, x, y) => {
     const { left, top, right, bottom } = {
@@ -32,12 +32,11 @@ const getEdgeCoordinates = (node, x, y) => {
     return closestPoint;
 };
 
-const Connection = ({ from, to, color, highlighted }) => {
-
+const Connection = ({ from, to, color, highlight }) => {
     const startEdge = getEdgeCoordinates(from, to?.x + NODE_WIDTH / 2, to?.y + NODE_HEIGHT / 2);
     const endEdge = getEdgeCoordinates(to, from.x + NODE_WIDTH / 2, from.y + NODE_HEIGHT / 2);
 
-    const pathWidth = highlighted ? 5 : 2;
+    const pathWidth = highlight ? 5 : 2;
 
     const path = `
         M ${startEdge.x} ${startEdge.y}
@@ -71,6 +70,5 @@ const Connection = ({ from, to, color, highlighted }) => {
         </>
     );
 };
-
 
 export default Connection;

@@ -14,128 +14,95 @@ const SemesterProvider = ({children}) => {
     const [nodes, setNodes] = useState(null);
     const [graduateProfiles, setGraduateProfiles] = useState(null);
     const [selectedGraduateProfile, setSelectedGraduateProfile] = useState(null);
-
+    const [selectedSemester, setSelectedSemester] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
+        fetchData("/semesters.json").then(data => {
+            setNodes(data);
+        });
+
+        fetchData("/graduate-profiles.json").then(data => {
+            setGraduateProfiles(data);
+        });
+    }, []);
+
+    const fetchData = async (api) => {
+        if(api) {
             try {
-                const response = await fetch('./graduate-profiles.json');
+                const response = await fetch(api);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const jsonData = await response.json();
-                setGraduateProfiles(jsonData);
+                return jsonData;
             } catch (error) {
                 console.error('Failed to fetch data:', error);
             }
-        };
-
-        fetchData();
-    }, []);
-
+        } else {
+            console.error('No API provided');
+        }
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('./semesters.json');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const jsonData = await response.json();
-                setNodes(jsonData);
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-            }
-        };
+        if(selectedSemester) handleHighlightPathConnections(selectedSemester);
+        if(selectedGraduateProfile) handleHighlightPathConnections(selectedGraduateProfile);
+        if(!selectedGraduateProfile && !selectedSemester) handleHighlightPathConnections(null);
+    }, [selectedSemester, selectedGraduateProfile]);
 
-        fetchData();
-    }, []);
-
-
-    const handleEditGraduateProfile = (id, label, color, connections) => {
-        setGraduateProfiles(prev => ({
-            ...prev,
-            [id]: {
-                ...prev[id],
-                label: label && label,
-                color: color && color,
-                connections: connections && connections
-            }
-        }));
-    };
-
-
-    const handleAddNode = () => {
-        const newId = Date.now();
-        setNodes(prev => ({
-            ...prev,
-            [newId]: {
-                id: newId,
-
-                x: window.innerWidth / 2 - NODE_WIDTH / 2,
-                y: window.innerHeight / 2 - NODE_HEIGHT / 2,
-
-                connections: [],
-                name: `Node ${Object.keys(prev).length + 1}`
-            }
-        }));
-    };
-
-    const handleHighlightPathConnections = (graduateProfile) => {
+    const handleHighlightPathConnections = (selectedItem) => {
         setNodes(prevNodes => {
             const updatedNodes = { ...prevNodes };
 
-            // Reset highlighting for all nodes
+            // Reset highlighting for all nodes and connections
             Object.values(updatedNodes).forEach(node => {
                 node.isHighlighted = false; // Ensure nodes are not highlighted
-                node.highlightConnections = [];
+                node.highlightConnections = []; // Reset highlighted connections
             });
 
-            if (graduateProfile && updatedNodes[graduateProfile.id]) {
-                // Highlight paths connected to the selected graduate profile
-                const highlightConnectionsRecursively = (currentProfileId) => {
-                    const currentProfile = updatedNodes[currentProfileId];
-                    if (currentProfile) {
-                        // Highlight connections leading to this profile
-                        currentProfile.connections.forEach(connection => {
+            if (selectedItem) {
+                const highlightConnectionsRecursively = (currentId) => {
+                    const currentNode = updatedNodes[currentId];
+
+                    if (currentNode) {
+                        currentNode.isHighlighted = true; // Highlight current node
+
+                        // Highlight connections leading to this node
+                        currentNode.connections.forEach(connection => {
                             const targetNodeId = connection.to;
 
                             if (updatedNodes[targetNodeId]) {
-                                // Highlight the connection leading to the target node
-                                updatedNodes[targetNodeId].isHighlighted = true; // Highlight child node
+                                updatedNodes[targetNodeId].isHighlighted = true; // Highlight target node
+                                updatedNodes[targetNodeId].highlightConnections.push(connection); // Store highlighted connection
 
-                                // Store the highlighted connection for reference
-                                updatedNodes[targetNodeId].highlightConnections.push(connection);
+                                connection.isHighlighted = true; // Highlight the connection itself
 
-                                // Recursively highlight connections for the child node
+                                // Recursively highlight connections for the target node
                                 highlightConnectionsRecursively(targetNodeId);
                             }
                         });
 
-                        // Highlight the parent connections for this graduate profile
-                        if (currentProfile.parentId && updatedNodes[currentProfile.parentId]) {
-                            updatedNodes[currentProfile.parentId].isHighlighted = true; // Highlight parent node
-
-                            // Store the highlighted connection from parent to this profile
-                            const parentConnection = updatedNodes[currentProfile.parentId].connections.find(conn => conn.to === currentProfileId);
+                        // Highlight parent connections if any
+                        if (currentNode.parentId && updatedNodes[currentNode.parentId]) {
+                            updatedNodes[currentNode.parentId].isHighlighted = true; // Highlight parent node
+                            const parentConnection = updatedNodes[currentNode.parentId].connections.find(conn => conn.to === currentId);
                             if (parentConnection) {
-                                updatedNodes[currentProfile.parentId].highlightConnections.push(parentConnection);
+                                updatedNodes[currentNode.parentId].highlightConnections.push(parentConnection); // Store highlighted connection
+                                parentConnection.isHighlighted = true; // Highlight the parent connection itself
                             }
                         }
                     }
                 };
 
-                // Start highlighting connections from the selected graduate profile
-                highlightConnectionsRecursively(graduateProfile.id);
+                // Start highlighting connections from the selected node or profile
+                highlightConnectionsRecursively(selectedItem.id || selectedItem); // Use ID for graduate profiles or node ID for semesters
             }
 
             return updatedNodes;
         });
     };
 
-
     const handleHighlightConnectionsOfNode = (node) => {
-        // highlight all the paths where the node is in the graduate profiles
+        // Similar to the above function but focuses only on the node's connections
         setNodes(prevNodes => {
             const updatedNodes = { ...prevNodes };
 
@@ -149,8 +116,6 @@ const SemesterProvider = ({children}) => {
                     const currentNode = updatedNodes[currentNodeId];
                     if (currentNode) {
                         currentNode.isHighlighted = true;
-
-                        console.log(currentNode);
 
                         currentNode.connections.forEach(connection => {
                             const targetNodeId = connection.to;
@@ -176,10 +141,13 @@ const SemesterProvider = ({children}) => {
 
             return updatedNodes;
         });
-    }
-
+    };
 
     const connectionIsInGraduateProfile = (from, to, profileConnections) => {
+        if (!profileConnections || !profileConnections.connections) {
+            return false; // Early return if profileConnections is null or does not have connections
+        }
+
         const loop = (connections, parentId = null) => {
             for (let connection of connections) {
                 const currentFrom = parentId;
@@ -202,12 +170,12 @@ const SemesterProvider = ({children}) => {
     };
 
 
+
     return (
-        <SemesterContext.Provider value={{nodes, setNodes, graduateProfiles, setGraduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile, handleAddNode, handleEditGraduateProfile, handleHighlightPathConnections, handleHighlightConnectionsOfNode, connectionIsInGraduateProfile}}>
+        <SemesterContext.Provider value={{nodes, selectedSemester, setSelectedSemester, setNodes, graduateProfiles, setGraduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile, handleHighlightPathConnections, handleHighlightConnectionsOfNode, connectionIsInGraduateProfile}}>
             {children}
         </SemesterContext.Provider>
     )
 }
 
 export default SemesterProvider;
-

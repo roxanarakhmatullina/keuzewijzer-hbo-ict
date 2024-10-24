@@ -12,8 +12,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
     <head>
       <meta name="viewport" content="width=500, initial-scale=1"/>
+        <link rel="icon" href="/hbo-ict-logo.ico" />
     </head>
-    <body className={"max-w-[100vw]"}>
+    <body className={"max-w-[100vw] md:overflow-x-auto overflow-x-hidden"}>
     <SemesterProvider>
       {children}
     </SemesterProvider>
