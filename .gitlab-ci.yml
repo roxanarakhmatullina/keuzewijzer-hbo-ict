@@ -20,10 +20,8 @@ build-image:
   stage: build
   tags: 
     - docker-client
-  services:
-    - docker:dind
   variables:
-    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_CERTDIR: ""
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
