@@ -14,7 +14,7 @@ test-python:
     - python -c 'print("hello world")'
     ##python manage.py test
   tags: 
-    - python-runner
+    - python
 
 build-image:
   stage: build
