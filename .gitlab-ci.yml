@@ -20,6 +20,8 @@ build-image:
   stage: build
   tags: 
     - docker-client
+  services:
+    - docker:20.10.16-dind
   variables:
     DOCKER_TLS_CERTDIR: ""
   before_script:
