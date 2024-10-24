@@ -1,26 +1,43 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-- build
-- test
-- deploy
-- review
-- dast
-- staging
-- canary
-- production
-- incremental rollout 10%
-- incremental rollout 25%
-- incremental rollout 50%
-- incremental rollout 100%
-- performance
-- cleanup
-sast:
+  - test
+  - build
+  - deploy
+
+variables:
+    IMAGE_NAME: matzleeflang/keuzewijzer
+    IMAGE_TAG: Nextjs-app
+
+test-python:
   stage: test
-include:
-- template: Auto-DevOps.gitlab-ci.yml
+  image: python:3.10
+  script:
+    - python -c 'print("hello world")'
+    ##python manage.py test
+  tags: 
+    - python-runner
+
+build-image:
+  stage: build
+  tags: 
+    - docker-client
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker info
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG -f prototype/Dockerfile ./prototype .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+
+deploy:
+  stage: deploy
+  before_script:
+    -chmod 400 $SSH_KEY
+  script: 
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@128.199.43.9 "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker ps -aq | xargs docker stop | xargs docker rm &&
+      docker run -d -p 3000:3000 $IMAGE_NAME:$IMAGE_TAG"
+      
