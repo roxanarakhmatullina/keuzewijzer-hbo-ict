@@ -1,44 +1,47 @@
 'use client'
-import React from 'react';
+import React from 'react'
+import {useApi} from "@/providers/ApiProvider";
 
-const GraduateProfile = ({id, label, color, onClick, selected}) => {
-    const handleClick = (e) => {
-        if(!e.target.closest(".context")) {
-            onClick();
-        }
+const GraduateProfile = ({name, color}) => {
+    const [isHovered, setIsHovered] = React.useState(false);
+    const {selectedGraduateProfile, setSelectedGraduateProfile} = useApi();
+
+    const handleHover = () => {
+        setIsHovered(!isHovered);
     }
 
-    const fadingColor = (color) => {
-        // if color is not a hex value make it one and put + 50 on the value
-        if(color[0] !== "#") {
-            color = "#" + color;
-        }
-        let r = parseInt(color.substring(1, 3), 16);
-        let g = parseInt(color.substring(3, 5), 16);
-        let b = parseInt(color.substring(5, 7), 16);
-        let a = 0.25;
+    const handleShadeColor = () => {
+        // make it an opacity of 0.1 of the original color
+        const newColor = color.replace("#", "");
+        const r = parseInt(newColor.substring(0, 2), 16);
+        const g = parseInt(newColor.substring(2, 4), 16);
+        const b = parseInt(newColor.substring(4, 6), 16);
 
-        return `rgba(${r}, ${g}, ${b}, ${a})`;
+        return `${r},${g},${b},0.3`;
     }
 
     return (
-        <button
-            id={"graduate-pf-" + id}
-            style={{backgroundColor: selected ? fadingColor(color) : "#f3f3f3"}}
-            onClick={(e) => handleClick(e)}
-            className={`hover:brightness-95 w-full rounded-[12px] p-[10px] box-border h-[50px] flex justify-start align-middle items-center flex-row gap-[10px]`}>
-            <div
-                className={`w-[25px] h-[25px] rounded-full flex justify-center align-middle items-center border-[3px] ${selected && `bg-[${color}]`}`}
-                style={{borderColor: color}}>
-                <div
-                    className={"w-[15px] h-[15px] rounded-full"}
-                    style={{backgroundColor: selected ? color : "transparent"}}>
-                </div>
-            </div>
-            <p
-                className={"text-[12px] font-bold text-left"}>{label}</p>
+        <div
+            // on hover
+            onMouseEnter={handleHover}
+            onMouseLeave={handleHover}
 
-        </button>
+            // also for mobile
+            onTouchStart={handleHover}
+            onTouchEnd={handleHover}
+
+            onClick={() => setSelectedGraduateProfile({name, color})}
+            style={{backgroundColor: (selectedGraduateProfile?.name === name || isHovered) ? `rgba(${handleShadeColor()})` : "#EFEFEFFF"}}
+            className={`w-full cursor-pointer ease-in-out  h-[50px] flex justify-start align-middle items-center gap-[10px] p-[10px] rounded-lg box-border`}>
+            <div
+                style={{borderColor: color}}
+                className={`min-w-[25px] min-h-[25px] border-[3px] rounded-full overflow-hidden flex justify-center align-middle items-center`}>
+                <div
+                    style={{backgroundColor: color}}
+                    className={`${selectedGraduateProfile?.name === name ? "w-[15px] h-[15px]" : "w-[0px] h-[0px]"} duration-300 ease-in-out rounded-full`}/>
+            </div>
+            <p className={"text-left text-[13px] font-bold flex-auto"}>{name}</p>
+        </div>
     )
 }
 

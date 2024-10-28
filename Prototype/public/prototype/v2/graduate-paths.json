@@ -53,7 +53,8 @@
       {
         "id": "cluster-2-25/26",
         "name": "Business Process Management",
-        "link": "", "freeChoice": false, 
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Business-Process-Management(1).aspx",
+        "freeChoice": false,
         "locked": false,
         "graduateProfileTags": [
           "UX Design",
@@ -64,7 +65,8 @@
       {
         "id": "cluster-3-25/26",
         "name": "Object Oriënted Software Design & Development",
-        "link": "", "freeChoice": false, 
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Object-Oriented-Software-Design-%26-Security.aspx",
+        "freeChoice": false,
         "locked": false,
         "graduateProfileTags": [
           "UX Design",
@@ -94,7 +96,9 @@
       {
           "id": "cluster-6-25/26",
           "name": "Data Science",
-          "link": "", "freeChoice": false,  "locked": false,
+          "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Data-Science.aspx",
+          "freeChoice": false,
+          "locked": false,
           "graduateProfileTags": [
             "Applied Data Science & AI",
             "Cloud & Security Engineering",
@@ -115,7 +119,9 @@
       {
         "id": "cluster-8-25/26",
         "name": "Web development",
-        "link": "", "freeChoice": false,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Web-Development.aspx",
+        "freeChoice": false,
+        "locked": false,
         "graduateProfileTags": [
           "Software Engineering"
         ]
@@ -123,7 +129,9 @@
       {
         "id": "cluster-9-25/26",
         "name": "Internet of Things",
-        "link": "", "freeChoice": false,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Internet-of-Things.aspx",
+        "freeChoice": false,
+        "locked": false,
         "graduateProfileTags": [
           "Embedded Software Engineering"
         ]
@@ -146,7 +154,9 @@
       {
         "id": "cluster-2-26/27",
         "name": "Machine Learning",
-        "link": "", "freeChoice": false,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Machine-Learning.aspx",
+        "freeChoice": false,
+        "locked": false,
         "graduateProfileTags": [
             "Applied Data Science & AI"
         ]
@@ -170,7 +180,9 @@
       {
         "id": "cluster-5-26/27",
         "name": "Quality in Software Development",
-        "link": "", "freeChoice": false,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Quality%20in%20Software%20Development.aspx",
+        "freeChoice": false,
+        "locked": false,
         "graduateProfileTags": [
             "Software Engineering",
             "Embedded Software Engineering"
@@ -179,7 +191,9 @@
       {
         "id": "cluster-6-26/27",
         "name": "Computer Engineering",
-        "link": "", "freeChoice": false,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
+        "freeChoice": false,
+        "locked": false,
         "graduateProfileTags": [
             "Embedded Software Engineering"
         ]
@@ -189,7 +203,9 @@
       {
         "id": "cluster-7-26/27",
         "name": "Vrije keuze 1",
-        "link": "", "freeChoice": true,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
+        "freeChoice": true,
+        "locked": false,
         "graduateProfileTags": [
           "Software Engineering",
           "Applied Data Science & AI",
@@ -209,7 +225,9 @@
       {
         "id": "cluster-1-27/28",
         "name": "Vrije keuze 2",
-        "link": "", "freeChoice": true,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
+        "freeChoice": true,
+        "locked": false,
         "graduateProfileTags": [
           "Software Engineering",
           "Applied Data Science & AI",
@@ -224,7 +242,9 @@
       {
         "id": "cluster-2-27/28",
         "name": "Afstuderen",
-        "link": "", "freeChoice": false,  "locked": false,
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/std-HBO-ICT-voltijd/SitePages/afstuderen-Home.aspx",
+        "freeChoice": false,
+        "locked": false,
         "graduateProfileTags": [
           "Software Engineering",
           "Applied Data Science & AI",
