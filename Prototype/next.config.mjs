@@ -1,8 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    output: "export",
-    trailingSlash: true,
-    assetPrefix: './',
-};
+const nextConfig = {};
 
 export default nextConfig;
