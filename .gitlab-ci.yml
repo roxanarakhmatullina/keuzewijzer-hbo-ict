@@ -34,6 +34,8 @@ build-image:
 
 deploy:
   stage: deploy
+  tags:
+    - deploy-runner
   before_script:
     -chmod 400 $SSH_KEY
   script:
