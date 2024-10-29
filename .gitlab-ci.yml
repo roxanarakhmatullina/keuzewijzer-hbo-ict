@@ -29,7 +29,7 @@ build-image:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build -t $IMAGE_NAME:$IMAGE_TAG -f Client/Dockerfile ./Client
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$IMAGE_TAG
 
 deploy:
