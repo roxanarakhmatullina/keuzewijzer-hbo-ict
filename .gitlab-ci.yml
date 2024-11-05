@@ -57,11 +57,12 @@ deploy-frontend:
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      container_id=\$(docker ps -aq -f 'ancestor=$IMAGE_NAME:$FRONTEND_TAG') &&
+      container_id=\$(docker ps -aq -f \"ancestor=$IMAGE_NAME:$FRONTEND_TAG\") &&
       if [ -n \"\$container_id\" ]; then
           docker stop \"\$container_id\" && docker rm \"\$container_id\"
       fi &&
       docker run -d -p 3000:3000 \"$IMAGE_NAME:$FRONTEND_TAG\""
+
 
 
 
@@ -74,7 +75,7 @@ deploy-backend:
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      container_id=\$(docker ps -aq -f 'ancestor=$IMAGE_NAME:$FRONTEND_TAG') &&
+      container_id=\$(docker ps -aq -f \"ancestor=$IMAGE_NAME:$FRONTEND_TAG\") &&
       if [ -n \"\$container_id\" ]; then
           docker stop \"\$container_id\" && docker rm \"\$container_id\"
       fi &&
