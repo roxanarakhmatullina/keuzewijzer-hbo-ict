@@ -5,18 +5,18 @@ stages:
 
 variables:
   IMAGE_NAME: matzleeflang/keuzewijzer
-  IMAGE_TAG: Nextjs-app
+  FRONTEND_TAG: Nextjs-app
+  BACKEND_TAG: Django-app
 
-test-python:
+tests-django:
   stage: test
-  image: python:3.10
   script:
     - python -c 'print("hello world")'
     ##python manage.py test
   tags:
     - python
 
-build-image:
+build-frontend:
   stage: build
   tags:
     - docker-client
@@ -29,10 +29,26 @@ build-image:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build -t $IMAGE_NAME:$IMAGE_TAG -f Client/dockerfile ./Client
-    - docker push $IMAGE_NAME:$IMAGE_TAG
+    - docker build -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
+    - docker push $IMAGE_NAME:$FRONTEND_TAG
 
-deploy:
+build-backend:
+  stage: build
+  tags:
+    - docker-client
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker info
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f keuzewijzer/dockerfile ./keuzewijzer
+    - docker push $IMAGE_NAME:$BACKEND_TAG
+
+deploy-frontend:
   stage: deploy
   tags:
     - deploy-runner
@@ -41,5 +57,26 @@ deploy:
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker ps -aq | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3000:3000 $IMAGE_NAME:$IMAGE_TAG"
+      container_id=\$(docker ps -aq -f \"ancestor=$IMAGE_NAME:$FRONTEND_TAG\") &&
+      if [ -n \"\$container_id\" ]; then
+          docker stop \"\$container_id\" && docker rm \"\$container_id\"
+      fi &&
+      docker run -d -p 3000:3000 \"$IMAGE_NAME:$FRONTEND_TAG\""
+
+
+
+
+deploy-backend:
+  stage: deploy
+  tags:
+    - deploy-runner
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      container_id=\$(docker ps -aq -f \"ancestor=$IMAGE_NAME:$FRONTEND_TAG\") &&
+      if [ -n \"\$container_id\" ]; then
+          docker stop \"\$container_id\" && docker rm \"\$container_id\"
+      fi &&
+      docker run -d -p 3000:3000 \"$IMAGE_NAME:$FRONTEND_TAG\""
