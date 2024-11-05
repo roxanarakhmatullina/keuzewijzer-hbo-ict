@@ -12,17 +12,12 @@ const ApiProvider = ({children}) => {
     const [currentSavedStudyYear, setCurrentSavedStudyYear] = useState(null);
     const [selectedGraduateProfile, setSelectedGraduateProfile] = useState(null);
     const [startedStudyYear, setStartedStudyYear] = useState(null);
-    const [availableStudyYears, setAvailableStudyYears] = useState([
-        "2019 of eerder",
-        "2020",
-        "2021",
-        "2022",
-        "2023",
-        "2024",
-    ]);
 
     const [studyYears, setStudyYears] = useState([]);
     const [graduateProfiles, setGraduateProfiles] = useState([]);
+    const [availableStudyYears, setAvailableStudyYears] = useState([]); // Empty initially
+
+    const COHORTS_ENDPOINT = 'http://127.0.0.1:8000/keuzeApp/api/cohorts/'
 
 
     const fetchApi = async (url) => {
@@ -40,6 +35,11 @@ const ApiProvider = ({children}) => {
 
         // fetch study years
         fetchApi('/prototype/v2/graduate-paths.json').then(data => setStudyYears(data));
+
+        fetchApi(COHORTS_ENDPOINT).then(data => {
+            const cohortYears = data.map(cohort => cohort.name);
+            setAvailableStudyYears(cohortYears);
+        });
 
         return () => {
             // cleanup

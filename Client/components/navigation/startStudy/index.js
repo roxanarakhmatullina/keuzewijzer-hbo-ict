@@ -6,7 +6,8 @@ const StartStudy = () => {
     const {availableStudyYears, selectedGraduateProfile, startedStudyYear, setStartedStudyYear, currentSavedStudyYear, setCurrentSavedStudyYear} = useApi();
 
     useEffect(() => {
-        if(startedStudyYear && startedStudyYear !== "2024") {
+        const year = parseInt(startedStudyYear, 10);
+        if (year && year < 2024)  {
             window.location.href = "https://keuzewijzerhboict.nl/";
         }
     }, [startedStudyYear])

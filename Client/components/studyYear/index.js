@@ -7,7 +7,8 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
-    const {selectedGraduateProfile, studyYears} = useApi();
+    const {selectedGraduateProfile, availableStudyYears} = useApi();
+    const [years, setYears] = useState(availableStudyYears);
 
     useEffect(() => {
         setFirstCluster(null);
@@ -21,6 +22,10 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters}) => {
             setIsLocked(first && second);
         }
     }, [firstClusters, secondClusters]);
+
+    useEffect(() => {
+        setYears(availableStudyYears);
+    }, [availableStudyYears]);
 
     const formatYear = (year) => {
         return "'" + year.toString().substring(2);
@@ -75,7 +80,7 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters}) => {
                 <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor} />
             </div>
 
-            {studyYears[studyYears.length - 1].toYear === toYear ? (
+            {years[years.length - 1].toYear === toYear ? (
                 <div className={"relative w-full flex flex-col justify-center align-middle items-center gap-[15px]"}>
                     <div
                         style={{background: selectedGraduateProfile ? selectedGraduateProfile.color : "#124477"}}
