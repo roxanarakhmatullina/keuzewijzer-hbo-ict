@@ -55,12 +55,11 @@ deploy-frontend:
   before_script:
     - chmod 400 $SSH_KEY
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
-      container_id=\$(docker ps -aq -f 'ancestor=matzleeflang/keuzewijzer:django-app') &&
-      if [ -n \"\$container_id\" ]; then
-          docker stop \"\$container_id\" && docker rm \"\$container_id\"
-      fi &&
-      docker run -d -p 3000:3000 $IMAGE_NAME:$FRONTEND_TAG"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@128.199.43.9 "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker ps -aq | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 5000:5000 $IMAGE_NAME:$FRONTEND_TAG &&
+      docker run -d -p 3001:3000 $IMAGE_NAME:$BACKEND_TAG"
 
 
 
