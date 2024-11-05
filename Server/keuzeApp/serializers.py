@@ -1,0 +1,56 @@
+# keuzeApp/serializers.py
+from rest_framework import serializers
+from .models import Category, GraduateProfile, Cluster, Prerequisite, Cohort, CohortCluster, ClusterGraduateProfileCohort
+
+class MessageSerializer(serializers.Serializer):
+    message = serializers.CharField(max_length=255)
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'  # Utilizamos todos los campos
+
+class GraduateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GraduateProfile
+        fields = '__all__'
+
+class ClusterSerializer(serializers.ModelSerializer):
+    category_id  = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+
+    class Meta:
+        model = Cluster
+        fields = '__all__'
+
+# Serializer for Prerequisite model
+class PrerequisiteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Prerequisite
+        fields = '__all__'
+
+# Serializer for Cohort model
+class CohortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cohort
+        fields = '__all__'
+
+
+# Serializer for CohortCluster model
+class CohortClusterSerializer(serializers.ModelSerializer):
+    cluster = serializers.PrimaryKeyRelatedField(queryset=Cluster.objects.all())
+    cohort = serializers.PrimaryKeyRelatedField(queryset=Cohort.objects.all())
+
+    class Meta:
+        model = CohortCluster
+        fields = '__all__'
+
+# Serializer for ClusterGraduateProfileCohort model
+class ClusterGraduateProfileCohortSerializer(serializers.ModelSerializer):
+    graduate_profile = serializers.PrimaryKeyRelatedField(queryset=GraduateProfile.objects.all())
+    cluster = serializers.PrimaryKeyRelatedField(queryset=Cluster.objects.all())
+    cohort = serializers.PrimaryKeyRelatedField(queryset=Cohort.objects.all())
+
+    class Meta:
+        model = ClusterGraduateProfileCohort
+        fields = '__all__'

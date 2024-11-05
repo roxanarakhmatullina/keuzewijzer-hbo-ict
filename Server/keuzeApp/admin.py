@@ -1,15 +1,13 @@
 from django.contrib import admin
-from .models import Categorie, GraduateProfile, Year, ClusterYear, Cluster, Prerequisite, Cohort, CohortCluster
+from .models import Category, GraduateProfile, Cluster, Prerequisite, Cohort, CohortCluster
 
 
 # Register your models here.
-admin.site.register(Categorie)
+admin.site.register(Category)
 admin.site.register(GraduateProfile)
-admin.site.register(Year)
 admin.site.register(Cluster)
 admin.site.register(Prerequisite)
 admin.site.register(Cohort)
-admin.site.register(ClusterYear)
 admin.site.register(CohortCluster)
 
 #username : superuser03
