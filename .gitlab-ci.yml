@@ -60,7 +60,7 @@ deploy-frontend:
       container_id=$(docker ps -aq -f "ancestor=$IMAGE_NAME:$FRONTEND_TAG") &&
       if [ -n "$container_id" ]; then
       docker stop "$container_id" && docker rm "$container_id" fi &&
-      docker run -d -p 3000:3000 "$IMAGE_NAME:$FRONTEND_TAG"
+      docker run -d -p 3000:3000 "$IMAGE_NAME:$FRONTEND_TAG""
 
 
 deploy-backend:
@@ -75,4 +75,4 @@ deploy-backend:
       container_id=$(docker ps -aq -f "ancestor=$IMAGE_NAME:$BACKEND_TAG") &&
       if [ -n "$container_id" ]; then
       docker stop "$container_id" && docker rm "$container_id" fi &&
-      docker run -d -p 3001:3000 $IMAGE_NAME:$BACKEND_TAG"
+      docker run -d -p 3001:3000 $IMAGE_NAME:$BACKEND_TAG""
