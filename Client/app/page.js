@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import Navigation from '@components/navigation';
+import Navigation from '@/components/navigation';
 import StudyYear from "@/components/studyYear";
 import {useApi} from "@/providers/ApiProvider";
 
