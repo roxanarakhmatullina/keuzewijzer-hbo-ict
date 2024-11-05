@@ -30,7 +30,7 @@ build-frontend:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
     - docker build -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
-    - docker push $IMAGE_NAME:$FRONTEDN_TAG
+    - docker push $IMAGE_NAME:$FRONTEND_TAG
 
 build-backend:
   stage: build
@@ -60,7 +60,7 @@ deploy-frontend:
       docker ps -aq | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 3000:3000 $IMAGE_NAME:$FRONTEND_TAG"
 
-deploy-frontend:
+deploy-backend:
   stage: deploy
   tags:
     - deploy-runner
