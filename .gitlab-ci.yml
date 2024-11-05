@@ -45,10 +45,10 @@ build-backend:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f keuzewijzer/dockerfile ./keuzewijzer
+    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f keuzeback/dockerfile ./keuzewijzer
     - docker push $IMAGE_NAME:$BACKEND_TAG
 
-deploy-frontend:
+deploy:
   stage: deploy
   tags:
     - deploy-runner
