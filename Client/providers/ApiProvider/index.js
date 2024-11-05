@@ -18,6 +18,7 @@ const ApiProvider = ({children}) => {
     const [availableStudyYears, setAvailableStudyYears] = useState([]); // Empty initially
 
     const COHORTS_ENDPOINT = 'http://127.0.0.1:8000/keuzeApp/api/cohorts/'
+    const PROFILE_ENDPOINT= 'http://127.0.0.1:8000/keuzeApp/api/graduate-profiles/'
 
 
     const fetchApi = async (url) => {
@@ -31,7 +32,7 @@ const ApiProvider = ({children}) => {
 
     useEffect(() => {
         // fetch graduate profiles
-        fetchApi('/prototype/v2/graduate-profiles.json').then(data => setGraduateProfiles(data));
+        fetchApi(PROFILE_ENDPOINT).then(data => setGraduateProfiles(data));
 
         // fetch study years
         fetchApi('/prototype/v2/graduate-paths.json').then(data => setStudyYears(data));
