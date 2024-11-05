@@ -45,7 +45,7 @@ build-backend:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f keuzeback/dockerfile ./keuzewijzer
+    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f keuzeback/dockerfile ./keuzeback
     - docker push $IMAGE_NAME:$BACKEND_TAG
 
 deploy:
