@@ -8,9 +8,10 @@ class Category(models.Model):
         return self.title
 
 class GraduateProfile(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    description = models.TextField()
-    link = models.URLField(max_length=200)
+    color = models.CharField(max_length=7, default='#03FCF4')
+
 
     def __str__(self):
         return self.name
@@ -26,6 +27,7 @@ class Cluster(models.Model):
     free_choice = models.BooleanField(default=False)
     required_ec = models.IntegerField()
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    graduate_profiles = models.ManyToManyField(GraduateProfile, related_name='clusters')
 
     def __str__(self):
         return self.name

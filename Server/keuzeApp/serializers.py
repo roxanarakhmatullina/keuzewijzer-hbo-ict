@@ -11,11 +11,15 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'  # Utilizamos todos los campos
 
 class GraduateProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = GraduateProfile
-        fields = '__all__'
+        fields = ['name']
 
 class ClusterSerializer(serializers.ModelSerializer):
+    
+    graduate_profiles = GraduateProfileSerializer(many=True, read_only=True)
+
     category_id  = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
 
     class Meta:
@@ -45,12 +49,4 @@ class CohortClusterSerializer(serializers.ModelSerializer):
         model = CohortCluster
         fields = '__all__'
 
-# Serializer for ClusterGraduateProfileCohort model
-class ClusterGraduateProfileCohortSerializer(serializers.ModelSerializer):
-    graduate_profile = serializers.PrimaryKeyRelatedField(queryset=GraduateProfile.objects.all())
-    cluster = serializers.PrimaryKeyRelatedField(queryset=Cluster.objects.all())
-    cohort = serializers.PrimaryKeyRelatedField(queryset=Cohort.objects.all())
 
-    class Meta:
-        model = ClusterGraduateProfileCohort
-        fields = '__all__'

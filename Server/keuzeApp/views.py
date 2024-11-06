@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.response import Response
@@ -38,6 +39,23 @@ class ClusterViewSet(viewsets.ModelViewSet):
     serializer_class = ClusterSerializer
     permission_classes = [AllowAny]
 
+    def create(self, request, *args, **kwargs):
+        # First, create the cluster using the serializer
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            cluster = serializer.save()  # Save the cluster to the database
+
+            # Now, associate graduate profiles based on the incoming data
+            graduate_profile_ids = request.data.get('graduate_profiles', [])
+            graduate_profiles = GraduateProfile.objects.filter(id__in=graduate_profile_ids)
+
+            # Add graduate profiles to the cluster
+            cluster.graduate_profiles.add(*graduate_profiles)
+
+            # Return the response
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
 class GraduateProfileViewSet(viewsets.ModelViewSet):
     queryset = GraduateProfile.objects.all()
     serializer_class = GraduateProfileSerializer
@@ -57,4 +75,18 @@ class CohortClusterViewSet(viewsets.ModelViewSet):
     queryset = CohortCluster.objects.all()
     serializer_class = CohortClusterSerializer
     permission_classes = [AllowAny]
+
+class GraduateProfileClustersView(APIView):
+    """
+    Retrieve clusters associated with a graduate profile.
+    """
+
+    def get(self, request, profile_id):
+        try:
+            profile = GraduateProfile.objects.get(id=profile_id)
+            clusters = profile.clusters.all()
+            serializer = ClusterSerializer(clusters, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except GraduateProfile.DoesNotExist:
+            return Response({"error": "Graduate profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
