@@ -144,3 +144,4 @@ fabric.properties
 .idea/workspace.xml
 
 keuzeEnv/
+Server/.env
