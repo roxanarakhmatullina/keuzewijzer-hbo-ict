@@ -11,8 +11,7 @@ variables:
 tests-django:
   stage: test
   script:
-    - python -c 'print("hello world")'
-    ##python manage.py test
+    - python manage.py test
   tags:
     - python
 
