@@ -12,7 +12,7 @@ const GraduateProfile = ({name, color}) => {
 
     const handleShadeColor = () => {
         // make it an opacity of 0.1 of the original color
-        const newColor = color.replace("#", "");
+        const newColor = (selectedGraduateProfile?.color || "#FFFFFF").replace("#", "");
         const r = parseInt(newColor.substring(0, 2), 16);
         const g = parseInt(newColor.substring(2, 4), 16);
         const b = parseInt(newColor.substring(4, 6), 16);

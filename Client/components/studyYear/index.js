@@ -34,7 +34,7 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters}) => {
     const handleColor = () => {
         if(selectedGraduateProfile) {
             // check if color neeeds to be white or black based on the background color
-            const newColor = selectedGraduateProfile.color.replace("#", "");
+            const newColor = (selectedGraduateProfile?.color || "#FFFFFF").replace("#", "");
             const r = parseInt(newColor.substring(0, 2), 16);
             const g = parseInt(newColor.substring(2, 4), 16);
             const b = parseInt(newColor.substring(4, 6), 16);
