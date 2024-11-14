@@ -7,6 +7,11 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+class Year(models.Model):
+    id = models.AutoField(primary_key=True)
+    year = models.CharField(max_length=255)
+    color = models.CharField(max_length=7, default='#03FCF4')
+
 class GraduateProfile(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -15,6 +20,7 @@ class GraduateProfile(models.Model):
 
     def __str__(self):
         return self.name
+
 
 
 class Cluster(models.Model):
@@ -43,14 +49,6 @@ class Cohort(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class CohortCluster(models.Model):
-    cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE)
-    cohort_id = models.ForeignKey(Cohort, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('cluster_id', 'cohort_id')
 
 class ClusterGraduateProfileCohort(models.Model):
     graduate_profile_id = models.ForeignKey(GraduateProfile, on_delete=models.CASCADE)
