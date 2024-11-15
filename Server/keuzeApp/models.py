@@ -7,11 +7,6 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
-class Year(models.Model):
-    id = models.AutoField(primary_key=True)
-    year = models.CharField(max_length=255)
-    color = models.CharField(max_length=7, default='#03FCF4')
-
 class GraduateProfile(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -21,8 +16,6 @@ class GraduateProfile(models.Model):
     def __str__(self):
         return self.name
 
-
-
 class Cluster(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -31,6 +24,7 @@ class Cluster(models.Model):
     first_semester = models.BooleanField(default=False)
     last_semester = models.BooleanField(default=False)
     free_choice = models.BooleanField(default=False)
+    year = models.IntegerField()
     required_ec = models.IntegerField()
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
     graduate_profiles = models.ManyToManyField(GraduateProfile, related_name='clusters')
