@@ -112,6 +112,7 @@ class ClusterView(View):
                 "name": cluster["name"],
                 "link": cluster["link"],
                 "locked": cluster["locked"],
+                "free_choice": cluster["free_choice"],
                 "graduateProfileTags": cluster["graduateProfileTags"],
             }
 
