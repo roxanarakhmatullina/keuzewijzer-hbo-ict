@@ -1,8 +1,6 @@
 [
   {
     "id": "studyYear-24-25",
-    "fromYear": 2024,
-    "toYear": 2025,
     "firstCluster": [
       {
         "id": "cluster-1-24/25",
@@ -38,8 +36,6 @@
   },
   {
     "id": "studyYear-25-26",
-    "fromYear": 2025,
-    "toYear": 2026,
     "firstCluster": [
       {
         "id": "cluster-1-25/26",
@@ -140,8 +136,6 @@
   },
   {
     "id": "studyYear-26-27",
-    "fromYear": 2026,
-    "toYear": 2027,
     "firstCluster": [
       {
         "id": "cluster-1-26/27",
@@ -219,8 +213,6 @@
   },
   {
     "id": "studyYear-27-28",
-    "fromYear": 2027,
-    "toYear": 2028,
     "firstCluster": [
       {
         "id": "cluster-1-27/28",

@@ -1,6 +1,8 @@
 # keuzeApp/serializers.py
 from rest_framework import serializers
-from .models import Category, GraduateProfile, Cluster, Prerequisite, Cohort, CohortCluster, ClusterGraduateProfileCohort
+from .models import *
+
+
 
 class MessageSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=255)
@@ -14,7 +16,7 @@ class GraduateProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GraduateProfile
-        fields = ['name']
+        fields = ['name', 'color']
 
 class ClusterSerializer(serializers.ModelSerializer):
     
@@ -39,14 +41,5 @@ class CohortSerializer(serializers.ModelSerializer):
         model = Cohort
         fields = '__all__'
 
-
-# Serializer for CohortCluster model
-class CohortClusterSerializer(serializers.ModelSerializer):
-    cluster = serializers.PrimaryKeyRelatedField(queryset=Cluster.objects.all())
-    cohort = serializers.PrimaryKeyRelatedField(queryset=Cohort.objects.all())
-
-    class Meta:
-        model = CohortCluster
-        fields = '__all__'
 
 

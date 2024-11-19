@@ -16,7 +16,6 @@ class GraduateProfile(models.Model):
     def __str__(self):
         return self.name
 
-
 class Cluster(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -25,6 +24,7 @@ class Cluster(models.Model):
     first_semester = models.BooleanField(default=False)
     last_semester = models.BooleanField(default=False)
     free_choice = models.BooleanField(default=False)
+    year = models.IntegerField()
     required_ec = models.IntegerField()
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
     graduate_profiles = models.ManyToManyField(GraduateProfile, related_name='clusters')
@@ -43,14 +43,6 @@ class Cohort(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class CohortCluster(models.Model):
-    cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE)
-    cohort_id = models.ForeignKey(Cohort, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('cluster_id', 'cohort_id')
 
 class ClusterGraduateProfileCohort(models.Model):
     graduate_profile_id = models.ForeignKey(GraduateProfile, on_delete=models.CASCADE)

@@ -7,8 +7,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.response import Response
 
-from .models import Category, Cluster, GraduateProfile, Prerequisite, Cohort, CohortCluster
-from .serializers import CategorySerializer, ClusterSerializer, GraduateProfileSerializer, PrerequisiteSerializer, CohortSerializer, CohortClusterSerializer, MessageSerializer
+from django.views import View
+from rest_framework.parsers import JSONParser
+from django.http import JsonResponse
+
+
+from .models import Category, Cluster, GraduateProfile, Prerequisite, Cohort
+from .serializers import CategorySerializer, ClusterSerializer, GraduateProfileSerializer, PrerequisiteSerializer, CohortSerializer, MessageSerializer
 
 
 def index(request):
@@ -71,10 +76,6 @@ class CohortViewSet(viewsets.ModelViewSet):
     serializer_class = CohortSerializer
     permission_classes = [AllowAny]
 
-class CohortClusterViewSet(viewsets.ModelViewSet):
-    queryset = CohortCluster.objects.all()
-    serializer_class = CohortClusterSerializer
-    permission_classes = [AllowAny]
 
 class GraduateProfileClustersView(APIView):
     """
@@ -89,4 +90,82 @@ class GraduateProfileClustersView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except GraduateProfile.DoesNotExist:
             return Response({"error": "Graduate profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ClusterView(View):
+
+    def transform_clusters(self, input_json):
+
+        output_structure = [
+            {"id": "1", "firstCluster": [], "lastCluster": []},
+            {"id": "2", "firstCluster": [], "lastCluster": []},
+            {"id": "3", "firstCluster": [], "lastCluster": []},
+            {"id": "4", "firstCluster": [], "lastCluster": []},
+        ]
+
+        for cluster in input_json:
+
+            cluster["graduateProfileTags"] = [profile["name"] for profile in cluster.pop("graduate_profiles")]
+
+            transformed_cluster = {
+                "id": cluster['id'],
+                "name": cluster["name"],
+                "link": cluster["link"],
+                "locked": cluster["locked"],
+                "free_choice": cluster["free_choice"],
+                "graduateProfileTags": cluster["graduateProfileTags"],
+            }
+
+
+            year_index = cluster["year"]
+
+            if cluster["first_semester"]:
+                output_structure[year_index]["firstCluster"].append(transformed_cluster)
+            elif cluster["last_semester"]:
+                output_structure[year_index]["lastCluster"].append(transformed_cluster)
+            else:
+                #Default
+                output_structure[year_index]["firstCluster"].append(transformed_cluster)
+
+        return output_structure
+
+    def post(self, request, *args, **kwargs):
+
+        # Parse the incoming JSON data
+        data = JSONParser().parse(request)
+
+        # Serialize and validate data
+        serializer = ClusterSerializer(data=data)
+        if serializer.is_valid():
+            # Save the cluster to the database
+            cluster = serializer.save()
+
+            # Retrieve and associate graduate profiles
+            graduate_profile_ids = data.get('graduate_profiles', [])
+            graduate_profiles = GraduateProfile.objects.filter(id__in=graduate_profile_ids)
+            cluster.graduate_profiles.add(*graduate_profiles)
+
+            # Prepare a response with the serialized data
+            response_data = {
+                "id": cluster.id,
+                "graduate_profiles": [{"name": gp.name} for gp in graduate_profiles],
+                "category_id": cluster.category_id,
+                "name": cluster.name,
+                "description": cluster.description,
+                "link": cluster.link,
+                "locked": cluster.locked,
+                "first_semester": cluster.first_semester,
+                "last_semester": cluster.last_semester,
+                "free_choice": cluster.free_choice,
+                "required_ec": cluster.required_ec,
+                "year": cluster.year
+            }
+            return JsonResponse(self.transform_clusters(response_data), status=201)
+
+    def get(self, request, *args, **kwargs):
+
+        clusters = Cluster.objects.all()  # Example query
+        serialized_clusters = ClusterSerializer(clusters, many=True)
+        return JsonResponse(self.transform_clusters(serialized_clusters.data), safe=False, status=200)
+
 

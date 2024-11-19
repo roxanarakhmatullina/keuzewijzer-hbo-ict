@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, GraduateProfile, Cluster, Prerequisite, Cohort, CohortCluster
+from .models import *
 
 class ClusterAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
@@ -12,7 +12,8 @@ admin.site.register(GraduateProfile)
 admin.site.register(Cluster, ClusterAdmin)
 admin.site.register(Prerequisite)
 admin.site.register(Cohort)
-admin.site.register(CohortCluster)
+admin.site.register(ClusterGraduateProfileCohort)
+admin.site.register(PrerequisiteCluster)
 
 #username : superuser03
 #email: S1218343@student.windesheim.nl

@@ -19,7 +19,7 @@ const ApiProvider = ({children}) => {
 
     const COHORTS_ENDPOINT = 'http://127.0.0.1:8000/keuzeApp/api/cohorts/'
     const PROFILE_ENDPOINT= 'http://127.0.0.1:8000/keuzeApp/api/graduate-profiles/'
-
+    const CLUSTER_ENDPOINT= 'http://127.0.0.1:8000/keuzeApp/api/clusters/'
 
     const fetchApi = async (url) => {
         try {
@@ -35,7 +35,7 @@ const ApiProvider = ({children}) => {
         fetchApi(PROFILE_ENDPOINT).then(data => setGraduateProfiles(data));
 
         // fetch study years
-        fetchApi('/prototype/v2/graduate-paths.json').then(data => setStudyYears(data));
+        fetchApi(CLUSTER_ENDPOINT).then(data => setStudyYears(data));
 
         fetchApi(COHORTS_ENDPOINT).then(data => {
             const cohortYears = data.map(cohort => cohort.name);
