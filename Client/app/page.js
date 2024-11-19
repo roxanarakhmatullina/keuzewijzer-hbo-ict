@@ -38,7 +38,7 @@ const Home = () => {
             <div
                 className={`${selectedGraduateProfile ? "flex" : "hidden"} relative w-full p-[20px] pt-[50px] pb-[50px] box-border h-auto flex-col`}>
                 {/* Scrollable content for StudyYears */}
-                {selectedGraduateProfile && studyYears.map((_, index) => {
+                {selectedGraduateProfile && studyYears && studyYears.length > 0 && studyYears.map((_, index) => {
                     const fromYear = (startingYear + index).toString(); // Convert result back to string if needed
                     const toYear = (startingYear + index + 1).toString();
 
