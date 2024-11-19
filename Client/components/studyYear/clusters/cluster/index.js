@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import ClusterInfo from "@/components/studyYear/clusters/cluster/info";
 import Popup from "@/components/popup";
 
-const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, freeChoice, inList}) => {
+const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, free_choice, inList}) => {
     const [hoverLink, setHoverLink] = useState(false);
     const [hoverCluster, setHoverCluster] = useState(false);
     const [openSemesters, setOpenSemesters] = useState(false);
@@ -13,7 +13,7 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
     }
 
     const handleClick = () => {
-        if(freeChoice) {
+        if(free_choice) {
             setOpenSemesters(true);
         }
     };
@@ -31,7 +31,7 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
                 onTouchEnd={handleHoverCluster}
                 onClick={() => handleClick()}
                 style={{zIndex: hoverCluster ? 2 : 0}}
-                className={`w-full md:w-full min-w-[250px] md:max-w-[300px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} md:min-w-[300px] h-[75px] ${freeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+                className={`w-full md:w-full min-w-[250px] md:max-w-[300px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} md:min-w-[300px] h-[75px] ${free_choice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
                 <h1
                     style={{lineHeight: "1.25"}}
                     className={"text-left flex-auto text-[14px] font-bold"}>{name}</h1>
@@ -57,16 +57,16 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
                         onTouchStart={handleHoverLink}
                         onTouchEnd={handleHoverLink}
                         onClick={() => link && window.open(link, "_blank")}
-                        style={{backgroundColor: link ? "rgba(18,68,119, 0.25)" : freeChoice ? "#c5c5c5" : "#e5e5e5"}}
+                        style={{backgroundColor: link ? "rgba(18,68,119, 0.25)" : free_choice ? "#c5c5c5" : "#e5e5e5"}}
                         className={"relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"}>
-                        <p className={`${link ? "text-black" : freeChoice ? "text-[#999]" : "text-[#c5c5c5]"} text-xl font-black`}>i</p>
+                        <p className={`${link ? "text-black" : free_choice ? "text-[#999]" : "text-[#c5c5c5]"} text-xl font-black`}>i</p>
 
                         <ClusterInfo hoverLink={hoverLink} link={link}/>
                     </div>
 
                 </div>
             </div>
-            {/*{freeChoice && (*/}
+            {/*{free_choice && (*/}
             {/*    <Popup*/}
             {/*        title={`Semesters voor ${name}`}*/}
             {/*        acceptText={"Gebruiken"}*/}
