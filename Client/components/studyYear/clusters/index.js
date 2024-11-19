@@ -51,7 +51,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                             style={{ color: handleColor() }}
                             className="w-full transition duration-300 text-center font-bold text-[14px] pt-0 pb-5 p-5 box-border"
                         >
-                            Kies een van de onderstaande semesters:
+                            Kies een van de onderstaande clusters:
                         </p>
                         <div className={`relative h-full cursor-pointer w-full flex flex-col gap-[25px] justify-evenly items-center px-6 box-border ease-in-out duration-300`}>
                             {clusters.sort((a, b) => (a.id === currentCluster?.id ? -1 : b.id === currentCluster?.id ? 1 : 0))
