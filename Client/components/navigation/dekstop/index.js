@@ -5,21 +5,35 @@ import GraduateProfile from "@/components/navigation/graduateProfile";
 import StartStudy from "@/components/navigation/startStudy";
 import Link from "next/link";
 import {useApi} from "@/providers/ApiProvider";
+import Retry from "@/icons/retry";
 
-const DesktopNav = ({navbarOpen}) => {
-    const {graduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile, startedStudyYear, setStartedStudyYear} = useApi();
+const DesktopNav = ({navbarOpen, setNavbarOpen}) => {
+    const {graduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile, startedStudyYear, setStartedStudyYear, errors} = useApi();
 
     return (
         <div
-            className={`hidden hover:overflow-y-scroll md:flex ${!selectedGraduateProfile ? "w-full" : "w-full md:w-1/5 md:min-w-[312px]"} top-0 left-0 fixed z-[100] ${navbarOpen ? "min-h-screen" : "h-[75px]"} md:min-h-screen bg-white shadow-lg p-[20px] box-border justify-between gap-[25px] align-middle items-center flex-col`}>
-            <div className={`w-full h-auto flex flex-col gap-[50px] justify-start align-middle items-center ${!selectedGraduateProfile ? "mt-[50px]" : "mt-0"}`}>
+            className={`top-0 left-0 fixed md:sticky-position md:sticky flex ${!selectedGraduateProfile ? "w-screen" : "w-screen md:w-1/5 md:min-w-[312px]"} z-[100] ${navbarOpen ? "min-h-screen h-auto" : "h-[75px]"} md:max-h-screen md:min-h-screen bg-white shadow-lg ${navbarOpen ? "p-[20px] flex-col" : "p-[10px] pl-[20px] pr-[20px] md:p-[20px] flex-col"} box-border justify-between gap-[25px] align-middle items-center`}>
+            <div
+                className={`w-full h-auto flex gap-[50px] justify-start align-middle items-center md:flex-col ${selectedGraduateProfile ? "md:mt-0" : "mt-[50px]"} ${navbarOpen ? "mt-[50px] flex-col" : "mt-0 justify-between flex-row"}`}>
                 <div
-                    className={`md:w-full w-auto flex flex-row ${!selectedGraduateProfile ? "justify-center md:scale-[1.5]" : "justify-start"} align-middle items-center gap-[10px]`}>
+                    className={`md:w-full w-full flex flex-row ${!selectedGraduateProfile ? "md:justify-center scale-[1.5]" : "scale-[1.5] md:scale-[1] md:justify-start"} ${navbarOpen ? "scale-[1.5] justify-center" : "justify-start scale-[1]"} align-middle items-center gap-[10px] box-border`}>
                     <Logo/>
                     <h1 className={"text-xl font-bold"}>Keuzewijzer</h1>
                 </div>
 
-                <div className={"w-full justify-center align-middle items-center flex flex-col gap-[15px]"}>
+                <div
+                    onClick={() => setNavbarOpen(!navbarOpen)}
+                    className={`relative ${navbarOpen ? "hidden" : "flex"} md:hidden w-auto p-[10px] box-border hover:bg-[#f3f3f3] rounded-[12px] justify-center align-middle items-center gap-[10px]`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                         className="feather feather-menu">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </div>
+
+                <div className={`${navbarOpen ? "flex md:flex" : "hidden md:flex"} w-full justify-center align-middle items-center flex-col gap-[15px]`}>
                     {startedStudyYear && (
                         <button
                             onClick={() => {
@@ -33,12 +47,7 @@ const DesktopNav = ({navbarOpen}) => {
                             </p>
                             <div
                                 className={"w-[30px] h-[30px] flex justify-center align-middle items-center p-[7px] bg-transparent rounded-full"}>
-                                <svg className={"w-full h-full"} viewBox="0 0 16 16" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fillRule="evenodd" clipRule="evenodd"
-                                          d="M7.32 0.0289756C8.70071 -0.0888534 10.0884 0.153982 11.347 0.733693C12.6056 1.31341 13.6921 2.21011 14.5 3.33598V1.74998C14.5 1.55106 14.579 1.3603 14.7197 1.21965C14.8603 1.07899 15.0511 0.999976 15.25 0.999976C15.4489 0.999976 15.6397 1.07899 15.7803 1.21965C15.921 1.3603 16 1.55106 16 1.74998V5.99998H11.75C11.5511 5.99998 11.3603 5.92096 11.2197 5.78031C11.079 5.63965 11 5.44889 11 5.24998C11 5.05106 11.079 4.8603 11.2197 4.71965C11.3603 4.57899 11.5511 4.49998 11.75 4.49998H13.477C12.7931 3.42988 11.8107 2.58356 10.6512 2.06556C9.4917 1.54757 8.20584 1.38058 6.95248 1.58524C5.69912 1.7899 4.53316 2.35723 3.59864 3.21715C2.66412 4.07708 2.00198 5.19192 1.694 6.42398C1.67128 6.52076 1.62955 6.61206 1.57123 6.69257C1.51291 6.77308 1.43917 6.84119 1.35429 6.89294C1.26942 6.9447 1.1751 6.97906 1.07682 6.99403C0.97854 7.00901 0.878265 7.0043 0.781825 6.98017C0.685385 6.95604 0.594703 6.91298 0.515053 6.8535C0.435404 6.79401 0.368375 6.71928 0.317865 6.63366C0.267355 6.54803 0.234371 6.45322 0.220832 6.35473C0.207293 6.25625 0.213469 6.15605 0.239 6.05998C0.643544 4.4424 1.5434 2.99166 2.81279 1.91052C4.08218 0.82939 5.65766 0.171906 7.319 0.0299756L7.32 0.0289756ZM3.92 14.881C4.99199 15.5164 6.19758 15.8925 7.44068 15.9795C8.68378 16.0665 9.93001 15.8618 11.08 15.3819C12.23 14.902 13.252 14.1601 14.0646 13.2153C14.8771 12.2704 15.4577 11.1489 15.76 9.93997C15.805 9.74817 15.7728 9.54635 15.6702 9.37814C15.5676 9.20993 15.403 9.08883 15.2119 9.04101C15.0207 8.9932 14.8185 9.02251 14.6488 9.12261C14.4791 9.22271 14.3556 9.38557 14.305 9.57598C13.9969 10.8078 13.3347 11.9223 12.4002 12.782C11.4658 13.6417 10.3 14.2089 9.04688 14.4136C7.79373 14.6182 6.50809 14.4513 5.34871 13.9336C4.18933 13.4158 3.20699 12.5698 2.523 11.5H4.25C4.44891 11.5 4.63968 11.421 4.78033 11.2803C4.92098 11.1397 5 10.9489 5 10.75C5 10.5511 4.92098 10.3603 4.78033 10.2196C4.63968 10.079 4.44891 9.99998 4.25 9.99998H0V14.25C0 14.4489 0.0790176 14.6397 0.21967 14.7803C0.360322 14.921 0.551088 15 0.75 15C0.948912 15 1.13968 14.921 1.28033 14.7803C1.42098 14.6397 1.5 14.4489 1.5 14.25V12.664C2.14478 13.5623 2.96879 14.3172 3.92 14.881Z"
-                                          fill="black"/>
-                                </svg>
+                                <Retry/>
                             </div>
                         </button>
                     )}
@@ -47,29 +56,41 @@ const DesktopNav = ({navbarOpen}) => {
                     {startedStudyYear && graduateProfiles && (
                         <div
                             className={`flex w-full md:max-w-[300px] h-auto flex-col gap-[15px] justify-center align-middle items-center`}>
-                            <p className={`w-full ${!selectedGraduateProfile ? "text-center" : "text-left text-[13px]"} font-bold`}>Selecteer
-                                een afstudeerprofiel:</p>
+                            <p className={`w-full text-center ${selectedGraduateProfile && "md:text-left"} font-bold`}>
+                                Selecteer een afstudeerprofiel:
+                            </p>
 
-                            {/*  Profiles  */}
+                            {/* Profiles */}
                             <div
                                 className={"w-full h-auto flex flex-col gap-[10px] box-border justify-center align-middle items-center"}>
-
-                                {graduateProfiles.map((graduateProfile, index) => (
-                                    <GraduateProfile
-                                        key={graduateProfile.id}
-                                        {...graduateProfile} />
+                                {graduateProfiles && graduateProfiles.length > 0 && graduateProfiles.map((graduateProfile) => (
+                                    <GraduateProfile key={graduateProfile.id} {...graduateProfile} />
                                 ))}
+
+                                {errors && errors.length > 0 && (
+                                    errors.filter(error => error.type === "profiles").map((error) => (
+                                        <div key={error.id}
+                                             className={"w-full h-auto p-[20px] border-[1px] border-[#c00c00] bg-[rgba(255,0,0,0.1)] rounded-[12px] box-border"}>
+                                            {error.message}
+                                        </div>
+                                    ))
+                                )}
                             </div>
+
+                            <button
+                                onClick={() => setNavbarOpen(false)}
+                                className={`md:hidden hover:brightness-95 w-full h-[50px] font-bold ${selectedGraduateProfile ? "bg-[#124477] text-white" : "bg-[#e5e5e5] pointer-events-none text-[#c5c5c5]"} rounded-[12px] p-[10px] box-border`}>Volgende</button>
                         </div>
                     )}
                 </div>
 
-                <StartStudy/>
-
+                <StartStudy navbarOpen={navbarOpen}/>
             </div>
-            <p className={"text-[14px] text-[#424242] text-center"}>Aan deze website kunnen geen rechten worden
+            <p className={`${navbarOpen ? "block" : "hidden"} flex-row text-[14px] text-[#424242] text-center`}>
+                Aan deze website kunnen geen rechten worden
                 ontleend. <Link className={"text-black"}
-                                href={"https://www.windesheim.nl/over-windesheim/disclaimer"}>Disclaimer</Link></p>
+                                href={"https://www.windesheim.nl/over-windesheim/disclaimer"}>Disclaimer</Link>
+            </p>
         </div>
     )
 }

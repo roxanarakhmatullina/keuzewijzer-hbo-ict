@@ -1,6 +1,5 @@
 'use client'
 import React, {useState} from 'react'
-import MobileNav from "@/components/navigation/mobile";
 import DesktopNav from "@/components/navigation/dekstop";
 
 const Navigation = () => {
@@ -8,8 +7,7 @@ const Navigation = () => {
 
     return (
         <>
-            <DesktopNav navbarOpen={navbarOpen}/>
-            <MobileNav setNavbarOpen={setNavbarOpen} navbarOpen={navbarOpen} />
+            <DesktopNav navbarOpen={navbarOpen} setNavbarOpen={setNavbarOpen}/>
         </>
     )
 }

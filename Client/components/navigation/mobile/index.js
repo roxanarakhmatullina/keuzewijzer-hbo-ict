@@ -75,7 +75,7 @@ const MobileNav = ({navbarOpen, setNavbarOpen}) => {
                             <div
                                 className={"w-full h-auto flex flex-col gap-[10px] box-border justify-center align-middle items-center"}>
 
-                                {graduateProfiles.map((graduateProfile, index) => (
+                                {graduateProfiles && graduateProfiles.length > 0 && graduateProfiles.map((graduateProfile, index) => (
                                     <GraduateProfile
                                         key={graduateProfile.id}
                                         {...graduateProfile} />
