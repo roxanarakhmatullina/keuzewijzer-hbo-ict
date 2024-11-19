@@ -2,6 +2,7 @@
 import React, {createContext, useContext, useEffect, useState} from 'react'
 import axios from "axios";
 
+
 const ApiContext = createContext();
 
 export const useApi = () => {
@@ -17,10 +18,10 @@ const ApiProvider = ({children}) => {
     const [graduateProfiles, setGraduateProfiles] = useState([]);
     const [availableStudyYears, setAvailableStudyYears] = useState([]); // Empty initially
     const [errors, setErrors] = useState([]);
-
-    const COHORTS_ENDPOINT = 'http://127.0.0.1:8000/keuzeApp/api/cohorts/'
-    const PROFILE_ENDPOINT= 'http://127.0.0.1:8000/keuzeApp/api/graduate-profiles/'
-    const CLUSTER_ENDPOINT= 'http://127.0.0.1:8000/keuzeApp/api/clusters/'
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    const COHORTS_ENDPOINT = `${url}/cohorts/`
+    const PROFILE_ENDPOINT= `${url}/graduate-profiles/`
+    const CLUSTER_ENDPOINT= `${url}/clusters/`
 
     const fetchApi = async (url) => {
         try {

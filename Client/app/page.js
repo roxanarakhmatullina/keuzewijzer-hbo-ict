@@ -30,7 +30,7 @@ const Home = () => {
     const startingYear = parseInt(currentSavedStudyYear, 10);
 
     return (
-        <div className={"w-full flex flex-row pt-[50px] md:pt-[0px]"}>
+        <div className={"w-screen flex flex-row pt-[50px] md:pt-[0px]"}>
             {/* Sidebar */}
             <Navigation/>
 

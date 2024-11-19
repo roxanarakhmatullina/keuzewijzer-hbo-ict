@@ -1,0 +1,21 @@
+.animation {
+    animation: notification 0.5s ease-in-out;
+}
+
+@keyframes notification {
+    0% {
+        opacity: 0;
+        transform-origin: top right;
+        transform: scale(0);
+    }
+    75% {
+        opacity: 1;
+        transform-origin: top right;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform-origin: top right;
+        transform: scale(1);
+    }
+}

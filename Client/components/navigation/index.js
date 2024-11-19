@@ -13,7 +13,7 @@ const Navigation = () => {
 
     return (
         <div
-            className={`top-0 overflow-y-auto left-0 fixed md:sticky-position md:sticky flex ${!selectedGraduateProfile ? "w-screen" : "w-screen md:w-1/5 md:min-w-[312px] md:max-h-screen"} z-[100] ${navbarOpen ? "min-h-screen h-full" : "h-[75px]"} md:min-h-screen bg-white shadow-lg ${navbarOpen ? "p-[20px] flex-col overflow-y-auto" : "p-[10px] pl-[20px] pr-[20px] md:p-[20px] flex-col"} box-border justify-between gap-[25px] align-middle items-center`}>
+            className={`top-0 overflow-y-auto overflow-x-hidden max-w-[100vw] left-0 fixed md:sticky-position md:sticky flex ${!selectedGraduateProfile ? "w-screen" : "w-screen md:w-1/5 md:min-w-[312px] md:max-h-screen"} z-[100] ${navbarOpen ? "min-h-screen h-full" : "h-[75px]"} md:min-h-screen bg-white shadow-lg ${navbarOpen ? "p-[20px] flex-col overflow-y-auto" : "p-[10px] pl-[20px] pr-[20px] md:p-[20px] flex-col"} box-border justify-between gap-[25px] align-middle items-center`}>
             <div
                 className={`w-full h-auto flex gap-[50px] justify-start align-middle items-center md:flex-col ${selectedGraduateProfile ? "md:mt-0" : "mt-[50px]"} ${navbarOpen ? "mt-[50px] flex-col" : "mt-0 justify-between flex-row"}`}>
                 <div

@@ -1,5 +1,6 @@
 import "./globals.css";
 import ApiProvider from "@/providers/ApiProvider";
+import Development from "@/components/development";
 
 export const metadata = {
   title: "Nieuwe betere Keuzewijzer",
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
       <link rel="shortcut icon" href="/nieuw/favicon.ico"/>
     </head>
     <body className={"relative w-screen overflow-x-hidden"}>
+      <Development message={"Hey dev! Looks like"}/>
       <ApiProvider>
         {children}
       </ApiProvider>
