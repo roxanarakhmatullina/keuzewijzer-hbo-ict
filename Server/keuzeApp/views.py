@@ -119,9 +119,9 @@ class ClusterView(View):
 
             year_index = cluster["year"]
 
-            if cluster["first_semester"]:
+            if cluster["first_cluster"]:
                 output_structure[year_index]["firstCluster"].append(transformed_cluster)
-            elif cluster["last_semester"]:
+            elif cluster["last_cluster"]:
                 output_structure[year_index]["lastCluster"].append(transformed_cluster)
             else:
                 #Default
@@ -154,8 +154,8 @@ class ClusterView(View):
                 "description": cluster.description,
                 "link": cluster.link,
                 "locked": cluster.locked,
-                "first_semester": cluster.first_semester,
-                "last_semester": cluster.last_semester,
+                "first_cluster": cluster.first_cluster,
+                "last_cluster": cluster.last_cluster,
                 "free_choice": cluster.free_choice,
                 "required_ec": cluster.required_ec,
                 "year": cluster.year

@@ -6,7 +6,7 @@ import Popup from "@/components/popup";
 const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, free_choice, inList}) => {
     const [hoverLink, setHoverLink] = useState(false);
     const [hoverCluster, setHoverCluster] = useState(false);
-    const [openSemesters, setOpenSemesters] = useState(false);
+    const [openClusters, setOpenClusters] = useState(false);
 
     const handleHoverLink = () => {
         setHoverLink(!hoverLink);
@@ -14,7 +14,7 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
 
     const handleClick = () => {
         if(free_choice) {
-            setOpenSemesters(true);
+            setOpenClusters(true);
         }
     };
 
@@ -68,10 +68,10 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
             </div>
             {/*{free_choice && (*/}
             {/*    <Popup*/}
-            {/*        title={`Semesters voor ${name}`}*/}
+            {/*        title={`Clusters voor ${name}`}*/}
             {/*        acceptText={"Gebruiken"}*/}
-            {/*        isVisible={openSemesters}*/}
-            {/*        handleClose={setOpenSemesters}*/}
+            {/*        isVisible={openClusters}*/}
+            {/*        handleClose={setOpenClusters}*/}
             {/*    >*/}
             {/*    </Popup>*/}
             {/*)}*/}
