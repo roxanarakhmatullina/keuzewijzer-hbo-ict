@@ -73,7 +73,7 @@ deploy-backend:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$BACKEND_TAG" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3000:3000 --name $BACKEND_TAG $IMAGE_NAME:$BACKEND_TAG"
+      docker run -d -p 5000:5000 --name $BACKEND_TAG $IMAGE_NAME:$BACKEND_TAG"
 
 
 #deploy:
