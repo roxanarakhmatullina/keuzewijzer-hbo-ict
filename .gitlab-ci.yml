@@ -26,7 +26,6 @@ build-frontend:
     DOCKER_HOST: tcp://docker:2375
   before_script:
     - docker info
-    - echo "$REGISTRY_PASS"
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
     - docker build -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
@@ -61,7 +60,7 @@ deploy-frontend:
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker stop $FRONTEND_TAG | docker rm $FRONTEND_TAG &&
+      docker ps -a --filter "name=$FRONTEND_TAG" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 3000:3000 --name $FRONTEND_TAG $IMAGE_NAME:$FRONTEND_TAG"
 
 deploy-backend:
@@ -73,7 +72,7 @@ deploy-backend:
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker stop $FRONTEND_TAG | docker rm $BACKEND_TAG &&
+      docker ps -a --filter "name=$BACKEND_TAG" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 3000:3000 --name $BACKEND_TAG $IMAGE_NAME:$BACKEND_TAG"
 
 
