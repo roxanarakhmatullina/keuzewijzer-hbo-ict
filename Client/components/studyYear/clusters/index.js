@@ -35,7 +35,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
     }, [selectedGraduateProfile, setCurrentCluster]);
 
     return (
-        <div className="w-full flex flex-row gap-[25px] justify-center items-center">
+        <div className="w-full lg:w-auto flex flex-row gap-[25px] justify-center items-center">
             {clusters && clusters.length > 0 && (
                 clusters.length > 1 ? (
                     <div
@@ -43,15 +43,14 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                         style={{
                             background: selectedGraduateProfile ? selectedGraduateProfile.color : "#d9d9d9",
                         }}
-                        className={`w-full rounded-[12px] flex flex-col justify-between items-center gap-[10px]
-                            p-[0px] pt-[20px] pb-[20px] box-border 
-                            transition-transform duration-500`}
+                        className={`w-full lg:max-w-[calc(100%-20px)] lg:w-auto rounded-[12px] flex flex-col justify-between items-center gap-[10px]
+                            p-[0px] pt-[20px] pb-[20px] box-border transition-transform duration-500`}
                     >
                         <p
                             style={{ color: handleColor() }}
-                            className="w-full transition duration-300 text-center font-bold text-[14px] pt-0 pb-5 p-5 box-border"
+                            className="w-full transition duration-300 text-center font-bold text-[14px] pt-0 pb-[5px] p-[5px] box-border"
                         >
-                            Kies een van de onderstaande clusters:
+                            Kies een van de clusters:
                         </p>
                         <div className={`relative h-full cursor-pointer w-full flex flex-col gap-[25px] justify-evenly items-center px-6 box-border ease-in-out duration-300`}>
                             {clusters.sort((a, b) => (a.id === currentCluster?.id ? -1 : b.id === currentCluster?.id ? 1 : 0))
@@ -65,7 +64,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                                     return (
                                         <div
                                             key={cluster?.id}
-                                            className={`cluster relative w-full cursor-pointer rounded-[12px] 
+                                            className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] 
                                                 ${!handleMultipleClusters && "shadow-lg"}`}
                                             onClick={() => handleMultipleClusters && handleClusterClick(cluster)}
                                             style={{

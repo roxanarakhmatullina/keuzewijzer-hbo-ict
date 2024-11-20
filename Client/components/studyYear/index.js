@@ -5,7 +5,7 @@ import {useApi} from "@/providers/ApiProvider";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudyYear}) => {
+const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, children}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -48,10 +48,12 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
     }
 
     return (
-        <div className={"relative last:mb-[50px] first:mt-0 mt-[-5px] min-w-full flex justify-between gap-[75px] align-middle items-center flex-col"}>
+        <div className={"relative last:mb-[50px] lg:m-0 lg:last:mb-0 first:mt-0 mt-[-5px] lg:mt-0 w-full lg:max-w-[calc(50%)] flex justify-between gap-[75px] lg:gap-[0px] h-auto align-middle items-center flex-col lg:flex-row"}>
+            {children}
+
             <div
                 style={{background: selectedGraduateProfile ? selectedGraduateProfile.color : "#124477"}}
-                className={"absolute transition ease-in-out duration-300 w-[10px] h-full rounded-full"}/>
+                className={"absolute transition ease-in-out duration-300 lg:w-full lg:h-[10px] w-[10px] h-full"}/>
             <div
                 style={{background: selectedGraduateProfile ? selectedGraduateProfile.color : "#124477"}}
                 className={"relative transition ease-in-out duration-300 top-0 left-0 min-w-[75px] min-h-[75px] rounded-full flex justify-center align-middle items-center"}>
@@ -62,7 +64,7 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
 
             {/* Clusters */}
             <div
-                className={"relative w-full md:w-auto pt-[25px] pb-[25px] p-[10px] box-border h-auto rounded-[12px] bg-[#D9D9D9] flex flex-col justify-center align-middle items-center gap-[25px]"}>
+                className={"relative w-full lg:w-auto pt-[25px] pb-[25px] p-[10px] box-border h-auto rounded-[12px] bg-[#D9D9D9] flex flex-col justify-center align-middle items-center gap-[25px]"}>
                 {isLocked && (
                     <div
                         className={"absolute top-[-25px] p-[12.5px] box-border w-[50px] h-[50px] bg-[#d9d9d9] rounded-full flex justify-center align-middle items-center"}>
@@ -78,15 +80,15 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
             </div>
 
             {isLastStudyYear ? (
-                <div className={"relative w-full flex flex-col justify-center align-middle items-center gap-[15px]"}>
+                <div className={"relative w-full lg:w-auto flex flex-col justify-center align-middle items-center gap-[15px]"}>
                     <div
                         style={{background: selectedGraduateProfile ? selectedGraduateProfile.color : "#124477"}}
                         className={"relative max-w-[75px] max-h-[75px] p-[10px] box-border min-w-[75px] min-h-[75px] rounded-full flex justify-center align-middle items-center"}>
                         <Graduate color={handleColor()}/>
                     </div>
-                    <p className={"absolute w-full text-center bottom-[-50px]"}>Verwacht af te studeren tot <b>{selectedGraduateProfile?.name}</b></p>
+                    <p className={"lg:hidden absolute w-full text-center bottom-[-50px]"}>Verwacht af te studeren tot <b>{selectedGraduateProfile?.name}</b></p>
                 </div>
-            ) : <p></p>}
+            ) : <p className={`${isEndOfRow && "min-w-[75px]"}`}></p>}
         </div>
     )
 }

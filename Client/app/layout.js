@@ -3,8 +3,8 @@ import ApiProvider from "@/providers/ApiProvider";
 import Development from "@/components/development";
 
 export const metadata = {
-  title: "Nieuwe betere Keuzewijzer",
-  description: "Een nieuwe en betere keuzewijzer voor HBO-ICT studenten om route te bepalen naar een afstudeerprofiel.",
+  title: "HBO-ICT Keuzewijzer - De Keuzewijzer van Windesheim",
+  description: "De HBO-ICT Keuzewijzer helpt studenten van Windesheim bij het kiezen van een afstudeerprofiel binnen de opleiding HBO-ICT. ",
 };
 
 export default function RootLayout({ children }) {
@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
       <link rel="apple-touch-icon" sizes="180x180" href="/nieuw/favicons/logo-180x180.png"/>
       <link rel="shortcut icon" href="/nieuw/favicon.ico"/>
     </head>
-    <body className={"relative w-screen overflow-x-hidden"}>
+    <body className={"relative w-screen overflow-x-hidden gap-0"}>
       <Development message={"Hey dev! Looks like"}/>
       <ApiProvider>
         {children}
