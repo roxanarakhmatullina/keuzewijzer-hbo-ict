@@ -35,7 +35,7 @@ const StartStudy = ({navbarOpen}) => {
 
                         {errors && errors.length > 0 && (
                             errors.filter(error => error.type === "studyyears").map((error) => (
-                                <div className={"w-full h-auto p-[20px] border-[1px] border-[#c00c00] bg-[rgba(255,0,0,0.1)] rounded-[12px] box-border"}>
+                                <div key={error.id} className={"w-full h-auto p-[20px] border-[1px] border-[#c00c00] bg-[rgba(255,0,0,0.1)] rounded-[12px] box-border"}>
                                     {error.message}
                                 </div>
                             ))

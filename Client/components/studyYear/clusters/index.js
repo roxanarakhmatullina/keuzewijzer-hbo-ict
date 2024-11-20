@@ -32,7 +32,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
     useEffect(() => {
         setCurrentCluster(null);
         setHandleMultipleClusters(true);
-    }, [selectedGraduateProfile]);
+    }, [selectedGraduateProfile, setCurrentCluster]);
 
     return (
         <div className="w-full flex flex-row gap-[25px] justify-center items-center">
