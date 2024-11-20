@@ -25,7 +25,7 @@ const Development = ({ message }) => {
                 text: "#c00c00",
                 font: "bold",
             }}
-            className={'fixed animation top-[25px] right-[25px] rounded-[8px] shadow-2xl shadow-[#EF4D61]/[0.35] p-[10px] pt-[25px] pb-[25px] z-[10000] box-border max-w-[500px] w-full h-auto flex flex-col gap-[25px] justify-center align-middle items-center'}
+            className={'fixed animation top-[25px] right-[25px] rounded-[8px] shadow-2xl shadow-[#EF4D61]/[0.35] p-[10px] pt-[25px] pb-[25px] z-[10000] box-border max-w-[calc(100vw-50px)] md:max-w-[500px] w-full h-auto flex flex-col gap-[25px] justify-center align-middle items-center'}
         >
             <div className={"w-full flex flex-row gap-[10px]"}>
                 <div
