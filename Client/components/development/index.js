@@ -4,9 +4,6 @@ import './index.css';
 
 const Development = ({ message }) => {
     // Only render the message box in development mode
-    if (process.env.NODE_ENV !== 'development' || process.env.NEXT_PUBLIC_API_URL) {
-        return null;
-    }
 
     const [showMessageBox, setShowMessageBox] = React.useState(true);
 
@@ -16,6 +13,10 @@ const Development = ({ message }) => {
             setShowMessageBox(false);
         }
     }, []);
+
+    if (process.env.NODE_ENV !== 'development' || process.env.NEXT_PUBLIC_API_URL) {
+        return null;
+    }
 
     return (
         <header
@@ -32,7 +33,7 @@ const Development = ({ message }) => {
                     className={"min-w-[30px] min-h-[30px] max-h-[30px] max-w-[30px] bg-[#EF4D61] rounded-full flex justify-center align-middle items-center font-black text-xl text-[#fff]"}>!
                 </div>
                 <div className={"w-full font-bold text-[#333] text-[14px] gap-[10px] flex flex-col"}>
-                    Hey dev, it looks like you forgot to add a .env file. Please add the '.env.local' file to '/Client'. Then
+                    Hey dev, it looks like you forgot to add a .env file. Please add the <b>.env.local</b> file to <b>/Client</b>. Then
                     add the following content to the file:
                     <div
                         className={"w-full p-[10px] box-border rounded-[8px] bg-[#e5e5e5] border-[1px] border-[#c5c5c5] text-black flex justify-between align-middle items-center flex-row gap-[10px]"}>
