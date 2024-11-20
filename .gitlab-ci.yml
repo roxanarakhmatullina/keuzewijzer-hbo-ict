@@ -5,8 +5,8 @@ stages:
 
 variables:
   IMAGE_NAME: matzleeflang/keuzewijzer
-  FRONTEND_TAG: Nextjs-app
-  BACKEND_TAG: Django-app
+  FRONTEND_TAG: "$CI_COMMIT_SHA-Nextjs-app"
+  BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
 
 #tests-django:
 #  stage: test
