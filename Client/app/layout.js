@@ -1,5 +1,6 @@
 import "./globals.css";
 import ApiProvider from "@/providers/ApiProvider";
+import Development from "@/components/development";
 
 export const metadata = {
   title: "Nieuwe betere Keuzewijzer",
@@ -16,7 +17,8 @@ export default function RootLayout({ children }) {
       <link rel="apple-touch-icon" sizes="180x180" href="/nieuw/favicons/logo-180x180.png"/>
       <link rel="shortcut icon" href="/nieuw/favicon.ico"/>
     </head>
-    <body className={"max-w-[100vw] md:overflow-x-auto overflow-x-hidden"}>
+    <body className={"relative w-screen overflow-x-hidden"}>
+      <Development message={"Hey dev! Looks like"}/>
       <ApiProvider>
         {children}
       </ApiProvider>

@@ -2,6 +2,7 @@
 import React, {createContext, useContext, useEffect, useState} from 'react'
 import axios from "axios";
 
+
 const ApiContext = createContext();
 
 export const useApi = () => {
@@ -16,10 +17,11 @@ const ApiProvider = ({children}) => {
     const [studyYears, setStudyYears] = useState([]);
     const [graduateProfiles, setGraduateProfiles] = useState([]);
     const [availableStudyYears, setAvailableStudyYears] = useState([]); // Empty initially
-
-    const COHORTS_ENDPOINT = 'http://127.0.0.1:8000/keuzeApp/api/cohorts/'
-    const PROFILE_ENDPOINT= 'http://127.0.0.1:8000/keuzeApp/api/graduate-profiles/'
-    const CLUSTER_ENDPOINT= 'http://127.0.0.1:8000/keuzeApp/api/clusters/'
+    const [errors, setErrors] = useState([]);
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    const COHORTS_ENDPOINT = `${url}/cohorts/`
+    const PROFILE_ENDPOINT= `${url}/graduate-profiles/`
+    const CLUSTER_ENDPOINT= `${url}/clusters/`
 
     const fetchApi = async (url) => {
         try {
@@ -27,20 +29,41 @@ const ApiProvider = ({children}) => {
             return response.data;
         } catch (error) {
             console.error('Error fetching the data:', error);
+            return error;
         }
     }
 
     useEffect(() => {
         // fetch graduate profiles
-        fetchApi(PROFILE_ENDPOINT).then(data => setGraduateProfiles(data));
+        fetchApi(PROFILE_ENDPOINT).then(data => {
+            setGraduateProfiles(data);
+        })
+            .catch(error => {
+                setErrors([...errors, {
+                    id: new Date().getTime(),
+                    type: "profiles",
+                    message: 'Er is iets mis gegaan bij het ophalen van de afstudeerprofielen. Probeer het later opnieuw.',
+                    error: error,
+                }]);
+            })
 
         // fetch study years
-        fetchApi(CLUSTER_ENDPOINT).then(data => setStudyYears(data));
+        fetchApi(CLUSTER_ENDPOINT).then(data => {
+            setStudyYears(data)
+        });
 
         fetchApi(COHORTS_ENDPOINT).then(data => {
             const cohortYears = data.map(cohort => cohort.name);
             setAvailableStudyYears(cohortYears);
-        });
+        })
+            .catch(error => {
+                setErrors([...errors, {
+                    id: new Date().getTime(),
+                    type: "studyyears",
+                    message: 'Er is iets mis gegaan bij het ophalen van de studie jaren. Probeer het later opnieuw.',
+                    error: error,
+                }]);
+            })
 
         return () => {
             // cleanup
@@ -48,13 +71,13 @@ const ApiProvider = ({children}) => {
         };
     }, []);
 
-
     return (
         <ApiContext.Provider value={{graduateProfiles, studyYears,
             availableStudyYears, startedStudyYear,
             setStartedStudyYear, selectedGraduateProfile,
             setSelectedGraduateProfile, currentSavedStudyYear,
-            setCurrentSavedStudyYear}}>
+            setCurrentSavedStudyYear, errors}}
+        >
             {children}
         </ApiContext.Provider>
     )
