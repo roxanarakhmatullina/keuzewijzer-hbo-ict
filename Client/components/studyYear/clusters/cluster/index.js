@@ -31,7 +31,7 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
                 onTouchEnd={handleHoverCluster}
                 onClick={() => handleClick()}
                 style={{zIndex: hoverCluster ? 2 : 0}}
-                className={`w-full md:w-full min-w-[250px] md:max-w-[300px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} md:min-w-[300px] h-[75px] ${free_choice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+                className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${free_choice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
                 <h1
                     style={{lineHeight: "1.25"}}
                     className={"text-left flex-auto text-[14px] font-bold"}>{name}</h1>
