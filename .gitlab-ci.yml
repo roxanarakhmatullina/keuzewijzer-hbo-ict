@@ -7,6 +7,8 @@ variables:
   IMAGE_NAME: matzleeflang/keuzewijzer
   FRONTEND_TAG: "$CI_COMMIT_SHA-Nextjs-app"
   BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
+  FRONTEND_NAME: Nextjs-app
+  BACKEND_NAME: Django-app
 
 #tests-django:
 #  stage: test
@@ -56,25 +58,22 @@ deploy-frontend:
   stage: deploy
   tags:
     - deploy-runner
-  before_script:
-    - chmod 400 $SSH_KEY
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
+    - ssh -o StrictHostKeyChecking=no -i $SERVER_PASS root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker ps -a --filter "name=$FRONTEND_TAG" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3000:3000 --name $FRONTEND_TAG $IMAGE_NAME:$FRONTEND_TAG"
+      docker ps -a --filter "name=$FRONTEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
 
 deploy-backend:
   stage: deploy
   tags:
     - deploy-runner
-  before_script:
-    - chmod 400 $SSH_KEY
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
+    - ssh -o StrictHostKeyChecking=no -i $SERVER_PASS root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker ps -a --filter "name=$BACKEND_TAG" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5000:5000 --name $BACKEND_TAG $IMAGE_NAME:$BACKEND_TAG"
+      docker ps -a --filter "name=$BACKEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 5000:5000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
+      docker images prune -a"
 
 
 #deploy:
