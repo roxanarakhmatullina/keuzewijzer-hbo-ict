@@ -2,7 +2,7 @@
 FROM node:18-alpine AS build
 
 ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL="http://keuzewijzerhboict.nl/keuzeApp/api"
+ENV NEXT_PUBLIC_API_URL="http://keuzewijzerhboict.nl:8000/keuzeApp/api"
 
 # Set working directory in the container
 WORKDIR /app
