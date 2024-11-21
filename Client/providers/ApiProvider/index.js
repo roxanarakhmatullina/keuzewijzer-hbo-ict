@@ -25,7 +25,11 @@ const ApiProvider = ({children}) => {
 
     const fetchApi = async (url) => {
         try {
-            const response = await axios.get(url);
+            const response = await axios.get(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
             return response.data;
         } catch (error) {
             console.error('Error fetching the data:', error);
