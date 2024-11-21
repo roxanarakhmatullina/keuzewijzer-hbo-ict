@@ -27,7 +27,8 @@ SECRET_KEY = "django-insecure-yqz=s98b%$ja)bldmvt7f@m2p8ku8c326k&q&#zp-w+xzczq^d
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "keuzewijzerhboict.nl"
+    "keuzewijzerhboict.nl",
+    "localhost"
 ]
 
 
