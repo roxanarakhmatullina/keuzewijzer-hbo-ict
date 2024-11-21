@@ -46,7 +46,7 @@ const ApiProvider = ({children}) => {
                 setErrors([...errors, {
                     id: new Date().getTime(),
                     type: "profiles",
-                    message: 'Er is iets mis gegaan bij het ophalen van de afstudeerprofielen. Probeer het later opnieuw.',
+                    message: 'Er is iets misgegaan bij het ophalen van de afstudeerprofielen. Probeer het later opnieuw.',
                     error: error,
                 }]);
             })
@@ -64,7 +64,7 @@ const ApiProvider = ({children}) => {
                 setErrors([...errors, {
                     id: new Date().getTime(),
                     type: "studyyears",
-                    message: 'Er is iets mis gegaan bij het ophalen van de studie jaren. Probeer het later opnieuw.',
+                    message: 'Er is iets misgegaan bij het ophalen van de studiejaren. Probeer het later opnieuw.',
                     error: error,
                 }]);
             })
