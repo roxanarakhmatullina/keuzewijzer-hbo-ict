@@ -14,17 +14,12 @@ build-frontend:
   stage: build
   tags:
     - nextjs
-  services:
-    - name: docker:20.10.16-dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375
   before_script:
-    - apk add --no-cache openssh
+    - apk add --no-cache openssh docker  # Install SSH and Docker CLI (if needed)
     - mkdir -p ~/.ssh
-    - echo "$SSH_KEY" > ~/.ssh/id_rsa  # Add the private key from GitLab CI/CD variables
+    - echo "$SSH_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa  # Set correct permissions for the private key
-    - docker info
+    - docker info  # Ensure Docker is available and connected to the Docker daemon
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$FRONTEND_TAG
@@ -36,17 +31,12 @@ build-backend:
   stage: build
   tags:
     - django
-  services:
-    - name: docker:20.10.16-dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375
   before_script:
-    - apk add --no-cache openssh
+    - apk add --no-cache openssh docker  # Install SSH and Docker CLI (if needed)
     - mkdir -p ~/.ssh
-    - echo "$SSH_KEY" > ~/.ssh/id_rsa  # Add the private key from GitLab CI/CD variables
+    - echo "$SSH_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa  # Set correct permissions for the private key
-    - docker info
+    - docker info  # Ensure Docker is available and connected to the Docker daemon
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
     - docker push $IMAGE_NAME:$BACKEND_TAG
