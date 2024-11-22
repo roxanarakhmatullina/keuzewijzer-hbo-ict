@@ -4,23 +4,16 @@ stages:
   - deploy
 
 variables:
-  IMAGE_NAME: matzleeflang/keuzewijzer
+  IMAGE_NAME: Keuzewijzer
   FRONTEND_TAG: "$CI_COMMIT_SHA-Nextjs-app"
   BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
   FRONTEND_NAME: Nextjs-app
   BACKEND_NAME: Django-app
 
-#tests-django:
-#  stage: test
-#  script:
-#    - python manage.py test
-#  tags:
-#    - python
-
 build-frontend:
   stage: build
   tags:
-    - docker-client
+    - nextjs
   services:
     - docker:20.10.16-dind
   variables:
@@ -33,13 +26,13 @@ build-frontend:
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$FRONTEND_TAG
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'  
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "dev"'
 
 build-backend:
   stage: build
   tags:
-    - docker-client
+    - django
   services:
     - docker:20.10.16-dind
   variables:
@@ -51,42 +44,30 @@ build-backend:
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
     - docker push $IMAGE_NAME:$BACKEND_TAG
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "dev"'
 
 deploy-frontend:
   stage: deploy
   tags:
-    - deploy-runner
+    - deploy
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
-      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
+      cd /var/www/Client &&
       docker ps -a --filter "name=$FRONTEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "dev"'
 
 deploy-backend:
   stage: deploy
   tags:
-    - deploy-runner
+    - deploy
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
-      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
+      cd /var/www/Server &&
       docker ps -a --filter "name=$BACKEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5000:5000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
+      docker run -d -p 8000:8000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
       docker images prune -a"
-
-
-#deploy:
-#  stage: deploy
-#  tags:
-#    - deploy-runner
-#  before_script:
-#    - chmod 400 $SSH_KEY
-#  script:
-#    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
-#      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-#      docker ps -aq | xargs -r docker stop | xargs -r docker rm &&
-#      docker run -d -p 3000:3000 --name $FRONTEND_TAG $IMAGE_NAME:$FRONTEND_TAG &&
-#      docker run -d -p 5000:5000 --name $BACKEND_TAG $IMAGE_NAME:$BACKEND_TAG"
-#  only:
-#    - main
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "dev"'
