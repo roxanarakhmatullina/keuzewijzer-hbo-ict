@@ -12,8 +12,8 @@ from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
 
 
-from .models import Category, Cluster, GraduateProfile, Prerequisite, Cohort
-from .serializers import CategorySerializer, ClusterSerializer, GraduateProfileSerializer, PrerequisiteSerializer, CohortSerializer, MessageSerializer
+from .models import Category, Cluster, GraduateProfile, Cohort
+from .serializers import CategorySerializer, ClusterSerializer, GraduateProfileSerializer, CohortSerializer, MessageSerializer
 
 
 def index(request):
@@ -39,37 +39,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]
 
-class ClusterViewSet(viewsets.ModelViewSet):
-    queryset = Cluster.objects.all()
-    serializer_class = ClusterSerializer
-    permission_classes = [AllowAny]
-
-    def create(self, request, *args, **kwargs):
-        # First, create the cluster using the serializer
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            cluster = serializer.save()  # Save the cluster to the database
-
-            # Now, associate graduate profiles based on the incoming data
-            graduate_profile_ids = request.data.get('graduate_profiles', [])
-            graduate_profiles = GraduateProfile.objects.filter(id__in=graduate_profile_ids)
-
-            # Add graduate profiles to the cluster
-            cluster.graduate_profiles.add(*graduate_profiles)
-
-            # Return the response
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-
 class GraduateProfileViewSet(viewsets.ModelViewSet):
     queryset = GraduateProfile.objects.all()
     serializer_class = GraduateProfileSerializer
     permission_classes = [AllowAny]
 
-class PrerequisiteViewSet(viewsets.ModelViewSet):
-    queryset = Prerequisite.objects.all()
-    serializer_class = PrerequisiteSerializer
-    permission_classes = [AllowAny]
 
 class CohortViewSet(viewsets.ModelViewSet):
     queryset = Cohort.objects.all()
@@ -92,7 +66,14 @@ class GraduateProfileClustersView(APIView):
             return Response({"error": "Graduate profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
+
 class ClusterView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        clusters = Cluster.objects.all()  # Example query
+        serialized_clusters = ClusterSerializer(clusters, many=True)
+        return JsonResponse(self.transform_clusters(serialized_clusters.data), safe=False, status=200)
 
     def transform_clusters(self, input_json):
 
@@ -105,7 +86,7 @@ class ClusterView(View):
 
         for cluster in input_json:
 
-            cluster["graduateProfileTags"] = [profile["name"] for profile in cluster.pop("graduate_profiles")]
+            cluster["graduateProfileTags"] = [(item["graduate_profile"]["name"], item["cohort"]["name"]) for item in cluster.pop("cohorts_profiles")]
 
             transformed_cluster = {
                 "id": cluster['id'],
@@ -128,6 +109,8 @@ class ClusterView(View):
                 output_structure[year_index]["firstCluster"].append(transformed_cluster)
 
         return output_structure
+
+
 
     def post(self, request, *args, **kwargs):
 
@@ -162,10 +145,7 @@ class ClusterView(View):
             }
             return JsonResponse(self.transform_clusters(response_data), status=201)
 
-    def get(self, request, *args, **kwargs):
 
-        clusters = Cluster.objects.all()  # Example query
-        serialized_clusters = ClusterSerializer(clusters, many=True)
-        return JsonResponse(self.transform_clusters(serialized_clusters.data), safe=False, status=200)
+
 
 

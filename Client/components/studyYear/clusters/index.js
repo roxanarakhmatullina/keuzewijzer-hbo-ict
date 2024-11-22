@@ -39,6 +39,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
             {clusters && clusters.length > 0 && (
                 clusters.length > 1 ? (
                     <div
+                        key={"clusters-menu"}
                         onClick={(e) => handleMenuClick(e)}
                         style={{
                             background: selectedGraduateProfile ? selectedGraduateProfile.color : "#d9d9d9",
@@ -63,7 +64,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
 
                                     return (
                                         <div
-                                            key={cluster?.id}
+                                            key={"cluster-"+ cluster?.id}
                                             className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] 
                                                 ${!handleMultipleClusters && "shadow-lg"}`}
                                             onClick={() => handleMultipleClusters && handleClusterClick(cluster)}

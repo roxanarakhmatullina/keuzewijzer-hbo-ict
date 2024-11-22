@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "keuzewijzerhboict.nl",
-    "localhost"
+    "localhost",
+    "127.0.0.1"
 ]
 
 
