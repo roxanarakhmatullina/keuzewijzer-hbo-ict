@@ -3,105 +3,72 @@ stages:
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://h2853458.stratoserver.net:2375
+  IMAGE_NAME: keuzewijzer
   FRONTEND_TAG: "$CI_COMMIT_SHA-nextjs-app"
   BACKEND_TAG: "$CI_COMMIT_SHA-django-app"
   FRONTEND_NAME: nextjs-app
   BACKEND_NAME: django-app
 
-
 build-frontend:
   stage: build
   tags:
-    - nextjs
+    - docker-client
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+    NEXT_PUBLIC_API_URL: "$API_URL"
+  before_script:
+    - docker info
   script:
-    # Build the Docker image locally
-    - docker build -t nextjs-app:latest ./Client
-    # Save the Docker image as a tar file for transfer
-    - docker save nextjs-app:latest > nextjs-app.tar
-  rules:
-    - if: '$CI_COMMIT_REF_NAME == "dev"'
+    - docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
+    - docker save $IMAGE_NAME:$FRONTEND_TAG | gzip > frontend-image.tar.gz
+  artifacts:
+    paths:
+      - frontend-image.tar.gz
 
-deploy:
+build-backend:
+  stage: build
+  tags:
+    - docker-client
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker info
+  script:
+    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
+    - docker save $IMAGE_NAME:$BACKEND_TAG | gzip > backend-image.tar.gz
+  artifacts:
+    paths:
+      - backend-image.tar.gz
+
+deploy-frontend:
   stage: deploy
+  tags:
+    - deploy-runner
+  dependencies:
+    - build-frontend
   script:
-    # Transfer the Docker image tar file to the Strato server
-    - scp nextjs-app.tar root@h2853458.stratoserver.net:/root/nextjs-app.tar
-    # Connect to the server and load the Docker image
-    - ssh root@h2853458.stratoserver.net 'docker load < /root/nextjs-app.tar'
-    # Stop and remove any existing container
-    - ssh root@h2853458.stratoserver.net 'docker stop nextjs-container || true && docker rm nextjs-container || true'
-    # Run the new container
-    - ssh root@h2853458.stratoserver.net 'docker run -d --name nextjs-container -p 5000:5000 nextjs-app:latest'
+    - scp -o StrictHostKeyChecking=no -i $SSH_KEY frontend-image.tar.gz root@h2853458.stratoserver.net:/tmp/
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      gunzip -c /tmp/frontend-image.tar.gz | docker load &&
+      docker ps -a --filter \"name=$FRONTEND_NAME\" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
 
-# Frontend Build
-# build-frontend:
-#   stage: build
-#   tags:
-#     - nextjs
-#   image: docker:latest
-#   services:
-#     - docker:dind
-#   before_script:
-#     - apk add --no-cache docker-cli
-#   script:
-#     - docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/Dockerfile ./Client
-#     - docker push $IMAGE_NAME:$FRONTEND_TAG
-#   rules:
-#     - if: '$CI_COMMIT_REF_NAME == "dev"'
-
-# # Backend Build
-# build-backend:
-#   stage: build
-#   tags:
-#     - django
-#   image: docker:latest
-#   services:
-#     - docker:dind
-#   before_script:
-#     - apk add --no-cache docker-cli
-#   script:
-#     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/Dockerfile ./Server
-#     - docker push $IMAGE_NAME:$BACKEND_TAG
-#   rules:
-#     - if: '$CI_COMMIT_REF_NAME == "dev"'
-
-# # Frontend Deployment
-# deploy-frontend:
-#   stage: deploy
-#   tags:
-#     - deploy
-#   image: alpine:latest
-#   before_script:
-#     - apk add --no-cache openssh
-#     - mkdir -p ~/.ssh
-#     - echo "$SSH_KEY" > ~/.ssh/id_rsa
-#     - chmod 600 ~/.ssh/id_rsa
-#   script:
-#     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@h2853458.stratoserver.net"
-#       docker stop $FRONTEND_NAME || true &&
-#       docker rm $FRONTEND_NAME || true &&
-#       docker pull $IMAGE_NAME:$FRONTEND_TAG &&
-#       docker run -d --name $FRONTEND_NAME -p 5000:5000 $IMAGE_NAME:$FRONTEND_TAG"
-#   rules:
-#     - if: '$CI_COMMIT_REF_NAME == "dev"'
-
-# # Backend Deployment
-# deploy-backend:
-#   stage: deploy
-#   tags:
-#     - deploy
-#   image: alpine:latest
-#   before_script:
-#     - apk add --no-cache openssh
-#     - mkdir -p ~/.ssh
-#     - echo "$SSH_KEY" > ~/.ssh/id_rsa
-#     - chmod 600 ~/.ssh/id_rsa
-#   script:
-#     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@h2853458.stratoserver.net"
-#       docker stop $BACKEND_NAME || true &&
-#       docker rm $BACKEND_NAME || true &&
-#       docker pull $IMAGE_NAME:$BACKEND_TAG &&
-#       docker run -d --name $BACKEND_NAME -p 8000:8000 $IMAGE_NAME:$BACKEND_TAG"
-#   rules:
-#     - if: '$CI_COMMIT_REF_NAME == "dev"'
+deploy-backend:
+  stage: deploy
+  tags:
+    - deploy-runner
+  dependencies:
+    - build-backend
+  script:
+    - scp -o StrictHostKeyChecking=no -i $SSH_KEY backend-image.tar.gz root@h2853458.stratoserver.net:/tmp/
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      gunzip -c /tmp/backend-image.tar.gz | docker load &&
+      docker ps -a --filter \"name=$BACKEND_NAME\" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 8000:8000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
+      docker images prune -a"
