@@ -15,7 +15,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class GraduateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GraduateProfile
-        fields = ['name', 'color']
+        fields = ['id','name', 'color']
 
 class CohortSerializer(serializers.ModelSerializer):
     class Meta:

@@ -18,7 +18,7 @@ const GraduateProfiles = ({setNavbarOpen}) => {
             <div
                 className={"w-full h-auto flex flex-col gap-[10px] box-border justify-center align-middle items-center"}>
                 {graduateProfiles && graduateProfiles.length > 0 ? graduateProfiles.map((graduateProfile) => (
-                    <GraduateProfile key={graduateProfile.id} {...graduateProfile} />
+                    <GraduateProfile key={"graduate-profile-"+ graduateProfile.id} {...graduateProfile} />
                 )) : (
                     <SkeletonLoader/>
                 )}

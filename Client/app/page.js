@@ -5,8 +5,6 @@ import StudyYear from "@/components/studyYear";
 import {useApi} from "@/providers/ApiProvider";
 
 const Home = () => {
-
-
     const {
         currentSavedStudyYear,
         studyYears,  // Assuming studyYears is an array of objects used for mapping
@@ -14,7 +12,6 @@ const Home = () => {
     } = useApi();
 
     const startingYear = parseInt(currentSavedStudyYear, 10);
-
 
     const handleShowClusters = (clusters) => {
         if (clusters && clusters.length > 0) {
@@ -33,9 +30,6 @@ const Home = () => {
         return [];
     };
 
-    // Convert currentSavedStudyYear to a number for arithmetic
-
-
     return (
         <div className={"w-screen flex flex-row pt-[50px] md:pt-[0px] gap-0"}>
             {/* Sidebar */}
@@ -49,10 +43,10 @@ const Home = () => {
                     const fromYear = (startingYear + index).toString(); // Convert result back to string if needed
                     const toYear = (startingYear + index + 1).toString();
 
+
                     return (
-                        <>
+                        <React.Fragment key={"study-year-" + index}>
                             <StudyYear
-                                key={index}
                                 fromYear={fromYear}
                                 toYear={toYear}
                                 firstClusters={handleShowClusters(studyYears[index]?.firstCluster)}
@@ -95,7 +89,7 @@ const Home = () => {
                                     </div>
                                 </div>
                             )}
-                        </>
+                        </React.Fragment>
                     );
                 })}
             </div>
