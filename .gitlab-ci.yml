@@ -12,19 +12,18 @@ variables:
 # Frontend Build
 build-frontend:
   stage: build
-  tags:
-    - nextjs
   image: docker:latest
-  services:
-    - docker:dind
+  variables:
+    DOCKER_HOST: unix:///var/run/docker.sock
+    DOCKER_TLS_CERTDIR: ""
   before_script:
     - apk add --no-cache docker-cli
   script:
     - docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/Dockerfile ./Client
     - docker push $IMAGE_NAME:$FRONTEND_TAG
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "dev"'
-
+    - if: '$CI_COMMIT_TAG =~ /Strato Server Runner|django|nextjs|deploy|production/'
+  
 # Backend Build
 build-backend:
   stage: build
