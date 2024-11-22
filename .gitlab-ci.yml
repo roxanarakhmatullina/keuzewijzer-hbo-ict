@@ -8,20 +8,19 @@ variables:
   BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
   FRONTEND_NAME: Nextjs-app
   BACKEND_NAME: Django-app
-  DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker
+  DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
+  DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
 
 # Frontend Build
 build-frontend:
   stage: build
   tags:
     - nextjs
-  services:
-    - name: docker:20.10.16-dind
   variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375  # Use the dind service's Docker daemon
+    DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
+    DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
   before_script:
-    - docker info
+    - docker info  # Verify Docker is accessible
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$FRONTEND_TAG
@@ -33,13 +32,11 @@ build-backend:
   stage: build
   tags:
     - django
-  services:
-    - name: docker:20.10.16-dind
   variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375  # Use the dind service's Docker daemon
+    DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
+    DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
   before_script:
-    - docker info
+    - docker info  # Verify Docker is accessible
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
     - docker push $IMAGE_NAME:$BACKEND_TAG
