@@ -10,6 +10,7 @@ variables:
   FRONTEND_NAME: Nextjs-app
   BACKEND_NAME: Django-app
 
+# Frontend Build
 build-frontend:
   stage: build
   tags:
@@ -18,17 +19,19 @@ build-frontend:
     - docker:20.10.16-dind
   variables:
     DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375
-    NEXT_PUBLIC_API_URL: "$API_URL"
+    DOCKER_HOST: tcp://docker:2375  # This is where the DinD service listens.
+    NEXT_PUBLIC_API_URL: "$API_URL" # Ensure this is set as a variable in GitLab
   before_script:
-    - docker info || apk add --no-cache docker
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    - apk add --no-cache docker  # Ensure Docker is installed before using it.
+    - docker info || exit 1  # Check Docker status.
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS # Login to Docker registry.
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
-    - docker push $IMAGE_NAME:$FRONTEND_TAG
+    - docker push $IMAGE_NAME:$FRONTEND_TAG  # Push the built image.
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
 
+# Backend Build
 build-backend:
   stage: build
   tags:
@@ -39,7 +42,8 @@ build-backend:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
   before_script:
-    - docker info || apk add --no-cache docker
+    - apk add --no-cache docker
+    - docker info || exit 1
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
@@ -47,6 +51,7 @@ build-backend:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
 
+# Frontend Deployment
 deploy-frontend:
   stage: deploy
   tags:
@@ -54,11 +59,12 @@ deploy-frontend:
   script:
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
       cd /var/www/Client &&
-      docker ps -a --filter "name=$FRONTEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker ps -a --filter \"name=$FRONTEND_NAME\" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
 
+# Backend Deployment
 deploy-backend:
   stage: deploy
   tags:
@@ -66,7 +72,7 @@ deploy-backend:
   script:
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
       cd /var/www/Server &&
-      docker ps -a --filter "name=$BACKEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker ps -a --filter \"name=$BACKEND_NAME\" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 8000:8000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
       docker images prune -a"
   rules:
