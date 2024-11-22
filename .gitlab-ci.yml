@@ -20,6 +20,7 @@ build-frontend:
     DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
     DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
   before_script:
+    - apk add --no-cache docker  # Install Docker in the container
     - docker info  # Verify Docker is accessible
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
@@ -36,6 +37,7 @@ build-backend:
     DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
     DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
   before_script:
+    - apk add --no-cache docker  # Install Docker in the container
     - docker info  # Verify Docker is accessible
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
