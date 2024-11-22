@@ -20,6 +20,7 @@ build-frontend:
     DOCKER_HOST: tcp://docker:2375
     NEXT_PUBLIC_API_URL: "$API_URL"
   before_script:
+    - apk add --no-cache docker-cli  # Ensure Docker CLI is installed
     - docker info
   script:
     - docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
@@ -27,6 +28,7 @@ build-frontend:
   artifacts:
     paths:
       - frontend-image.tar.gz
+    expire_in: 1 hour
 
 build-backend:
   stage: build
@@ -38,6 +40,7 @@ build-backend:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
   before_script:
+    - apk add --no-cache docker-cli  # Ensure Docker CLI is installed
     - docker info
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
@@ -45,6 +48,7 @@ build-backend:
   artifacts:
     paths:
       - backend-image.tar.gz
+    expire_in: 1 hour
 
 deploy-frontend:
   stage: deploy
