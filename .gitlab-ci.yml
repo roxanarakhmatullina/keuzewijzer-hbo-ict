@@ -9,6 +9,7 @@ variables:
   FRONTEND_NAME: nextjs-app
   BACKEND_NAME: django-app
 
+
 build-frontend:
   stage: build
   tags:
@@ -18,7 +19,8 @@ build-frontend:
     - docker build -t nextjs-app:latest ./Client
     # Save the Docker image as a tar file for transfer
     - docker save nextjs-app:latest > nextjs-app.tar
-    
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "dev"'
 
 deploy:
   stage: deploy
