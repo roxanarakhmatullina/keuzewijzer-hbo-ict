@@ -8,22 +8,19 @@ variables:
   BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
   FRONTEND_NAME: Nextjs-app
   BACKEND_NAME: Django-app
-  DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
-  DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
 
 # Frontend Build
 build-frontend:
   stage: build
   tags:
     - nextjs
-  variables:
-    DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
-    DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
-  before_script:
-    - apk add --no-cache docker  # Install Docker in the container
-    - docker info  # Verify Docker is accessible
   script:
-    - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
+    # SSH into your Strato server to build the Docker image
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
+      cd /var/www/Client &&
+      docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
+      "
+    # Push the image to a Docker registry (optional)
     - docker push $IMAGE_NAME:$FRONTEND_TAG
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
@@ -33,14 +30,13 @@ build-backend:
   stage: build
   tags:
     - django
-  variables:
-    DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker (no need for this anymore)
-    DOCKER_HOST: unix:///var/run/docker.sock  # Use the host's Docker daemon
-  before_script:
-    - apk add --no-cache docker  # Install Docker in the container
-    - docker info  # Verify Docker is accessible
   script:
-    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
+    # SSH into your Strato server to build the Docker image
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
+      cd /var/www/Server &&
+      docker build --pull --no-cache -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
+      "
+    # Push the image to a Docker registry (optional)
     - docker push $IMAGE_NAME:$BACKEND_TAG
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
@@ -51,10 +47,12 @@ deploy-frontend:
   tags:
     - deploy
   script:
+    # SSH into your Strato server and deploy the Docker container
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
       cd /var/www/Client &&
       docker ps -a --filter \"name=$FRONTEND_NAME\" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
+      docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG
+      "
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
 
@@ -64,10 +62,12 @@ deploy-backend:
   tags:
     - deploy
   script:
+    # SSH into your Strato server and deploy the Docker container
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
       cd /var/www/Server &&
       docker ps -a --filter \"name=$BACKEND_NAME\" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 8000:8000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
-      docker images prune -a"
+      docker images prune -a
+      "
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
