@@ -1,5 +1,4 @@
 stages:
-  - test
   - build
   - deploy
 
@@ -9,6 +8,7 @@ variables:
   BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
   FRONTEND_NAME: Nextjs-app
   BACKEND_NAME: Django-app
+  DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker
 
 # Frontend Build
 build-frontend:
@@ -16,18 +16,14 @@ build-frontend:
   tags:
     - nextjs
   services:
-    - docker:20.10.16-dind
+    - name: docker:20.10.16-dind  # Docker-in-Docker service
   variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375  # This is where the DinD service listens.
-    NEXT_PUBLIC_API_URL: "$API_URL" # Ensure this is set as a variable in GitLab
+    DOCKER_HOST: tcp://docker:2375  # Use the dind service's Docker daemon
   before_script:
-    - apk add --no-cache docker  # Ensure Docker is installed before using it.
-    - docker info || exit 1  # Check Docker status.
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS # Login to Docker registry.
+    - docker info || exit 1  # Ensure Docker is running
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
-    - docker push $IMAGE_NAME:$FRONTEND_TAG  # Push the built image.
+    - docker push $IMAGE_NAME:$FRONTEND_TAG
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
 
@@ -37,14 +33,11 @@ build-backend:
   tags:
     - django
   services:
-    - docker:20.10.16-dind
+    - name: docker:20.10.16-dind  # Docker-in-Docker service
   variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375
+    DOCKER_HOST: tcp://docker:2375  # Use the dind service's Docker daemon
   before_script:
-    - apk add --no-cache docker
-    - docker info || exit 1
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    - docker info || exit 1  # Ensure Docker is running
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
     - docker push $IMAGE_NAME:$BACKEND_TAG
