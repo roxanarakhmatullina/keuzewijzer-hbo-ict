@@ -53,7 +53,7 @@ deploy-frontend:
     - echo "$SSH_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@h2853458.stratoserver.net"
       docker stop $FRONTEND_NAME || true &&
       docker rm $FRONTEND_NAME || true &&
       docker pull $IMAGE_NAME:$FRONTEND_TAG &&
@@ -73,7 +73,7 @@ deploy-backend:
     - echo "$SSH_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@85.214.238.103 "
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@h2853458.stratoserver.net"
       docker stop $BACKEND_NAME || true &&
       docker rm $BACKEND_NAME || true &&
       docker pull $IMAGE_NAME:$BACKEND_TAG &&
