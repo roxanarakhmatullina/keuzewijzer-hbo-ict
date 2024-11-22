@@ -16,11 +16,13 @@ build-frontend:
   tags:
     - nextjs
   services:
-    - name: docker:20.10.16-dind  # Docker-in-Docker service
+    - name: docker:20.10.16-dind
+      command: ["--host=tcp://0.0.0.0:2375"]
   variables:
     DOCKER_HOST: tcp://docker:2375  # Use the dind service's Docker daemon
   before_script:
     - docker info || exit 1  # Ensure Docker is running
+    - docker ps || exit 1 # Ensure Docker is running
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$FRONTEND_TAG
@@ -33,7 +35,8 @@ build-backend:
   tags:
     - django
   services:
-    - name: docker:20.10.16-dind  # Docker-in-Docker service
+    - name: docker:20.10.16-dind
+      command: [ "--host=tcp://0.0.0.0:2375" ]
   variables:
     DOCKER_HOST: tcp://docker:2375  # Use the dind service's Docker daemon
   before_script:
