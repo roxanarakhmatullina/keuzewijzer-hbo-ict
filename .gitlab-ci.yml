@@ -21,7 +21,7 @@ build-frontend:
     DOCKER_HOST: tcp://docker:2375
     NEXT_PUBLIC_API_URL: "$API_URL"
   before_script:
-    - docker info
+    - docker info || apk add --no-cache docker
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
@@ -39,7 +39,7 @@ build-backend:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
   before_script:
-    - docker info
+    - docker info || apk add --no-cache docker
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
