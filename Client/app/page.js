@@ -5,19 +5,26 @@ import StudyYear from "@/components/studyYear";
 import {useApi} from "@/providers/ApiProvider";
 
 const Home = () => {
+
+
     const {
         currentSavedStudyYear,
         studyYears,  // Assuming studyYears is an array of objects used for mapping
         selectedGraduateProfile,
     } = useApi();
 
+    const startingYear = parseInt(currentSavedStudyYear, 10);
+
+
     const handleShowClusters = (clusters) => {
         if (clusters && clusters.length > 0) {
-            // Check if selectedGraduateProfile is set
-            if (selectedGraduateProfile) {
-                // Filter the cluster graduateProfileTags
+            // Check if selectedGraduateProfile and StartingYear are set
+            if (selectedGraduateProfile && startingYear) {
+                // Filter the clusters based on graduateProfileTags
                 return clusters.filter(cluster =>
-                    cluster.graduateProfileTags.includes(selectedGraduateProfile.name)
+                    cluster.graduateProfileTags.some(([profileName, year]) =>
+                        profileName === selectedGraduateProfile.name && year === startingYear.toString()
+                    )
                 );
             } else {
                 return clusters;
@@ -27,7 +34,7 @@ const Home = () => {
     };
 
     // Convert currentSavedStudyYear to a number for arithmetic
-    const startingYear = parseInt(currentSavedStudyYear, 10);
+
 
     return (
         <div className={"w-screen flex flex-row pt-[50px] md:pt-[0px] gap-0"}>

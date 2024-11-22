@@ -10,36 +10,44 @@ class MessageSerializer(serializers.Serializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'  # Utilizamos todos los campos
+        fields = ['title', 'description']  # Utilizamos todos los campos
 
 class GraduateProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = GraduateProfile
         fields = ['name', 'color']
 
-class ClusterSerializer(serializers.ModelSerializer):
-    
-    graduate_profiles = GraduateProfileSerializer(many=True, read_only=True)
+class CohortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cohort
+        fields = ['id', 'name']
 
-    category_id  = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+
+class GraduateProfileSerializerClusters(serializers.ModelSerializer):
+    class Meta:
+        model = GraduateProfile
+        fields = ['name']
+
+class CohortSerializerClusters(serializers.ModelSerializer):
+    class Meta:
+        model = Cohort
+        fields = [ 'name']
+
+
+class ClusterGraduateProfileCohortSerializer(serializers.ModelSerializer):
+
+    graduate_profile = GraduateProfileSerializerClusters()
+    cohort = CohortSerializerClusters()
+    class Meta:
+        model = ClusterGraduateProfileCohort
+        fields = ['graduate_profile', 'cohort']
+
+
+class ClusterSerializer(serializers.ModelSerializer):
+    cohorts_profiles = ClusterGraduateProfileCohortSerializer(many=True, read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
 
     class Meta:
         model = Cluster
         fields = '__all__'
-
-# Serializer for Prerequisite model
-class PrerequisiteSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Prerequisite
-        fields = '__all__'
-
-# Serializer for Cohort model
-class CohortSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cohort
-        fields = '__all__'
-
-
 
