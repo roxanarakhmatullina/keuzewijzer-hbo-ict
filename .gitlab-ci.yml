@@ -22,11 +22,13 @@ build_client:
         - Client/**
     - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
+    - echo "Building Client Docker image..."
     - docker build -t $CLIENT_IMAGE:latest ./Client
     - docker save $CLIENT_IMAGE:latest | gzip > client.tar.gz
   artifacts:
     paths:
       - client.tar.gz
+    expire_in: 1 hour
 
 build_server:
   stage: build
@@ -36,24 +38,34 @@ build_server:
         - Server/**
     - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
+    - echo "Building Server Docker image..."
     - docker build -t $SERVER_IMAGE:latest ./Server
     - docker save $SERVER_IMAGE:latest | gzip > server.tar.gz
   artifacts:
     paths:
       - server.tar.gz
+    expire_in: 1 hour
 
 deploy_client:
   stage: deploy
   needs:
     - build_client
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
+    - echo "Deploying Client Docker image..."
     - scp client.tar.gz $SERVER:~/client.tar.gz
-    - ssh $SERVER "docker load < ~/client.tar.gz && docker run -d --name client-container -p 5000:5000 $CLIENT_IMAGE:latest"
+    - ssh $SERVER "docker load < ~/client.tar.gz && docker run -d --rm --name client-container -p 5000:5000 $CLIENT_IMAGE:latest"
 
 deploy_server:
   stage: deploy
   needs:
     - build_server
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
+    - echo "Deploying Server Docker image..."
     - scp server.tar.gz $SERVER:~/server.tar.gz
-    - ssh $SERVER "docker load < ~/server.tar.gz && docker run -d --name server-container -p 8000:8000 $SERVER_IMAGE:latest"
+    - ssh $SERVER "docker load < ~/server.tar.gz && docker run -d --rm --name server-container -p 8000:8000 $SERVER_IMAGE:latest"
