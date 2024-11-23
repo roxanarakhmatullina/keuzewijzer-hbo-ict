@@ -1,6 +1,6 @@
 variables:
   SSH_KEY: $SSH_KEY
-  SERVER: user@h2853458.stratoserver.net
+  SERVER: root@h2853458.stratoserver.net
   CLIENT_IMAGE: client-image
   SERVER_IMAGE: server-image
 
