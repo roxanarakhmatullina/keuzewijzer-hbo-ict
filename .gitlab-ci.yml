@@ -62,8 +62,6 @@ deploy_client:
   stage: deploy
   tags:
     - deploy
-  needs:
-    - build_client
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
@@ -75,8 +73,6 @@ deploy_server:
   stage: deploy
   tags:
     - deploy
-  needs:
-    - build_server
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
