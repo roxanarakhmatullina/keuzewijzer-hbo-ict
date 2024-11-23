@@ -16,7 +16,7 @@ before_script:
   - apk add --no-cache openssh-client
   # Configure SSH key for server access
   - mkdir -p ~/.ssh
-  - echo "$SSH_KEY" > ~/.ssh/id_rsa
+  - echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa  # Remove any potential Windows line endings
   - chmod 600 ~/.ssh/id_rsa
   # Add server to known hosts to prevent prompt issues
   - ssh-keyscan -H $(echo $SERVER | cut -d '@' -f2) >> ~/.ssh/known_hosts
