@@ -16,11 +16,12 @@ before_script:
 
 build_client:
   stage: build
+  tags:
+    - nextjs
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
       changes:
         - Client/**
-    - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
     - echo "Building Client Docker image..."
     - docker build -t $CLIENT_IMAGE:latest ./Client
@@ -32,6 +33,8 @@ build_client:
 
 build_server:
   stage: build
+  tags:
+    - django
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
       changes:
@@ -48,6 +51,8 @@ build_server:
 
 deploy_client:
   stage: deploy
+  tags:
+    - deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
     - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
@@ -58,6 +63,8 @@ deploy_client:
 
 deploy_server:
   stage: deploy
+  tags:
+    - deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
     - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
