@@ -1,4 +1,7 @@
+image: docker:20.10.24
+
 variables:
+  DOCKER_TLS_CERTDIR: ""  # Disables Docker's TLS setup in CI
   SSH_KEY: $SSH_KEY
   SERVER: root@h2853458.stratoserver.net
   CLIENT_IMAGE: client-image
@@ -9,11 +12,17 @@ stages:
   - deploy
 
 before_script:
+  # Install necessary tools (like ssh, ssh-keyscan)
+  - apk add --no-cache openssh-client
+  # Configure SSH key for server access
   - mkdir -p ~/.ssh
   - echo "$SSH_KEY" > ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
+  # Add server to known hosts to prevent prompt issues
   - ssh-keyscan -H $(echo $SERVER | cut -d '@' -f2) >> ~/.ssh/known_hosts
-  - export DOCKER_HOST="ssh://$SERVER"
+  # Start Docker in the CI environment
+  - dockerd &  # Start the Docker daemon
+  - sleep 10   # Wait for Docker to initialize
 
 build_client:
   stage: build
@@ -40,7 +49,6 @@ build_server:
     - if: '$CI_COMMIT_BRANCH == "dev"'
       changes:
         - Server/**
-    - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
     - echo "Building Server Docker image..."
     - docker build -t $SERVER_IMAGE:latest ./Server
@@ -54,22 +62,24 @@ deploy_client:
   stage: deploy
   tags:
     - deploy
+  needs:
+    - build_client
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
-    - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
-    - echo "Deploying Client Docker image..."
-    - docker load < client.tar.gz
-    - docker run -d --rm --name client-container -p 5000:5000 $CLIENT_IMAGE:latest
+    - echo "Deploying Client Docker image to remote server..."
+    - scp client.tar.gz $SERVER:~/client.tar.gz
+    - ssh $SERVER "docker load < ~/client.tar.gz && docker run -d --rm --name client-container -p 5000:5000 $CLIENT_IMAGE:latest"
 
 deploy_server:
   stage: deploy
   tags:
     - deploy
+  needs:
+    - build_server
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
-    - if: '$CI_COMMIT_TAG =~ /^(nextjs|django|deploy|production)$/'
   script:
-    - echo "Deploying Server Docker image..."
-    - docker load < server.tar.gz
-    - docker run -d --rm --name server-container -p 8000:8000 $SERVER_IMAGE:latest
+    - echo "Deploying Server Docker image to remote server..."
+    - scp server.tar.gz $SERVER:~/server.tar.gz
+    - ssh $SERVER "docker load < ~/server.tar.gz && docker run -d --rm --name server-container -p 8000:8000 $SERVER_IMAGE:latest"
