@@ -13,6 +13,12 @@ const StartStudy = ({navbarOpen}) => {
         }
     }, [startedStudyYear])
 
+    const handleKeyDown = (event, studyYear) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            setCurrentSavedStudyYear(studyYear); // Simulate the onClick action
+        }
+    };
+
     return (
         <div
             className={`${navbarOpen ? "flex md:flex" : "hidden md:flex"} w-full md:max-w-[300px] h-auto flex flex-col gap-[15px] justify-center align-middle items-center`}>
@@ -22,7 +28,8 @@ const StartStudy = ({navbarOpen}) => {
                     <p className={"w-full text-center font-bold"}>Wanneer ben je gestart met je studie?</p>
                     <div className={"w-full h-auto flex flex-col gap-[10px] justify-center align-middle items-center box-border rounded-[12px]"}>
                         {availableStudyYears && availableStudyYears.length > 0 ? availableStudyYears.map((studyYear, index) => (
-                            <div key={index} onClick={() => setCurrentSavedStudyYear(studyYear)}
+                            <div key={index} onClick={() => setCurrentSavedStudyYear(studyYear)}  onKeyDown={(event) => handleKeyDown(event, studyYear)} // Handle keyboard events
+                            tabIndex={0} // Make div focusable via Tab key
                                  className={"hover:brightness-95 w-full h-[50px] bg-[#f3f3f3] rounded-[12px] p-[10px] box-border cursor-pointer flex justify-start flex-row gap-[10px] align-middle items-center"}>
                                 <div
                                     className={"w-[25px] h-[25px] border-[3px] box-border border-[#124477] bg-transparent rounded-full flex justify-center align-middle items-center"}>
@@ -50,7 +57,7 @@ const StartStudy = ({navbarOpen}) => {
             {(!startedStudyYear && !selectedGraduateProfile) && (
                 <button
                     onClick={() => currentSavedStudyYear && !selectedGraduateProfile && setStartedStudyYear(currentSavedStudyYear)}
-                    className={`hover:brightness-95 w-full h-[50px] font-bold ${currentSavedStudyYear && !selectedGraduateProfile ? "bg-[#124477] text-white" : "bg-[#e5e5e5] pointer-events-none text-[#c5c5c5]"} rounded-[12px] p-[10px] box-border`}>Volgende</button>
+                    className={`hover:brightness-95 w-full h-[50px] font-bold ${currentSavedStudyYear && !selectedGraduateProfile ? "bg-[#124477] text-white" : "bg-[#e5e5e5] pointer-events-none text-[#c5c5c5]"} rounded-[12px] p-[10px] box-border`} tabIndex={0} >Volgende</button>
             )}
         </div>
     )
