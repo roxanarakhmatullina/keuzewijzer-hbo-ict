@@ -1,92 +1,81 @@
+image: docker:20.10.24
+
+variables:
+  DOCKER_TLS_CERTDIR: ""  # Disables Docker's TLS setup in CI
+  SSH_KEY: $SSH_KEY
+  SERVER: root@h2853458.stratoserver.net
+  CLIENT_IMAGE: client-image
+  SERVER_IMAGE: server-image
+
 stages:
-  - test
   - build
   - deploy
 
-variables:
-  IMAGE_NAME: matzleeflang/keuzewijzer
-  FRONTEND_TAG: "$CI_COMMIT_SHA-Nextjs-app"
-  BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
-  FRONTEND_NAME: Nextjs-app
-  BACKEND_NAME: Django-app
+before_script:
+  # Install necessary tools (like ssh, ssh-keyscan)
+  - apk add --no-cache openssh-client
+  # Configure SSH key for server access
+  - mkdir -p ~/.ssh
+  - echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa  # Remove any potential Windows line endings
+  - chmod 600 ~/.ssh/id_rsa
+  # Add server to known hosts to prevent prompt issues
+  - ssh-keyscan -H $(echo $SERVER | cut -d '@' -f2) >> ~/.ssh/known_hosts
+  # Start Docker in the CI environment
+  - dockerd &  # Start the Docker daemon
+  - sleep 10   # Wait for Docker to initialize
 
-#tests-django:
-#  stage: test
-#  script:
-#    - python manage.py test
-#  tags:
-#    - python
-
-build-frontend:
+build_client:
   stage: build
   tags:
-    - docker-client
-  services:
-    - docker:20.10.16-dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375
-    NEXT_PUBLIC_API_URL: "$API_URL"
-  before_script:
-    - docker info
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    - nextjs
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - Client/**
   script:
-    - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
-    - docker push $IMAGE_NAME:$FRONTEND_TAG
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'  
+    - echo "Building Client Docker image..."
+    - docker build -t $CLIENT_IMAGE:latest ./Client
+    - docker save $CLIENT_IMAGE:latest | gzip > client.tar.gz
+  artifacts:
+    paths:
+      - client.tar.gz
+    expire_in: 1 hour
 
-build-backend:
+build_server:
   stage: build
   tags:
-    - docker-client
-  services:
-    - docker:20.10.16-dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375
-  before_script:
-    - docker info
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    - django
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - Server/**
   script:
-    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
-    - docker push $IMAGE_NAME:$BACKEND_TAG
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - echo "Building Server Docker image..."
+    - docker build -t $SERVER_IMAGE:latest ./Server
+    - docker save $SERVER_IMAGE:latest | gzip > server.tar.gz
+  artifacts:
+    paths:
+      - server.tar.gz
+    expire_in: 1 hour
 
-deploy-frontend:
+deploy_client:
   stage: deploy
   tags:
-    - deploy-runner
+    - deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
-      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker ps -a --filter "name=$FRONTEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
+    - echo "Deploying Client Docker image to remote server..."
+    - scp client.tar.gz $SERVER:~/client.tar.gz
+    - ssh $SERVER "docker load < ~/client.tar.gz && docker run -d --rm --name client-container -p 5000:5000 $CLIENT_IMAGE:latest"
 
-deploy-backend:
+deploy_server:
   stage: deploy
   tags:
-    - deploy-runner
+    - deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
-      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker ps -a --filter "name=$BACKEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5000:5000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
-      docker images prune -a"
-
-
-#deploy:
-#  stage: deploy
-#  tags:
-#    - deploy-runner
-#  before_script:
-#    - chmod 400 $SSH_KEY
-#  script:
-#    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
-#      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-#      docker ps -aq | xargs -r docker stop | xargs -r docker rm &&
-#      docker run -d -p 3000:3000 --name $FRONTEND_TAG $IMAGE_NAME:$FRONTEND_TAG &&
-#      docker run -d -p 5000:5000 --name $BACKEND_TAG $IMAGE_NAME:$BACKEND_TAG"
-#  only:
-#    - main
+    - echo "Deploying Server Docker image to remote server..."
+    - scp server.tar.gz $SERVER:~/server.tar.gz
+    - ssh $SERVER "docker load < ~/server.tar.gz && docker run -d --rm --name server-container -p 8000:8000 $SERVER_IMAGE:latest"
