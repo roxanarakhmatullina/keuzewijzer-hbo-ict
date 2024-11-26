@@ -17,9 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 import os
+from dotenv import load_dotenv
 
-api_path = ""
-if os.getenv('DJANGO_PRODUCTION') == True:
+load_dotenv()
+print(f"Loaded DJANGO_PRODUCTION: {os.getenv('DJANGO_PRODUCTION')}")
+inProduction = os.getenv('DJANGO_PRODUCTION')
+
+if inProduction == "True":
     api_path = "v2/api"
 else:
     api_path = "api"
@@ -28,3 +32,5 @@ urlpatterns = [
     path(f'{api_path}/admin/', admin.site.urls),
     path(f'{api_path}', include('keuzeApp.urls'))
 ]
+
+
