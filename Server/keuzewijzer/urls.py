@@ -16,8 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+import os
+
+api_path = ""
+if os.getenv('DJANGO_PRODUCTION') == True:
+    api_path = "v2/api"
+else:
+    api_path = "api"
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("keuzeApp/", include('keuzeApp.urls'))
+    path(f'{api_path}/admin/', admin.site.urls),
+    path(f'{api_path}', include('keuzeApp.urls'))
 ]
