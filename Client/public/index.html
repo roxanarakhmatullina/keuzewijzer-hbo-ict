@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stepped Line Connection</title>
+    <style>
+        .block {
+            width: 100px;
+            height: 100px;
+            background-color: lightblue;
+            position: absolute;
+            cursor: move;
+        }
+        .block1 { top: 50px; left: 50px; }
+        .block2 { top: 200px; left: 300px; }
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="block block1" id="block1"></div>
+<div class="block block2" id="block2"></div>
+<svg id="svg"></svg>
+<script>
+    const block1 = document.getElementById('block1');
+    const block2 = document.getElementById('block2');
+    const svg = document.getElementById('svg');
+
+    function createSteppedLine(x1, y1, x2, y2) {
+        return `<path d="M${x1},${y1} L${x1},${y2} L${x2},${y2}" stroke="black" fill="transparent"/>`;
+    }
+
+    function updateLine() {
+        const rect1 = block1.getBoundingClientRect();
+        const rect2 = block2.getBoundingClientRect();
+
+        const center1 = { x: rect1.left + rect1.width / 2, y: rect1.top + rect1.height / 2 };
+        const center2 = { x: rect2.left + rect2.width / 2, y: rect2.top + rect2.height / 2 };
+
+        const middleX1 = {
+            top: rect1.top + rect1.height / 2,
+            bottom: rect1.top + rect1.height / 2,
+            left: rect1.left + rect1.width / 2,
+            right: rect1.left + rect1.width / 2
+        };
+
+        const middleX2 = {
+            top: rect2.top + rect2.height / 2,
+            bottom: rect2.top + rect2.height / 2,
+            left: rect2.left + rect2.width / 2,
+            right: rect2.left + rect2.width / 2
+        };
+
+        const direction1 = getEdgeDirection(center1, rect1);
+        const direction2 = getEdgeDirection(center2, rect2);
+
+        const startX = direction1 === 'left' ? rect1.left : (direction1 === 'right' ? rect1.right : center1.x);
+        const startY = direction1 === 'top' ? rect1.top : (direction1 === 'bottom' ? rect1.bottom : center1.y);
+
+        const endX = direction2 === 'left' ? rect2.left : (direction2 === 'right' ? rect2.right : center2.x);
+        const endY = direction2 === 'top' ? rect2.top : (direction2 === 'bottom' ? rect2.bottom : center2.y);
+
+        svg.innerHTML = createSteppedLine(startX, startY, endX, endY);
+    }
+
+    function getEdgeDirection(center, rect) {
+        const directions = ['top', 'right', 'bottom', 'left'];
+        let minDist = Infinity;
+        let closestEdge = 'center';
+
+        directions.forEach(direction => {
+            let dist;
+            switch (direction) {
+                case 'top':
+                    dist = Math.abs(center.y - rect.top);
+                    break;
+                case 'right':
+                    dist = Math.abs(center.x - rect.right);
+                    break;
+                case 'bottom':
+                    dist = Math.abs(center.y - rect.bottom);
+                    break;
+                case 'left':
+                    dist = Math.abs(center.x - rect.left);
+                    break;
+            }
+            if (dist < minDist) {
+                minDist = dist;
+                closestEdge = direction;
+            }
+        });
+
+        return closestEdge;
+    }
+
+    function dragElement(elmnt) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+        elmnt.onmousedown = function (e) {
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        };
+
+        function elementDrag(e) {
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            updateLine();
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+
+    dragElement(block1);
+    dragElement(block2);
+
+    updateLine();
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluster List</title>
+</head>
+<body>
+
+    <h1>Cluster Names and Links</h1>
+
+    <ul>
+        {% for i in sem_names%}
+            <li>
+                <strong>Name:</strong> {{ sem_names.i }} <br>
+                {# <strong>Link:</strong> <a href="{{ sem_links.i }}">{{ sem_links.i }}</a>#}   
+
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

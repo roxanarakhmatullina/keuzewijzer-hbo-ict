@@ -1,0 +1,251 @@
+[
+  {
+    "id": "studyYear-24-25",
+    "firstCluster": [
+      {
+        "id": "cluster-1-24/25",
+        "name": "Propedeuse 1",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/std-HBO-ICT-voltijd/SitePages/Eerste%20jaar%20en%20introductie.aspx?csf=1&web=1&e=mFNNDa",
+        "locked": true,
+        "graduateProfileTags": [
+          "Software Engineering",
+          "Embedded Software Engineering",
+          "UX Design",
+          "Business IT & Management",
+          "Applied Data Science & AI",
+          "Cloud & Security Engineering"
+        ]
+      }
+    ],
+    "lastCluster": [
+      {
+        "id": "cluster-2-24/25",
+        "name": "Propedeuse 2",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/std-HBO-ICT-voltijd/SitePages/Eerste%20jaar%20en%20introductie.aspx?csf=1&web=1&e=mFNNDa",
+        "locked": true,
+        "graduateProfileTags": [
+          "Software Engineering",
+          "Embedded Software Engineering",
+          "UX Design",
+          "Business IT & Management",
+          "Applied Data Science & AI",
+          "Cloud & Security Engineering"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "studyYear-25-26",
+    "firstCluster": [
+      {
+        "id": "cluster-1-25/26",
+        "name": "Cyber Security",
+        "link": "", "freeChoice": false, 
+        "locked": false,
+        "graduateProfileTags": [
+          "Cloud & Security Engineering"
+        ]
+      },
+      {
+        "id": "cluster-2-25/26",
+        "name": "Business Process Management",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Business-Process-Management(1).aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+          "UX Design",
+          "Business IT & Management",
+          "Applied Data Science & AI"
+        ]
+      },
+      {
+        "id": "cluster-3-25/26",
+        "name": "Object Oriënted Software Design & Development",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Object-Oriented-Software-Design-%26-Security.aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+          "UX Design",
+          "Applied Data Science & AI",
+          "Software Engineering"
+        ]
+      },
+      {
+        "id": "cluster-4-25/26",
+        "name": "Micocontrollers",
+        "link": "", "freeChoice": false, 
+        "locked": false,
+        "graduateProfileTags": [
+          "Embedded Software Engineering"
+        ]
+      }
+    ],
+    "lastCluster": [
+      {
+          "id": "cluster-5-25/26",
+          "name": "Cloud Automation",
+          "link": "", "freeChoice": false,  "locked": false,
+          "graduateProfileTags": [
+            "Cloud & Security Engineering"
+          ]
+      },
+      {
+          "id": "cluster-6-25/26",
+          "name": "Data Science",
+          "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Data-Science.aspx",
+          "freeChoice": false,
+          "locked": false,
+          "graduateProfileTags": [
+            "Applied Data Science & AI",
+            "Cloud & Security Engineering",
+            "Business IT & Management",
+            "Software Engineering"
+          ]
+      },
+      {
+          "id": "cluster-7-25/26",
+          "name": "User interface",
+          "link": "", "freeChoice": false,  "locked": false,
+          "graduateProfileTags": [
+            "Software Engineering",
+            "UX Design",
+            "Business IT & Management"
+          ]
+      },
+      {
+        "id": "cluster-8-25/26",
+        "name": "Web development",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Web-Development.aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+          "Software Engineering"
+        ]
+      },
+      {
+        "id": "cluster-9-25/26",
+        "name": "Internet of Things",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Internet-of-Things.aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+          "Embedded Software Engineering"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "studyYear-26-27",
+    "firstCluster": [
+      {
+        "id": "cluster-1-26/27",
+        "name": "Cloud Security Governance",
+        "link": "", "freeChoice": false,  "locked": false,
+        "graduateProfileTags": [
+          "Cloud & Security Engineering"
+        ]
+      },
+      {
+        "id": "cluster-2-26/27",
+        "name": "Machine Learning",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Machine-Learning.aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+            "Applied Data Science & AI"
+        ]
+      },
+      {
+        "id": "cluster-3-26/27",
+        "name": "Management of IT",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Management-of-IT.aspx",
+        "graduateProfileTags": [
+          "Business IT & Management"
+        ]
+      },
+      {
+        "id": "cluster-4-26/27",
+        "name": "User Experience Design",
+        "link": "", "freeChoice": false,  "locked": false,
+        "graduateProfileTags": [
+          "UX Design"
+        ]
+      },
+      {
+        "id": "cluster-5-26/27",
+        "name": "Quality in Software Development",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Quality%20in%20Software%20Development.aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+            "Software Engineering",
+            "Embedded Software Engineering"
+        ]
+      },
+      {
+        "id": "cluster-6-26/27",
+        "name": "Computer Engineering",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+            "Embedded Software Engineering"
+        ]
+      }
+    ],
+    "lastCluster": [
+      {
+        "id": "cluster-7-26/27",
+        "name": "Vrije keuze 1",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
+        "freeChoice": true,
+        "locked": false,
+        "graduateProfileTags": [
+          "Software Engineering",
+          "Applied Data Science & AI",
+          "Embedded Software Engineering",
+          "UX Design",
+          "Business IT & Management",
+          "Cloud & Security Engineering"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "studyYear-27-28",
+    "firstCluster": [
+      {
+        "id": "cluster-1-27/28",
+        "name": "Vrije keuze 2",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
+        "freeChoice": true,
+        "locked": false,
+        "graduateProfileTags": [
+          "Software Engineering",
+          "Applied Data Science & AI",
+          "Embedded Software Engineering",
+          "UX Design",
+          "Business IT & Management",
+          "Cloud & Security Engineering"
+        ]
+      }
+    ],
+    "lastCluster": [
+      {
+        "id": "cluster-2-27/28",
+        "name": "Afstuderen",
+        "link": "https://liveadminwindesheim.sharepoint.com/sites/std-HBO-ICT-voltijd/SitePages/afstuderen-Home.aspx",
+        "freeChoice": false,
+        "locked": false,
+        "graduateProfileTags": [
+          "Software Engineering",
+          "Applied Data Science & AI",
+          "Embedded Software Engineering",
+          "UX Design",
+          "Business IT & Management",
+          "Cloud & Security Engineering"
+        ]
+      }
+    ]
+  }
+]
