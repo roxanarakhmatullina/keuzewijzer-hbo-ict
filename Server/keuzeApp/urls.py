@@ -12,5 +12,5 @@ import os
 
 urlpatterns = [
     path('/', include(router.urls)),  # No need for a tuple or namespace unless required
-    path('clusters/', ClusterView.as_view(), name='cluster-view'),
+    path('/clusters/', ClusterView.as_view(), name='cluster-view'),
 ]
