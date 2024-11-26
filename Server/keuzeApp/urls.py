@@ -6,9 +6,9 @@ import os
 # Set the API path based on the DJANGO_PRODUCTION environment variable
 api_path = ""
 if os.getenv('DJANGO_PRODUCTION') == True:
-    api_path = "v2/api/keuzeApp/api/"
+    api_path = "/"
 else:
-    api_path = "api/"
+    api_path = "/"
 
 urlpatterns = [
     path(f'{api_path}', include(router.urls)),  # No need for a tuple or namespace unless required
