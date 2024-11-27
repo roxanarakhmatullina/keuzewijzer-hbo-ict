@@ -49,8 +49,17 @@ const StartStudy = ({navbarOpen}) => {
 
             {(!startedStudyYear && !selectedGraduateProfile) && (
                 <button
-                    onClick={() => currentSavedStudyYear && !selectedGraduateProfile && setStartedStudyYear(currentSavedStudyYear)}
-                    className={`hover:brightness-95 w-full h-[50px] font-bold ${currentSavedStudyYear && !selectedGraduateProfile ? "bg-[#124477] text-white" : "bg-[#e5e5e5] pointer-events-none text-[#c5c5c5]"} rounded-[12px] p-[10px] box-border`}>Volgende</button>
+                onClick={() => currentSavedStudyYear && !selectedGraduateProfile && setStartedStudyYear(currentSavedStudyYear)}
+                className={`hover:brightness-95 w-full h-[50px] font-bold ${currentSavedStudyYear && !selectedGraduateProfile 
+                    ? "bg-[#124477] text-white" 
+                    : "bg-[#e5e5e5] pointer-events-none text-[#888888]"} rounded-[12px] p-[10px] box-border`}
+                aria-disabled={!currentSavedStudyYear || selectedGraduateProfile}
+                aria-label={currentSavedStudyYear && !selectedGraduateProfile 
+                    ? "Proceed to the next step" 
+                    : "You must select a study year and graduate profile to proceed"}
+            >
+                Volgende
+            </button>
             )}
         </div>
     )
