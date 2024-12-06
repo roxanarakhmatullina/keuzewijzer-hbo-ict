@@ -59,6 +59,8 @@ deploy-frontend:
   stage: deploy
   tags:
     - deploy-runner
+  before_script:
+    - chmod 400 $SSH_KEY
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
@@ -69,13 +71,15 @@ deploy-frontend:
 
 deploy-backend:
   stage: deploy
+  before_script:
+    - chmod 400 $SSH_KEY
   tags:
     - deploy-runner
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$BACKEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5000:5000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
+      docker run -d -p 8000:8000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
       docker images prune -a"
   only:
     - main
