@@ -20,6 +20,12 @@ const GraduateProfile = ({name, color}) => {
         return `${r},${g},${b},0.3`;
     }
 
+    const handleEnterKey = (e) => {
+        if (e.key === 'Enter') {
+            setSelectedGraduateProfile({name, color});
+        }
+    };
+
     return (
         <div
             // on hover
@@ -31,6 +37,13 @@ const GraduateProfile = ({name, color}) => {
             onTouchEnd={handleHover}
 
             onClick={() => setSelectedGraduateProfile({name, color})}
+            onKeyDown={handleEnterKey}
+
+             // Accessibility enhancements
+             tabIndex={0} // Makes the div focusable for Tab navigation
+             role="button" // Indicates that this is a clickable element for screen readers
+             aria-pressed={selectedGraduateProfile?.name === name} // Adds ARIA state to indicate selection 
+            
             style={{backgroundColor: (selectedGraduateProfile?.name === name || isHovered) ? `rgba(${handleShadeColor()})` : "#EFEFEFFF"}}
             className={`w-full cursor-pointer ease-in-out  h-[50px] flex justify-start align-middle items-center gap-[10px] p-[10px] rounded-lg box-border`}>
             <div

@@ -15,6 +15,12 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
             setHandleMultipleClusters(true);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleMenuClick(e);
+        }
+    };
+
     const handleClusterClick = (cluster) => {
         setHandleMultipleClusters(false);
         setIsAnimating(true);
@@ -41,6 +47,8 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                     <div
                         key={"clusters-menu"}
                         onClick={(e) => handleMenuClick(e)}
+                        onKeyDown={(e) => handleKeyDown(e)}
+                        tabIndex={0} // Makes the div focusable
                         style={{
                             background: selectedGraduateProfile ? selectedGraduateProfile.color : "#d9d9d9",
                         }}
@@ -68,6 +76,11 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                                             className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] 
                                                 ${!handleMultipleClusters && "shadow-lg"}`}
                                             onClick={() => handleMultipleClusters && handleClusterClick(cluster)}
+                                            onKeyDown={(e) => {if (e.key === 'Enter') {
+                                                if (handleMultipleClusters) {
+                                                    handleClusterClick(cluster);
+                                                }
+                                            }}}
                                             style={{
                                                 marginTop: (!handleMultipleClusters ? topPosition : "0") + "px",
                                                 zIndex: !handleMultipleClusters ? 3 - index : currentCluster?.id === cluster.id ? 3 : 1,

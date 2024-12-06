@@ -22,6 +22,18 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
         setHoverCluster(!hoverCluster);
     }
 
+    const handleKeyDownCluster = (e) => {
+        if (e.key === 'Enter') {
+            handleClick();
+        }
+    };
+
+    const handleKeyDownLink = (e) => {
+        if (e.key === 'Enter' && link) {
+            window.open(link, "_blank");
+        }
+    };
+
     return (
         <>
             <div
@@ -30,6 +42,10 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
                 onTouchStart={handleHoverCluster}
                 onTouchEnd={handleHoverCluster}
                 onClick={() => handleClick()}
+                onKeyDown={handleKeyDownCluster}
+                tabIndex={0} // Makes the div focusable
+                role="button" // Indicates interactivity for accessibility
+                aria-pressed={openClusters} // ARIA state for toggleable behavior
                 style={{zIndex: hoverCluster ? 2 : 0}}
                 className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${free_choice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
                 <h1
@@ -57,6 +73,9 @@ const Cluster = ({name, link, canChange, locked, clusterSelected, clustersSize, 
                         onTouchStart={handleHoverLink}
                         onTouchEnd={handleHoverLink}
                         onClick={() => link && window.open(link, "_blank")}
+                        onKeyDown={handleKeyDownLink}
+                        tabIndex={link ? 0 : -1} // Focusable if `link` is present
+                        role={link ? "button" : undefined} // Interactive if `link` exists
                         style={{backgroundColor: link ? "rgba(18,68,119, 0.25)" : free_choice ? "#c5c5c5" : "#e5e5e5"}}
                         className={"relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"}>
                         <p className={`${link ? "text-black" : free_choice ? "text-[#999]" : "text-[#c5c5c5]"} text-xl font-black`}>i</p>
