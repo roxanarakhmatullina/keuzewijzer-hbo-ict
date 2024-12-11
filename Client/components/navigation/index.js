@@ -57,9 +57,9 @@ const Navigation = () => {
                 <StartStudy navbarOpen={navbarOpen}/>
             </div>
             <p className={`${navbarOpen ? "block" : "hidden md:block"} flex-row text-[14px] text-[#424242] text-center`}>
-                Aan deze website kunnen geen rechten worden
-                ontleend. <Link className={"text-black"}
-                                href={"https://www.windesheim.nl/over-windesheim/disclaimer"}>Disclaimer</Link>
+                Aan deze website kunnen geen rechten worden ontleend. 
+                            <Link className="text-[#124477] underline hover:text-[#092A3B] focus:text-[#092A3B]" 
+                                href="https://www.windesheim.nl/over-windesheim/disclaimer">Disclaimer</Link>
             </p>
         </div>
     )
