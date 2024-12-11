@@ -20,7 +20,7 @@ variables:
 build-frontend:
   stage: build
   tags:
-    - deploy
+    - docker-build
   services:
     - docker:20.10.16-dind
   variables:
@@ -39,7 +39,7 @@ build-frontend:
 build-backend:
   stage: build
   tags:
-    - docker-client
+    - docker-build
   services:
     - docker:20.10.16-dind
   variables:
