@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('keuzeApp', '0008_delete_year'),
+        ('keuzeApp', '0007_delete_prerequisite_and_more'),
     ]
 
     operations = [

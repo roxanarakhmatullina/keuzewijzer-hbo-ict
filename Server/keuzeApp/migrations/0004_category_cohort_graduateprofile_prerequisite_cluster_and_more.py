@@ -53,7 +53,6 @@ class Migration(migrations.Migration):
                 ('first_semester', models.BooleanField(default=False)),
                 ('last_semester', models.BooleanField(default=False)),
                 ('free_choice', models.BooleanField(default=False)),
-                ('required_ec', models.IntegerField()),
                 ('category_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='keuzeApp.category')),
             ],
         ),

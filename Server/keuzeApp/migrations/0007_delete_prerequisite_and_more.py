@@ -37,10 +37,6 @@ class Migration(migrations.Migration):
             model_name='cluster',
             name='graduate_profiles',
         ),
-        migrations.RemoveField(
-            model_name='cluster',
-            name='required_ec',
-        ),
         migrations.AlterField(
             model_name='graduateprofile',
             name='color',

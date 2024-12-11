@@ -12,10 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='cluster',
-            name='required_ec',
-        ),
-        migrations.RemoveField(
-            model_name='cluster',
             name='year',
         ),
         migrations.AddField(
