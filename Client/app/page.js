@@ -5,13 +5,6 @@ import StudyYear from "@/components/studyYear";
 import {useApi} from "@/providers/ApiProvider";
 import {useContextProvider} from '@/providers/ContextProvider';
 
-
-
-
-
-
-
-
 const Home = () => {
     const {
         clusters,
@@ -25,11 +18,13 @@ const Home = () => {
 
     const handleShowClusters = (clusters) => {
         if (clusters && clusters.length > 0) {
-            // Check if selectedGraduateProfile is set
-            if (selectedGraduateProfile) {
-                // Filter the cluster graduateProfileTags
+            // Check if selectedGraduateProfile and StartingYear are set
+            if (selectedGraduateProfile && startingYear) {
+                // Filter the clusters based on graduateProfileTags
                 return clusters.filter(cluster =>
-                    cluster.graduateProfileTags.includes(selectedGraduateProfile.name)
+                    cluster.graduateProfileTags.some(([profileName, year]) =>
+                        profileName === selectedGraduateProfile.name && year === startingYear.toString()
+                    )
                 );
             } else {
                 return clusters;
@@ -55,10 +50,10 @@ const Home = () => {
                     const fromYear = (startingYear + index).toString(); // Convert result back to string if needed
                     const toYear = (startingYear + index + 1).toString();
 
+
                     return (
-                        <>
+                        <React.Fragment key={"study-year-" + index}>
                             <StudyYear
-                                key={index}
                                 fromYear={fromYear}
                                 toYear={toYear}
                                 firstClusters={handleShowClusters(studyYears[index]?.firstCluster)}
@@ -101,7 +96,7 @@ const Home = () => {
                                     </div>
                                 </div>
                             )}
-                        </>
+                        </React.Fragment>
                     );
                 })}
             </div>

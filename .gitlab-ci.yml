@@ -33,8 +33,8 @@ build-frontend:
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$FRONTEND_TAG
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'  
+  only:
+    - main  
 
 build-backend:
   stage: build
@@ -51,8 +51,9 @@ build-backend:
   script:
     - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
     - docker push $IMAGE_NAME:$BACKEND_TAG
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  only:
+    - main
+
 
 deploy-frontend:
   stage: deploy
@@ -63,6 +64,8 @@ deploy-frontend:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$FRONTEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5000:5000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
+  only:
+    - main
 
 deploy-backend:
   stage: deploy
@@ -74,19 +77,5 @@ deploy-backend:
       docker ps -a --filter "name=$BACKEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5000:5000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
       docker images prune -a"
-
-
-#deploy:
-#  stage: deploy
-#  tags:
-#    - deploy-runner
-#  before_script:
-#    - chmod 400 $SSH_KEY
-#  script:
-#    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@206.189.97.124 "
-#      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-#      docker ps -aq | xargs -r docker stop | xargs -r docker rm &&
-#      docker run -d -p 3000:3000 --name $FRONTEND_TAG $IMAGE_NAME:$FRONTEND_TAG &&
-#      docker run -d -p 5000:5000 --name $BACKEND_TAG $IMAGE_NAME:$BACKEND_TAG"
-#  only:
-#    - main
+  only:
+    - main

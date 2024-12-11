@@ -34,6 +34,11 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
         }
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleMenuClick(e);
+        }
+    };
 
     const handleClusterClick = (cluster) => {
         setHandleMultipleClusters(false);
@@ -62,7 +67,10 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
             {clusters && clusters.length > 0 && (
                 clusters.length > 1 ? (
                     <div
+                        key={"clusters-menu"}
                         onClick={(e) => handleMenuClick(e)}
+                        onKeyDown={(e) => handleKeyDown(e)}
+                        tabIndex={0} // Makes the div focusable
                         style={{
                             background: selectedGraduateProfile ? selectedGraduateProfile.color : "#d9d9d9",
                         }}
@@ -86,11 +94,15 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
 
                                     return (
                                         <div
-                                            key={cluster?.id}
-                                            id={cluster?.id}
-                                            className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px]
+                                            key={"cluster-"+ cluster?.id}
+                                            className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] 
                                                 ${!handleMultipleClusters && "shadow-lg"}`}
                                             onClick={() => handleMultipleClusters && handleClusterClick(cluster)}
+                                            onKeyDown={(e) => {if (e.key === 'Enter') {
+                                                if (handleMultipleClusters) {
+                                                    handleClusterClick(cluster);
+                                                }
+                                            }}}
                                             style={{
                                                 marginTop: (!handleMultipleClusters ? topPosition : "0") + "px",
                                                 zIndex: !handleMultipleClusters ? 3 - index : currentCluster?.id === cluster.id ? 3 : 1,

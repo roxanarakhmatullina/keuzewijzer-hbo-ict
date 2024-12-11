@@ -8,11 +8,17 @@ const StartStudy = ({navbarOpen}) => {
     const {availableStudyYears, errors} = useApi();
     const {selectedGraduateProfile, startedStudyYear, setStartedStudyYear, currentSavedStudyYear, setCurrentSavedStudyYear} = useContextProvider();
     useEffect(() => {
-        const year = parseInt(startedStudyYear, 10);
-        if (year && year < 2024)  {
-            window.location.href = "https://keuzewijzerhboict.nl/";
+        if(startedStudyYear !== null && startedStudyYear?.length !== 4) {
+            window.location.href = "https://keuzewijzerhboict.nl/v1";
+            setStartedStudyYear(null);
         }
     }, [startedStudyYear])
+
+    const handleKeyDown = (event, studyYear) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            setCurrentSavedStudyYear(studyYear); // Simulate the onClick action
+        }
+    };
 
     return (
         <div
@@ -23,7 +29,8 @@ const StartStudy = ({navbarOpen}) => {
                     <p className={"w-full text-center font-bold"}>Wanneer ben je gestart met je studie?</p>
                     <div className={"w-full h-auto flex flex-col gap-[10px] justify-center align-middle items-center box-border rounded-[12px]"}>
                         {availableStudyYears && availableStudyYears.length > 0 ? availableStudyYears.map((studyYear, index) => (
-                            <div key={index} onClick={() => setCurrentSavedStudyYear(studyYear)}
+                            <div key={index} onClick={() => setCurrentSavedStudyYear(studyYear)} onKeyDown={(event) => handleKeyDown(event, studyYear)} // Handle keyboard events
+                            tabIndex={0} // Make div focusable via Tab key
                                  className={"hover:brightness-95 w-full h-[50px] bg-[#f3f3f3] rounded-[12px] p-[10px] box-border cursor-pointer flex justify-start flex-row gap-[10px] align-middle items-center"}>
                                 <div
                                     className={"w-[25px] h-[25px] border-[3px] box-border border-[#124477] bg-transparent rounded-full flex justify-center align-middle items-center"}>
@@ -50,8 +57,17 @@ const StartStudy = ({navbarOpen}) => {
 
             {(!startedStudyYear && !selectedGraduateProfile) && (
                 <button
-                    onClick={() => currentSavedStudyYear && !selectedGraduateProfile && setStartedStudyYear(currentSavedStudyYear)}
-                    className={`hover:brightness-95 w-full h-[50px] font-bold ${currentSavedStudyYear && !selectedGraduateProfile ? "bg-[#124477] text-white" : "bg-[#e5e5e5] pointer-events-none text-[#c5c5c5]"} rounded-[12px] p-[10px] box-border`}>Volgende</button>
+                onClick={() => currentSavedStudyYear && !selectedGraduateProfile && setStartedStudyYear(currentSavedStudyYear)}
+                className={`hover:brightness-95 w-full h-[50px] font-bold ${currentSavedStudyYear && !selectedGraduateProfile 
+                    ? "bg-[#124477] text-white" 
+                    : "bg-[#e5e5e5] pointer-events-none text-[#888888]"} rounded-[12px] p-[10px] box-border`}
+                aria-disabled={!currentSavedStudyYear || selectedGraduateProfile}
+                aria-label={currentSavedStudyYear && !selectedGraduateProfile 
+                    ? "Proceed to the next step" 
+                    : "You must select a study year and graduate profile to proceed"}
+            >
+                Volgende
+            </button>
             )}
         </div>
     )
