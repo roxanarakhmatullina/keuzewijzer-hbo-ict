@@ -59,10 +59,3 @@ class ClusterGraduateProfileCohort(models.Model):
 
     class Meta:
         unique_together = ('graduate_profile_id', 'cluster_id', 'cohort_id')
-
-class PrerequisiteCluster(models.Model):
-    cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE)
-    prerequisite_cluster_id = models.ForeignKey(Prerequisite, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('cluster_id', 'prerequisite_cluster_id')

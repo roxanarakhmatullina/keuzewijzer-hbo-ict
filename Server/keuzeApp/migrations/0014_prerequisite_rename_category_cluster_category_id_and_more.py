@@ -57,15 +57,4 @@ class Migration(migrations.Migration):
             name='clustergraduateprofilecohort',
             unique_together={('graduate_profile_id', 'cluster_id', 'cohort_id')},
         ),
-        migrations.CreateModel(
-            name='PrerequisiteCluster',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cluster_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='keuzeApp.cluster')),
-                ('prerequisite_cluster_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='keuzeApp.prerequisite')),
-            ],
-            options={
-                'unique_together': {('cluster_id', 'prerequisite_cluster_id')},
-            },
-        ),
     ]

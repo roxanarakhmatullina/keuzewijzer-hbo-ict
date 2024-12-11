@@ -11,7 +11,6 @@ admin.site.register(GraduateProfile)
 admin.site.register(Cluster, ClusterAdmin)
 admin.site.register(Prerequisite)
 admin.site.register(Cohort)
-admin.site.register(PrerequisiteCluster)
 admin.site.register(ClusterGraduateProfileCohort)
 
 #username : superuser03
