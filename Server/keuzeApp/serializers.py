@@ -22,7 +22,7 @@ class ClusterSerializer(serializers.ModelSerializer):
     
     graduate_profiles = GraduateProfileSerializer(many=True, read_only=True)
 
-    category_id  = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    category_value = serializers.IntegerField(source='category_id.value', read_only=True)  # Fetch 'value' from Category
 
     class Meta:
         model = Cluster

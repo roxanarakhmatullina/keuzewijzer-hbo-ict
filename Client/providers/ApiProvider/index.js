@@ -10,7 +10,6 @@ export const useApi = () => {
 
 const APIProvider = ({ children }) => {
     const [clusters, setClusters] = useState([]);
-    const [clusters2, setClusters2] = useState([]);
     const [graduateProfiles, setGraduateProfiles] = useState([]);
     const [availableStudyYears, setAvailableStudyYears] = useState([]);
     const [errors, setErrors] = useState([]);
@@ -19,7 +18,6 @@ const APIProvider = ({ children }) => {
     const COHORTS_ENDPOINT = `${url}/cohorts/`;
     const PROFILE_ENDPOINT = `${url}/graduate-profiles/`;
     const CLUSTER_ENDPOINT = `${url}/clusters/`;
-    const CLUSTER_ENDPOINT2 = `${url}/clusters2/`;
 
 
     const fetchApi = async (url, type) => {
@@ -88,7 +86,6 @@ const APIProvider = ({ children }) => {
             value={{
                 graduateProfiles,
                 clusters,
-                clusters2,
                 availableStudyYears,
                 errors,
 

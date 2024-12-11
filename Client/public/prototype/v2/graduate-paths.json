@@ -193,22 +193,22 @@
         ]
       }
     ],
-      "lastCluster": [
-        {
-          "id": "cluster-7-26/27",
-          "name": "Vrije keuze 1",
-          "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
-          "freeChoice": true,
-          "locked": false,
-          "graduateProfileTags": [
-            "Software Engineering",
-            "Applied Data Science & AI",
-            "Embedded Software Engineering",
-            "UX Design",
-            "Business IT & Management",
-            "Cloud & Security Engineering"
-          ]
-        }
+            "lastCluster": [
+              {
+                "id": "cluster-7-26/27",
+                "name": "Vrije keuze 1",
+                "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Computer-Engineering.aspx",
+                "freeChoice": true,
+                "locked": false,
+                "graduateProfileTags": [
+                  "Software Engineering",
+                  "Applied Data Science & AI",
+                  "Embedded Software Engineering",
+                  "UX Design",
+                  "Business IT & Management",
+                  "Cloud & Security Engineering"
+                ]
+              }
     ]
   },
   {

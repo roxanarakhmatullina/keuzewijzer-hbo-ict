@@ -15,7 +15,6 @@ import {useContextProvider} from '@/providers/ContextProvider';
 const Home = () => {
     const {
         clusters,
-        clusters2,
     } = useApi();
 
     const {
@@ -41,7 +40,6 @@ const Home = () => {
 
     // Convert currentSavedStudyYear to a number for arithmetic
     const startingYear = parseInt(currentSavedStudyYear, 10);
-    const newStudyYears = transformClustersToStudyYears(clusters2)
     const studyYears = clusters
 
     return (

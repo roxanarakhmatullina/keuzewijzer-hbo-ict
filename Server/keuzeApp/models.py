@@ -3,6 +3,7 @@ from django.db import models
 class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
+    value = models.IntegerField()
 
     def __str__(self):
         return self.title
@@ -24,9 +25,6 @@ class Cluster(models.Model):
     first_semester = models.BooleanField(default=False)
     last_semester = models.BooleanField(default=False)
     free_choice = models.BooleanField(default=False)
-    order = models.IntegerField()
-    level = models.IntegerField()
-    year = models.IntegerField()
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
     graduate_profiles = models.ManyToManyField(GraduateProfile, related_name='clusters')
 

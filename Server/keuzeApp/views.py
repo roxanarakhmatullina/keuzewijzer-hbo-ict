@@ -124,16 +124,16 @@ class ClusterView(View):
                 "last_semester": cluster["last_semester"],
             }
 
-            if (cluster["category_id"] == 1):
+            if (cluster["category_value"] == 1):
                 level_one.append(transformed_cluster)
 
-            elif (cluster["category_id"] == 2):
+            elif (cluster["category_value"] == 2):
                 level_two.append(transformed_cluster)
 
-            elif (cluster["category_id"] == 3):
+            elif (cluster["category_value"] == 3):
                 level_three.append(transformed_cluster)
 
-            elif (cluster["category_id"] == 4):
+            elif (cluster["category_value"] == 4):
                 level_four.append(transformed_cluster)
 
 
@@ -202,7 +202,7 @@ class ClusterView(View):
                 threshold += 1
 
             if threshold >= 2:
-                for cluster in level_two:
+                for cluster in level_three:
                     if cluster["last_semester"]:
                         year["lastCluster"].append(cluster)
                         if "three" not in year["levelsLast"]:
@@ -250,7 +250,7 @@ class ClusterView(View):
             response_data = {
                 "id": cluster.id,
                 "graduate_profiles": [{"name": gp.name} for gp in graduate_profiles],
-                "category_id": cluster.category_id,
+                "category_value": cluster.category_value,
                 "name": cluster.name,
                 "description": cluster.description,
                 "link": cluster.link,
