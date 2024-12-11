@@ -2,22 +2,45 @@
 import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
 import {useApi} from "@/providers/ApiProvider";
+import {useContextProvider, addClusterToRoute, removeClusterFromRoute} from '@/providers/ContextProvider';
 
 const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) => {
     const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
     const [isAnimating, setIsAnimating] = useState(true);
-    const {selectedGraduateProfile} = useApi();
+    const {selectedGraduateProfile} = useContextProvider();
 
     const handleMenuClick = (e) => {
-        if (!e.target.closest('.cluster'))
+
+        const clusterElement = e.target.closest('.cluster');
+
+        if (!clusterElement) {
             setHandleMultipleClusters(prev => !prev);
-        else if (!handleMultipleClusters)
-            setHandleMultipleClusters(true);
+            console.log("click outside cluster");
+        } else {
+            const clickedClusterId = clusterElement.getAttribute('id'); // 
+            if (!handleMultipleClusters) {
+
+                setHandleMultipleClusters(true);
+
+            } else {
+            // Find the clicked cluster object based on the ID
+                const clickedCluster = clusters.find(cluster => cluster.id.toString() === clickedClusterId);
+
+                if (clickedCluster) {
+                    setCurrentCluster(clickedCluster);
+                    console.log("adding clutser ", clickedClusterId, " to route")
+                }
+            }
+        }
     };
+
 
     const handleClusterClick = (cluster) => {
         setHandleMultipleClusters(false);
         setIsAnimating(true);
+        console.log("test 3");
+        addClusterToRoute(cluster.id)
+
 
         setTimeout(() => {
             setIsAnimating(false);
@@ -52,7 +75,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                         >
                             Kies een van de clusters:
                         </p>
-                        <div className={`relative h-full cursor-pointer w-full flex flex-col gap-[25px] justify-evenly items-center px-6 box-border ease-in-out duration-300`}>
+                          .<div className={`relative h-full cursor-pointer w-full flex flex-col gap-[25px] justify-evenly items-center px-6 box-border ease-in-out duration-300`}>
                             {clusters.sort((a, b) => (a.id === currentCluster?.id ? -1 : b.id === currentCluster?.id ? 1 : 0))
                                 .map((cluster, index) => {
                                     if (handleMultipleClusters && index > 2) return null;
@@ -64,7 +87,8 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                                     return (
                                         <div
                                             key={cluster?.id}
-                                            className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] 
+                                            id={cluster?.id}
+                                            className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px]
                                                 ${!handleMultipleClusters && "shadow-lg"}`}
                                             onClick={() => handleMultipleClusters && handleClusterClick(cluster)}
                                             style={{

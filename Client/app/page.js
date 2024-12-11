@@ -3,13 +3,26 @@ import React from 'react';
 import Navigation from '@/components/navigation';
 import StudyYear from "@/components/studyYear";
 import {useApi} from "@/providers/ApiProvider";
+import {useContextProvider} from '@/providers/ContextProvider';
+
+
+
+
+
+
+
 
 const Home = () => {
     const {
-        currentSavedStudyYear,
-        studyYears,  // Assuming studyYears is an array of objects used for mapping
-        selectedGraduateProfile,
+        clusters,
+        clusters2,
     } = useApi();
+
+    const {
+        currentSavedStudyYear,
+        selectedGraduateProfile,
+        transformClustersToStudyYears,
+    } = useContextProvider();
 
     const handleShowClusters = (clusters) => {
         if (clusters && clusters.length > 0) {
@@ -28,6 +41,8 @@ const Home = () => {
 
     // Convert currentSavedStudyYear to a number for arithmetic
     const startingYear = parseInt(currentSavedStudyYear, 10);
+    const newStudyYears = transformClustersToStudyYears(clusters2)
+    const studyYears = clusters
 
     return (
         <div className={"w-screen flex flex-row pt-[50px] md:pt-[0px] gap-0"}>

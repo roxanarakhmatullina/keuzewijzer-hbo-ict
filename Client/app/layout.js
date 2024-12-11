@@ -1,5 +1,6 @@
 import "./globals.css";
 import ApiProvider from "@/providers/ApiProvider";
+import ContextProvider from "@/providers/ContextProvider";
 import Development from "@/components/development";
 
 export const metadata = {
@@ -20,7 +21,9 @@ export default function RootLayout({ children }) {
     <body className={"relative w-screen overflow-x-hidden gap-0"}>
       <Development message={"Hey dev! Looks like"}/>
       <ApiProvider>
+      <ContextProvider>
         {children}
+      </ContextProvider>
       </ApiProvider>
     </body>
     </html>

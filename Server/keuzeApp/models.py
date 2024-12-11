@@ -24,10 +24,20 @@ class Cluster(models.Model):
     first_semester = models.BooleanField(default=False)
     last_semester = models.BooleanField(default=False)
     free_choice = models.BooleanField(default=False)
+    order = models.IntegerField()
+    level = models.IntegerField()
     year = models.IntegerField()
-    required_ec = models.IntegerField()
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
     graduate_profiles = models.ManyToManyField(GraduateProfile, related_name='clusters')
+
+    prerequisite = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='dependent_clusters'
+    )
+
 
     def __str__(self):
         return self.name

@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from 'react'
 import Clusters from "@/components/studyYear/clusters";
 import {useApi} from "@/providers/ApiProvider";
+import {useContextProvider} from '@/providers/ContextProvider';
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
@@ -9,7 +10,8 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
-    const {selectedGraduateProfile, availableStudyYears} = useApi();
+    const {availableStudyYears} = useApi();
+    const {selectedGraduateProfile} = useContextProvider();
     const [years, setYears] = useState(availableStudyYears);
 
     useEffect(() => {

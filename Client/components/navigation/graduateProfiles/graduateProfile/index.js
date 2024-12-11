@@ -1,10 +1,10 @@
 'use client'
 import React from 'react'
-import {useApi} from "@/providers/ApiProvider";
+import {useContextProvider} from '@/providers/ContextProvider';
 
 const GraduateProfile = ({name, color}) => {
     const [isHovered, setIsHovered] = React.useState(false);
-    const {selectedGraduateProfile, setSelectedGraduateProfile} = useApi();
+    const {selectedGraduateProfile, setSelectedGraduateProfile} = useContextProvider();
 
     const handleHover = () => {
         setIsHovered(!isHovered);

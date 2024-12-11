@@ -1,11 +1,13 @@
 'use client'
 import React from 'react'
 import {useApi} from "@/providers/ApiProvider";
+import {useContextProvider} from '@/providers/ContextProvider';
 import GraduateProfile from "@/components/navigation/graduateProfiles/graduateProfile";
 import SkeletonLoader from "@/components/loaders/skeletonLoader";
 
 const GraduateProfiles = ({setNavbarOpen}) => {
-    const {selectedGraduateProfile, graduateProfiles, errors} = useApi();
+    const {graduateProfiles, errors} = useApi();
+    const {selectedGraduateProfile} = useContextProvider();
 
     return (
         <div

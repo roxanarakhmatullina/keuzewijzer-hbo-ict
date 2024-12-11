@@ -1,11 +1,12 @@
 'use client'
 import React, {useEffect} from 'react'
 import {useApi} from "@/providers/ApiProvider";
+import {useContextProvider} from '@/providers/ContextProvider';
 import SkeletonLoader from "@/components/loaders/skeletonLoader";
 
 const StartStudy = ({navbarOpen}) => {
-    const {availableStudyYears, errors, selectedGraduateProfile, startedStudyYear, setStartedStudyYear, currentSavedStudyYear, setCurrentSavedStudyYear} = useApi();
-
+    const {availableStudyYears, errors} = useApi();
+    const {selectedGraduateProfile, startedStudyYear, setStartedStudyYear, currentSavedStudyYear, setCurrentSavedStudyYear} = useContextProvider();
     useEffect(() => {
         const year = parseInt(startedStudyYear, 10);
         if (year && year < 2024)  {
