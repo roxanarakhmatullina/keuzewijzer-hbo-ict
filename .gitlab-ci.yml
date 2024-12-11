@@ -58,7 +58,7 @@ build-backend:
 deploy-frontend:
   stage: deploy
   tags:
-    - deploy-runner
+    - docker-deploy
   before_script:
     - chmod 400 $SSH_KEY
   script:
@@ -71,10 +71,10 @@ deploy-frontend:
 
 deploy-backend:
   stage: deploy
+  tags:
+    - docker-deploy
   before_script:
     - chmod 400 $SSH_KEY
-  tags:
-    - deploy-runner
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
