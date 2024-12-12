@@ -1,12 +1,12 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
-import {useApi} from "@/providers/ApiProvider";
+import {useGraduateProfile} from "@/hooks";
 
 const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) => {
     const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
     const [isAnimating, setIsAnimating] = useState(true);
-    const {selectedGraduateProfile} = useApi();
+    const {selectedGraduateProfile} = useGraduateProfile();
 
     const handleMenuClick = (e) => {
         if (!e.target.closest('.cluster'))
@@ -75,9 +75,15 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                                             key={"cluster-"+ cluster?.id}
                                             className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] 
                                                 ${!handleMultipleClusters && "shadow-lg"}`}
-                                            onClick={() => handleMultipleClusters && handleClusterClick(cluster)}
+                                            onClick={(e) => {
+                                                if(handleMultipleClusters) {
+                                                    if(e.target.closest('.cluster-info')) return null;
+                                                    handleClusterClick(cluster);
+                                                }
+                                            }}
                                             onKeyDown={(e) => {if (e.key === 'Enter') {
                                                 if (handleMultipleClusters) {
+                                                    if(e.target.closest('.cluster-info')) return null;
                                                     handleClusterClick(cluster);
                                                 }
                                             }}}
