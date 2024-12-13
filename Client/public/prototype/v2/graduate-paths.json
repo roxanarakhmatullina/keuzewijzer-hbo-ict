@@ -60,15 +60,15 @@
       },
       {
         "id": "cluster-3-25/26",
-        "name": "Object Oriënted Software Design & Development",
-        "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Object-Oriented-Software-Design-%26-Security.aspx",
-        "freeChoice": false,
-        "locked": false,
-        "graduateProfileTags": [
-          "UX Design",
-          "Applied Data Science & AI",
-          "Software Engineering"
-        ]
+              "name": "Object Oriënted Software Design & Development",
+              "link": "https://liveadminwindesheim.sharepoint.com/sites/Aanbodpersoonlijkeprofilering/SitePages/Object-Oriented-Software-Design-%26-Security.aspx",
+              "freeChoice": false,
+              "locked": false,
+              "graduateProfileTags": [
+                "UX Design",
+                "Applied Data Science & AI",
+                "Software Engineering"
+              ]
       },
       {
         "id": "cluster-4-25/26",

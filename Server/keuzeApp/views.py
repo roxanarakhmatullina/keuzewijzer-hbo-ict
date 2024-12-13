@@ -86,11 +86,11 @@ class ClusterView(View):
         level_one = []
         level_two = []
         level_three = []
-        level_four = []
+        level_zero = []
 
         for cluster in input_json:
 
-            cluster["graduateProfileTags"] = [(item["graduate_profile"]["name"], item["cohort"]["name"]) for item in cluster.pop("cohorts_profiles")]
+            cluster["graduateProfileTags"] = [(item["graduate_profile_id"]["name"], item["cohort_id"]["name"]) for item in cluster.pop("cohorts_profiles")]
 
             transformed_cluster = {
                 "id": cluster['id'],
@@ -112,11 +112,8 @@ class ClusterView(View):
             elif (cluster["category_value"] == 3):
                 level_three.append(transformed_cluster)
 
-            elif (cluster["category_value"] == 4):
-                level_four.append(transformed_cluster)
-
-
-
+            elif (cluster["category_value"] == 0):
+                level_zero.append(transformed_cluster)
 
 
         for cluster in level_one:
@@ -192,21 +189,16 @@ class ClusterView(View):
             if "two" in year["levelsLast"]:
                 threshold += 1
 
-        for cluster in level_four:
+        for cluster in level_zero:
             for year in output_structure:
                 if not year["levelsFirst"] and cluster["first_semester"]:
                     year["firstCluster"].append(cluster)
-                    year["levelsFirst"].append("four")
+                    year["levelsFirst"].append("zero")
                     break
                 if not year["levelsLast"] and cluster["last_semester"]:
                     year["lastCluster"].append(cluster)
-                    year["levelsLast"].append("four")
+                    year["levelsLast"].append("zero")
                     break
-
-
-
-
-
         return output_structure
 
 
@@ -239,8 +231,6 @@ class ClusterView(View):
                 "first_semester": cluster.first_semester,
                 "last_semester": cluster.last_semester,
                 "free_choice": cluster.free_choice,
-                "required_ec": cluster.required_ec,
-                "year": cluster.year
             }
             return JsonResponse(self.transform_clusters(response_data), status=201)
 

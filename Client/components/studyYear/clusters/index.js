@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
 import {useApi} from "@/providers/ApiProvider";
-import {useContextProvider, addClusterToRoute, removeClusterFromRoute} from '@/providers/ContextProvider';
+import {useContextProvider} from '@/providers/ContextProvider';
 
 const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) => {
     const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
@@ -44,7 +44,6 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
         setHandleMultipleClusters(false);
         setIsAnimating(true);
         console.log("test 3");
-        addClusterToRoute(cluster.id)
 
 
         setTimeout(() => {
