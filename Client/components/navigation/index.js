@@ -1,7 +1,7 @@
 'use client'
 import React, {useState} from 'react'
-import {useApi} from "@/providers/ApiProvider";
-import Logo from "@/components/logo";
+import {useGraduateProfile, useStudyYear} from "@/hooks";
+import Logo from "@/icons/logo";
 import StartStudy from "@/components/navigation/startStudy";
 import Link from "next/link";
 import Retry from "@/icons/retry";
@@ -10,7 +10,8 @@ import GraduateProfiles from "@/components/navigation/graduateProfiles";
 
 const Navigation = () => {
     const [navbarOpen, setNavbarOpen] = useState(true);
-    const {graduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile, startedStudyYear, setStartedStudyYear, errors} = useApi();
+    const {graduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile} = useGraduateProfile();
+    const {startedStudyYear, setStartedStudyYear} = useStudyYear();
 
     return (
         <div
@@ -56,11 +57,10 @@ const Navigation = () => {
 
                 <StartStudy navbarOpen={navbarOpen}/>
             </div>
-            <p className={`${navbarOpen ? "block" : "hidden md:block"} flex-row text-[14px] text-[#424242] text-center`}>
-                Aan deze website kunnen geen rechten worden ontleend. 
-                            <Link className="text-[#124477] underline hover:text-[#092A3B] focus:text-[#092A3B]" 
-                                href="https://www.windesheim.nl/over-windesheim/disclaimer">Disclaimer</Link>
-            </p>
+            <div className={`${navbarOpen ? "flex" : "hidden md:flex"} flex-row text-[14px] text-[#424242] text-center gap-[0.5ch] justify-center items-center`}>
+                <p>Aan deze website kunnen geen rechten worden ontleend. <Link className="text-[#124477] underline hover:text-[#092A3B] focus:text-[#092A3B] gap-[0.5ch]"
+                                                                               href="https://www.windesheim.nl/over-windesheim/disclaimer">Disclaimer</Link></p>
+            </div>
         </div>
     )
 }
