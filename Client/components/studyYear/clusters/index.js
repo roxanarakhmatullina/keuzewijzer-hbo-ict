@@ -46,7 +46,10 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                 clusters.length > 1 ? (
                     <div
                         key={"clusters-menu"}
-                        onClick={(e) => handleMenuClick(e)}
+                        onClick={(e) => {
+                            if(e.target.closest('.cluster-info')) return null;
+                            handleMenuClick(e)
+                        }}
                         onKeyDown={(e) => handleKeyDown(e)}
                         tabIndex={0} // Makes the div focusable
                         style={{
