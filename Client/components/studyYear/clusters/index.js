@@ -50,7 +50,10 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                             if(e.target.closest('.cluster-info')) return null;
                             handleMenuClick(e)
                         }}
-                        onKeyDown={(e) => handleKeyDown(e)}
+                        onKeyDown={(e) => {
+                            if(e.target.closest('.cluster-info')) return null;
+                            handleKeyDown(e)
+                        }}
                         tabIndex={0} // Makes the div focusable
                         style={{
                             background: selectedGraduateProfile ? selectedGraduateProfile.color : "#d9d9d9",
