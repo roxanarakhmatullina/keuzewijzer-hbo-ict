@@ -20,7 +20,18 @@ export default function RootLayout({ children }) {
       <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png"/>
       <link rel="shortcut icon" href="/favicons/favicon.ico"/>
       <meta name="theme-color" content="#ffffff"/>
-      <Script src="https://www.googletagmanager.com/gtag/js?id=G-Y0CQ5ZCT5F" strategy="afterInteractive"/>
+      <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-Y0CQ5ZCT5F"
+          strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-Y0CQ5ZCT5F');
+        `}
+      </Script>
     </head>
     <body className={"relative w-screen overflow-x-hidden gap-0"}>
     <ErrorProvider>
