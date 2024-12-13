@@ -1,10 +1,10 @@
 'use client'
 import React from 'react'
-import {useContextProvider} from '@/providers/ContextProvider';
+import {useGraduateProfile} from "@/hooks";
 
 const GraduateProfile = ({name, color}) => {
     const [isHovered, setIsHovered] = React.useState(false);
-    const {selectedGraduateProfile, setSelectedGraduateProfile} = useContextProvider();
+    const {selectedGraduateProfile, setSelectedGraduateProfile} = useGraduateProfile();
 
     const handleHover = () => {
         setIsHovered(!isHovered);

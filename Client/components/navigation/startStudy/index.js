@@ -1,23 +1,39 @@
 'use client'
 import React, {useEffect} from 'react'
-import {useApi} from "@/providers/ApiProvider";
-import {useContextProvider} from '@/providers/ContextProvider';
+import {useGraduateProfile, useError, useStudyYear} from "@/hooks";
 import SkeletonLoader from "@/components/loaders/skeletonLoader";
+import {fetchApi} from "@/hooks/api";
 
 const StartStudy = ({navbarOpen}) => {
-    const {availableStudyYears, errors} = useApi();
-    const {selectedGraduateProfile, startedStudyYear, setStartedStudyYear, currentSavedStudyYear, setCurrentSavedStudyYear} = useContextProvider();
+    const {selectedGraduateProfile} = useGraduateProfile();
+    const {errors, setErrors} = useError();
+    const {startedStudyYear, setStartedStudyYear, currentSavedStudyYear, setCurrentSavedStudyYear, availableStudyYears, setAvailableStudyYears} = useStudyYear();
+
+    useEffect(() => {
+        // Fetching the study years.
+        fetchApi("/cohorts/").then(data => {
+            const cohortYears = data.map(cohort => cohort.name);
+            setAvailableStudyYears(cohortYears);
+        })
+        .catch(error => {
+            setErrors([...errors, {
+                id: new Date().getTime(),
+                type: "studyyears",
+                message: 'Er is iets misgegaan bij het ophalen van de studiejaren. Probeer het later opnieuw.',
+                error: error,
+            }]);
+        })
+    }, []);
+
     useEffect(() => {
         if(startedStudyYear !== null && startedStudyYear?.length !== 4) {
-            window.location.href = "https://keuzewijzerhboict.nl/v1";
             setStartedStudyYear(null);
+            window.location.href = "https://keuzewijzerhboict.nl/v1";
         }
     }, [startedStudyYear])
 
     const handleKeyDown = (event, studyYear) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-            setCurrentSavedStudyYear(studyYear); // Simulate the onClick action
-        }
+        if (event.key === 'Enter' || event.key === ' ') setCurrentSavedStudyYear(studyYear);
     };
 
     return (
@@ -39,10 +55,7 @@ const StartStudy = ({navbarOpen}) => {
                                 </div>
                                 <p className={"text-[#124477] text-[14px] font-bold"}>{studyYear}</p>
                             </div>
-                        )) : (
-                            <SkeletonLoader/>
-                        )}
-
+                        )) : <SkeletonLoader/>}
 
                         {errors && errors.length > 0 && (
                             errors.filter(error => error.type === "studyyears").map((error) => (

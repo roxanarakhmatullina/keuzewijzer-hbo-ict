@@ -1,37 +1,18 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
-import {useApi} from "@/providers/ApiProvider";
-import {useContextProvider} from '@/providers/ContextProvider';
+import {useGraduateProfile} from "@/hooks";
 
 const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) => {
     const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
     const [isAnimating, setIsAnimating] = useState(true);
-    const {selectedGraduateProfile} = useContextProvider();
+    const {selectedGraduateProfile} = useGraduateProfile();
 
     const handleMenuClick = (e) => {
-
-        const clusterElement = e.target.closest('.cluster');
-
-        if (!clusterElement) {
+        if (!e.target.closest('.cluster'))
             setHandleMultipleClusters(prev => !prev);
-            console.log("click outside cluster");
-        } else {
-            const clickedClusterId = clusterElement.getAttribute('id'); // 
-            if (!handleMultipleClusters) {
-
-                setHandleMultipleClusters(true);
-
-            } else {
-            // Find the clicked cluster object based on the ID
-                const clickedCluster = clusters.find(cluster => cluster.id.toString() === clickedClusterId);
-
-                if (clickedCluster) {
-                    setCurrentCluster(clickedCluster);
-                    console.log("adding clutser ", clickedClusterId, " to route")
-                }
-            }
-        }
+        else if (!handleMultipleClusters)
+            setHandleMultipleClusters(true);
     };
 
     const handleKeyDown = (e) => {
@@ -43,8 +24,6 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
     const handleClusterClick = (cluster) => {
         setHandleMultipleClusters(false);
         setIsAnimating(true);
-        console.log("test 3");
-
 
         setTimeout(() => {
             setIsAnimating(false);
@@ -67,8 +46,14 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                 clusters.length > 1 ? (
                     <div
                         key={"clusters-menu"}
-                        onClick={(e) => handleMenuClick(e)}
-                        onKeyDown={(e) => handleKeyDown(e)}
+                        onClick={(e) => {
+                            if(e.target.closest('.cluster-info')) return null;
+                            handleMenuClick(e)
+                        }}
+                        onKeyDown={(e) => {
+                            if(e.target.closest('.cluster-info')) return null;
+                            handleKeyDown(e)
+                        }}
                         tabIndex={0} // Makes the div focusable
                         style={{
                             background: selectedGraduateProfile ? selectedGraduateProfile.color : "#d9d9d9",
@@ -82,7 +67,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                         >
                             Kies een van de clusters:
                         </p>
-                          .<div className={`relative h-full cursor-pointer w-full flex flex-col gap-[25px] justify-evenly items-center px-6 box-border ease-in-out duration-300`}>
+                        <div className={`relative h-full cursor-pointer w-full flex flex-col gap-[25px] justify-evenly items-center px-6 box-border ease-in-out duration-300`}>
                             {clusters.sort((a, b) => (a.id === currentCluster?.id ? -1 : b.id === currentCluster?.id ? 1 : 0))
                                 .map((cluster, index) => {
                                     if (handleMultipleClusters && index > 2) return null;
@@ -96,9 +81,15 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                                             key={"cluster-"+ cluster?.id}
                                             className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] 
                                                 ${!handleMultipleClusters && "shadow-lg"}`}
-                                            onClick={() => handleMultipleClusters && handleClusterClick(cluster)}
+                                            onClick={(e) => {
+                                                if(handleMultipleClusters) {
+                                                    if(e.target.closest('.cluster-info')) return null;
+                                                    handleClusterClick(cluster);
+                                                }
+                                            }}
                                             onKeyDown={(e) => {if (e.key === 'Enter') {
                                                 if (handleMultipleClusters) {
+                                                    if(e.target.closest('.cluster-info')) return null;
                                                     handleClusterClick(cluster);
                                                 }
                                             }}}

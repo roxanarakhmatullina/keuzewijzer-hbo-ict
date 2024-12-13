@@ -1,8 +1,7 @@
 'use client'
 import React, {useState} from 'react'
-import {useApi} from "@/providers/ApiProvider";
-import {useContextProvider} from '@/providers/ContextProvider';
-import Logo from "@/components/logo";
+import {useGraduateProfile, useStudyYear} from "@/hooks";
+import Logo from "@/icons/logo";
 import StartStudy from "@/components/navigation/startStudy";
 import Link from "next/link";
 import Retry from "@/icons/retry";
@@ -11,8 +10,9 @@ import GraduateProfiles from "@/components/navigation/graduateProfiles";
 
 const Navigation = () => {
     const [navbarOpen, setNavbarOpen] = useState(true);
-    const {graduateProfiles, errors} = useApi();
-    const {selectedGraduateProfile, setSelectedGraduateProfile, startedStudyYear, setStartedStudyYear} = useContextProvider();
+    const {graduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile} = useGraduateProfile();
+    const {startedStudyYear, setStartedStudyYear} = useStudyYear();
+
     return (
         <div
             className={`top-0 overflow-y-auto overflow-x-hidden max-w-[100vw] left-0 fixed md:sticky-position md:sticky flex ${!selectedGraduateProfile ? "md:w-screen" : "md:w-1/5 md:min-w-[250px] md:max-h-screen"} z-[100] ${navbarOpen ? "min-h-full h-full" : "h-[75px]"} w-screen md:min-h-dvh h-auto bg-white shadow-lg ${navbarOpen ? "p-[20px] flex-col overflow-y-auto" : "p-[10px] pl-[20px] pr-[20px] md:p-[20px] flex-col"} box-border justify-between gap-[25px] align-middle items-center`}>
@@ -57,11 +57,10 @@ const Navigation = () => {
 
                 <StartStudy navbarOpen={navbarOpen}/>
             </div>
-            <p className={`${navbarOpen ? "block" : "hidden md:block"} flex-row text-[14px] text-[#424242] text-center`}>
-                Aan deze website kunnen geen rechten worden ontleend. 
-                            <Link className="text-[#124477] underline hover:text-[#092A3B] focus:text-[#092A3B]" 
-                                href="https://www.windesheim.nl/over-windesheim/disclaimer">Disclaimer</Link>
-            </p>
+            <div className={`${navbarOpen ? "flex" : "hidden md:flex"} flex-row text-[14px] text-[#424242] text-center gap-[0.5ch] justify-center items-center`}>
+                <p>Aan deze website kunnen geen rechten worden ontleend. <Link className="text-[#124477] underline hover:text-[#092A3B] focus:text-[#092A3B] gap-[0.5ch]"
+                                                                               href="https://www.windesheim.nl/over-windesheim/disclaimer">Disclaimer</Link></p>
+            </div>
         </div>
     )
 }
