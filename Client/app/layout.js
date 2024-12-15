@@ -2,6 +2,8 @@ import "./globals.css";
 import StudyYearProvider from "@/providers/StudyYearProvider";
 import GraduateProfileProvider from "@/providers/GraduateProfileProvider";
 import ErrorProvider from "@/providers/ErrorProvider";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import GoogleAnalyticsProvider from "@/providers/GoogleAnalyticsProvider";
 
 export const metadata = {
   title: "HBO-ICT Keuzewijzer - De Keuzewijzer van Windesheim",
@@ -21,13 +23,16 @@ export default function RootLayout({ children }) {
       <meta name="theme-color" content="#ffffff"/>
     </head>
     <body className={"relative w-screen overflow-x-hidden gap-0"}>
-    <ErrorProvider>
-      <StudyYearProvider>
-        <GraduateProfileProvider>
-          {children}
-        </GraduateProfileProvider>
-      </StudyYearProvider>
-    </ErrorProvider>
+    <GoogleAnalyticsProvider>
+      <ErrorProvider>
+        <StudyYearProvider>
+          <GraduateProfileProvider>
+            {children}
+          </GraduateProfileProvider>
+        </StudyYearProvider>
+      </ErrorProvider>
+      <GoogleAnalytics id={"G-Y0CQ5ZCT5F"}/>
+    </GoogleAnalyticsProvider>
     </body>
     </html>
   );
