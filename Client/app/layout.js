@@ -2,7 +2,8 @@ import "./globals.css";
 import StudyYearProvider from "@/providers/StudyYearProvider";
 import GraduateProfileProvider from "@/providers/GraduateProfileProvider";
 import ErrorProvider from "@/providers/ErrorProvider";
-import Script from "next/script";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import GoogleAnalyticsProvider from "@/providers/GoogleAnalyticsProvider";
 
 export const metadata = {
   title: "HBO-ICT Keuzewijzer - De Keuzewijzer van Windesheim",
@@ -20,16 +21,18 @@ export default function RootLayout({ children }) {
       <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png"/>
       <link rel="shortcut icon" href="/favicons/favicon.ico"/>
       <meta name="theme-color" content="#ffffff"/>
-      <Script src="https://www.googletagmanager.com/gtag/js?id=G-Y0CQ5ZCT5F" strategy="afterInteractive"/>
     </head>
     <body className={"relative w-screen overflow-x-hidden gap-0"}>
-    <ErrorProvider>
-      <StudyYearProvider>
-        <GraduateProfileProvider>
-          {children}
-        </GraduateProfileProvider>
-      </StudyYearProvider>
-    </ErrorProvider>
+    <GoogleAnalyticsProvider>
+      <ErrorProvider>
+        <StudyYearProvider>
+          <GraduateProfileProvider>
+            {children}
+          </GraduateProfileProvider>
+        </StudyYearProvider>
+      </ErrorProvider>
+      <GoogleAnalytics id={"G-Y0CQ5ZCT5F"}/>
+    </GoogleAnalyticsProvider>
     </body>
     </html>
   );
