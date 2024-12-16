@@ -4,13 +4,14 @@ from .models import *
 
 
 
+
 class MessageSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=255)
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['title', 'description']  # Utilizamos todos los campos
+        fields = ['title', 'description']
 
 class GraduateProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,18 +37,21 @@ class CohortSerializerClusters(serializers.ModelSerializer):
 
 class ClusterGraduateProfileCohortSerializer(serializers.ModelSerializer):
 
-    graduate_profile = GraduateProfileSerializerClusters()
-    cohort = CohortSerializerClusters()
+    graduate_profile_id = GraduateProfileSerializerClusters()
+    cohort_id = CohortSerializerClusters()
     class Meta:
         model = ClusterGraduateProfileCohort
-        fields = ['graduate_profile', 'cohort']
+        fields = ['graduate_profile_id', 'cohort_id']
 
 
 class ClusterSerializer(serializers.ModelSerializer):
     cohorts_profiles = ClusterGraduateProfileCohortSerializer(many=True, read_only=True)
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    category_value = serializers.IntegerField(source='category_id.value', read_only=True)
 
     class Meta:
         model = Cluster
         fields = '__all__'
+
+
+
 

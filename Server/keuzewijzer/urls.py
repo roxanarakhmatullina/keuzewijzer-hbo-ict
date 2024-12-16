@@ -23,7 +23,7 @@ load_dotenv()
 
 urlpatterns = [
     path(f'api/admin/', admin.site.urls),
-    path(f'api', include('keuzeApp.urls'))
+    path(f'api/', include('keuzeApp.urls'))
 ]
 
 
