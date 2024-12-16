@@ -21,8 +21,8 @@ const PrivacyPolicyPage = () => {
                     <br/>
                     <br/>
                     <h2 className={"text-[16px] font-bold"}>1. Verantwoordelijke</h2>
-                    De website keuzewijzerhboict.nl wordt beheerd door [jouw organisatie of instelling]. Voor vragen
-                    over deze privacyverklaring kun je contact opnemen via [contactgegevens, zoals e-mailadres].
+                    De website keuzewijzerhboict.nl wordt beheerd door Windesheim. Voor vragen
+                    over deze privacyverklaring kun je contact opnemen via <a href={"https://www.windesheim.nl"}>Windesheim.nl</a>.
                     <br/>
                     <br/>
                     <h2 className={"text-[16px] font-bold"}>2. Welke gegevens verzamelen we?</h2>
@@ -106,7 +106,7 @@ const PrivacyPolicyPage = () => {
                     </div>
                     <br/>
                     <h2 className={"text-[16px] font-bold"}>6. Hoe lang bewaren we je gegevens?</h2>
-                    De gegevens verzameld via Google Analytics worden maximaal 26 maanden bewaard en daarna automatisch
+                    De gegevens verzameld via Google Analytics worden maximaal 14 maanden bewaard en daarna automatisch
                     verwijderd.
                     <br/>
                     <br/>
