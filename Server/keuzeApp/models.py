@@ -36,6 +36,8 @@ class Cluster(models.Model):
     last_semester = models.BooleanField(default=False)
     free_choice = models.BooleanField(default=False)
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    chosen = models.BooleanField(default=False)
+    retake = models.IntegerField(default=0)
 
 
     def __str__(self):
