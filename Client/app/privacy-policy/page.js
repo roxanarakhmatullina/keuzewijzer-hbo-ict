@@ -11,7 +11,7 @@ const PrivacyPolicyPage = () => {
             <div className={"w-full max-w-[768px] bg-[#f3f3f3] rounded-[12px] p-[20px] box-border flex justify-center align-middle items-center flex-col gap-[10px]"}>
                 <Logo />
                 <h1 className={"w-full text-[18px] font-bold"}>Privacyverklaring Keuzewijzer HBO-ICT</h1>
-                <div>
+                <div className={"w-full"}>
                     <span className={"text-[#999]"}>Laatst bijgewerkt: 15-12-2024</span>
                     <br/>
                     <br/>
@@ -68,7 +68,7 @@ const PrivacyPolicyPage = () => {
                     het verwijderen of uitschakelen van cookies gevolgen kan hebben voor de functionaliteit van onze
                     website.
                     <br/>
-                    <div style={{ overflowX: "auto", margin: "20px 0" }}>
+                    <div className={"w-full"} style={{ overflowX: "auto", margin: "20px 0" }}>
                         <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
                             <thead>
                             <tr style={{ backgroundColor: "#f3f3f3", borderBottom: "2px solid #ddd" }}>
