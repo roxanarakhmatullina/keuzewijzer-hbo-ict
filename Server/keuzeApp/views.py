@@ -68,11 +68,7 @@ class GraduateProfileClustersView(APIView):
 
 class ClusterView(View):
 
-    def get(self, request, *args, **kwargs):
 
-        clusters = Cluster.objects.all()  # Example query
-        serialized_clusters = ClusterSerializer(clusters, many=True)
-        return JsonResponse(self.transform_clusters(serialized_clusters.data), safe=False, status=200)
 
     def add_level(self, output_structure):
         # Get the highest existing id in the structure
@@ -128,8 +124,8 @@ class ClusterView(View):
 
         for i in range(4): self.add_level(output_structure)
 
-        afstuderen_name = "Afstudieren"
-        freechoice_name = "Vrie keuze"
+        afstuderen_name = "Afstuderen"
+        freechoice_name = "Vrije keuze"
 
         level_one = []
         level_two = []
@@ -150,6 +146,7 @@ class ClusterView(View):
                 "first_semester": cluster["first_semester"],
                 "last_semester": cluster["last_semester"],
                 "retake": cluster["retake"],
+                "chosen":cluster["chosen"]
             }
 
             if (cluster["category_value"] == 1):
@@ -182,8 +179,6 @@ class ClusterView(View):
                     output_structure[0]["levelsLast"].append("one")
 
             cluster_index +=1
-
-
 
         threshold = 0
         check = False
@@ -225,12 +220,13 @@ class ClusterView(View):
             year_index +=1
 
 
-
         threshold = 0
         check = False
         year_index = 0
         while year_index < len(output_structure):
             year = output_structure[year_index]
+
+            print("year start")
 
             if threshold >= 2:
                 for cluster in level_three:
@@ -256,6 +252,9 @@ class ClusterView(View):
             if "two" in year["levelsLast"]:
                 threshold += 1
 
+            year_index += 1
+
+
         for cluster in level_zero:
 
             if cluster["name"] == afstuderen_name:
@@ -267,7 +266,7 @@ class ClusterView(View):
                         year["lastCluster"].append(cluster)
                         year["levelsLast"].append("zero")
 
-            elif cluster["name"] == freechoice_name:
+            elif    freechoice_name in cluster["name"]:
                 for year in output_structure:
                     if not year["levelsFirst"] and cluster["first_semester"]:
                         year["firstCluster"].append(cluster)
@@ -280,7 +279,11 @@ class ClusterView(View):
 
         return output_structure
 
+    def get(self, request, *args, **kwargs):
 
+        clusters = Cluster.objects.all()  # Example query
+        serialized_clusters = ClusterSerializer(clusters, many=True)
+        return JsonResponse(self.transform_clusters(serialized_clusters.data), safe=False, status=200)
 
     def post(self, request, *args, **kwargs):
 

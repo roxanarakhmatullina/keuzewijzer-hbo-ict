@@ -10,21 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='clustergraduateprofilecohort',
-            old_name='cluster',
-            new_name='cluster_id',
-        ),
-        migrations.RenameField(
-            model_name='clustergraduateprofilecohort',
-            old_name='cohort',
-            new_name='cohort_id',
-        ),
-        migrations.RenameField(
-            model_name='clustergraduateprofilecohort',
-            old_name='graduate_profile',
-            new_name='graduate_profile_id',
-        ),
         migrations.AddField(
             model_name='cluster',
             name='chosen',
