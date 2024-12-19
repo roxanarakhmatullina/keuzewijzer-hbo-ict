@@ -69,6 +69,7 @@ const GoogleAnalytics = ({ id }) => {
             consent: allConsent,
             date: new Date().toISOString(),
         };
+        
         setConsent(allConsent);
         localStorage.setItem('ga-consent-keuzewijzerhboict', JSON.stringify(consentData));
         setShowModal(false);
