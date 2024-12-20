@@ -9,7 +9,7 @@ export const metadata = {
   title: "HBO-ICT Keuzewijzer - De Keuzewijzer van Windesheim",
   description: "De HBO-ICT Keuzewijzer helpt studenten van Windesheim bij het kiezen van een afstudeerprofiel binnen de opleiding HBO-ICT. ",
   manifest: "/manifest.json",
-  robots: "/robots.txt",
+  robots: "index, follow",
   icons: {
       icon: [
       { rel: "icon", type: "image/png", sizes: "32x32", url: "/favicons/favicon-32x32.png" },
