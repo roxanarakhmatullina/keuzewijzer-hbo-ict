@@ -36,10 +36,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
     <body className={"relative w-screen overflow-x-hidden gap-0"}>
+    <head>
+        <meta name="google-site-verification" content="2mp2mLZAJi0O8uQKsjHjg7fkNvj-aoYQTawkNqXWQ3U"/>
+    </head>
     <GoogleAnalyticsProvider>
-      <ErrorProvider>
-        <StudyYearProvider>
-          <GraduateProfileProvider>
+        <ErrorProvider>
+            <StudyYearProvider>
+                <GraduateProfileProvider>
             {children}
           </GraduateProfileProvider>
         </StudyYearProvider>
