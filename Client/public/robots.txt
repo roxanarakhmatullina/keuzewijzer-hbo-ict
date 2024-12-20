@@ -1,6 +1,8 @@
-User-agent: *
-Disallow: /cms/
+User-Agent: *
 Disallow: /dashboard/
 Disallow: /admin/
+Disallow: /cms/
 Disallow: /login/
 Disallow: /register/
+
+Sitemap: https://keuzewijzerhboict.nl/sitemap.xml
