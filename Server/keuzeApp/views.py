@@ -86,6 +86,35 @@ class ClusterView(View):
         }
         output_structure.append(new_level)
 
+
+    def complies_prerequisites(self, studyYear):
+
+        complied = []
+        level_three = False
+
+        for year in studyYear:
+
+            for cluster in year["firstCluster"]:
+                if cluster["chosen"]:
+                    complied.append(cluster["id"])
+                    if all(requisite_id not in complied for requisite_id in cluster["requisites"]):
+                        return cluster[id]
+
+            for cluster in year["lastCluster"]:
+                if cluster["chosen"]:
+                    complied.append(cluster["id"])
+                    if all(requisite_id not in complied for requisite_id in cluster["requisites"]):
+                        return cluster[id]
+
+            if not level_three and ("three" in year["levelsFirst"] or "three" in year["levelsLast"]): level_three = True
+
+        if level_three: return 0
+        else: return -1
+
+
+
+
+
     def retake_cluster(self, cluster, output_structure, current_index, autumn):
 
         #Take sthat there are no clusters added on the next years. If this was the case it wouldnt forcefully position the year on the next available spot.
@@ -113,9 +142,6 @@ class ClusterView(View):
                 self.add_level(output_structure)
 
         return output_structure
-
-
-
 
 
     def transform_clusters(self, input_json):
@@ -146,7 +172,8 @@ class ClusterView(View):
                 "first_semester": cluster["first_semester"],
                 "last_semester": cluster["last_semester"],
                 "retake": cluster["retake"],
-                "chosen":cluster["chosen"]
+                "chosen":cluster["chosen"],
+                "requisites":cluster["prerequisite_ids"]
             }
 
             if (cluster["category_value"] == 1):
@@ -266,7 +293,7 @@ class ClusterView(View):
                         year["lastCluster"].append(cluster)
                         year["levelsLast"].append("zero")
 
-            elif    freechoice_name in cluster["name"]:
+            elif freechoice_name in cluster["name"]:
                 for year in output_structure:
                     if not year["levelsFirst"] and cluster["first_semester"]:
                         year["firstCluster"].append(cluster)
@@ -283,7 +310,11 @@ class ClusterView(View):
 
         clusters = Cluster.objects.all()  # Example query
         serialized_clusters = ClusterSerializer(clusters, many=True)
-        return JsonResponse(self.transform_clusters(serialized_clusters.data), safe=False, status=200)
+        output_structure = self.transform_clusters(serialized_clusters.data)
+        code = self.complies_prerequisites(output_structure)
+        response = {"data": output_structure, "code": code}
+
+        return JsonResponse(response, safe=False, status=200)
 
     def post(self, request, *args, **kwargs):
 

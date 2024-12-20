@@ -26,7 +26,7 @@ const GraduateProfiles = ({setNavbarOpen}) => {
 
         // fetch study years
         fetchApi("/clusters/").then(data => {
-            setStudyYears(data)
+            setStudyYears(data.data)
         }).catch(error => {
                 setErrors([...errors, {
                     id: new Date().getTime(),
