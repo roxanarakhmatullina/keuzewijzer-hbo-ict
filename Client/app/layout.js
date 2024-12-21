@@ -22,20 +22,15 @@ export const metadata = {
   keywords: [
       "hbo-ict", "windesheim", "keuzewijzer", "afstudeerprofiel", "ict", "informatica"
   ],
-  canonicalUrl: "https://keuzewijzerhboict.nl/",
 };
-
-export const viewport = {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: true,
-}
 
 export default function RootLayout({ children }) {
   return (
       <html lang="en">
       <head>
+          <meta charSet="UTF-8"/>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+          <link rel="canonical" href="https://keuzewijzerhboict.nl/"/>
           <meta name="google-site-verification" content="2mp2mLZAJi0O8uQKsjHjg7fkNvj-aoYQTawkNqXWQ3U"/>
       </head>
       <body className={"relative w-screen overflow-x-hidden gap-0"}>
