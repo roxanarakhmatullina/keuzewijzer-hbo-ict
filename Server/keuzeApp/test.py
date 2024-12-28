@@ -123,8 +123,6 @@ def complies_prerequisites(studyYear):
 
 
 def retake_cluster(cluster, output_structure, current_index, autumn):
-    print("testt")
-    print(str(output_structure))
     displaced_clusters = []
     if cluster["retake"] <= 0 or not cluster["chosen"]:
         raise ValueError("Invalid cluster: 'retake' must be greater than 0 and 'chosen' must be True.")
@@ -152,7 +150,6 @@ def retake_cluster(cluster, output_structure, current_index, autumn):
         if cluster["last_semester"] and times >=0:
             while year["lastCluster"]:
                 displaced_clusters.append(year["lastCluster"].pop())
-                print("poppingg")
             cluster_copy = copy.deepcopy(cluster)
             cluster_copy["retake"] = times
             year["lastCluster"].append(cluster_copy)
@@ -177,6 +174,9 @@ def is_free(semester):
     return all(cluster["retake"] == 0 for cluster in semester) if semester else True
 
 def transform_clusters(input_json):
+
+
+    # No puede haber dos edlegidos que se posicionarian en la misma
 
     output_structure = []
     for i in range(3):
@@ -219,15 +219,13 @@ def transform_clusters(input_json):
     cluster_index = 0
     check = True
 
-# LEVEL ONE
+    # LEVEL ONE
 
     while cluster_index < len(level_one):
 
         current_cluster = level_one[cluster_index]
-        print("current cluster : " + current_cluster["name"])
         #Two cases forcing propedeuze to be first
         if current_cluster["name"] != propedeuze_name and check:
-            print("case one")
             level_one.append(level_one.pop(0))
 
         elif current_cluster["name"] == propedeuze_name:
@@ -270,15 +268,15 @@ def transform_clusters(input_json):
                 year_index += 1
             cluster_index += 1
 
+
+
+
     # LEVEL 2
 
-    print("test1 " + str(output_structure))
-
+    to_extend = []
     threshold = 0
     check = False
     year_index = 0
-    to_extend = []
-
     while year_index < len(output_structure):
         year = output_structure[year_index]
 
@@ -287,7 +285,6 @@ def transform_clusters(input_json):
             cluster_index = 0
             while cluster_index < len(level_two):
                 cluster = level_two[cluster_index]
-                print("Processing cluster on the first half"+ cluster["name"])
                 if cluster["first_semester"]:
                     if cluster["retake"] > 0:
                         to_extend.extend(retake_cluster(cluster, output_structure, year_index, True))
@@ -309,12 +306,9 @@ def transform_clusters(input_json):
             cluster_index = 0
             while cluster_index < len(level_two):
                 cluster = level_two[cluster_index]
-                print("Processing cluster on the second half " + cluster["name"])
                 if cluster["last_semester"]:
-                    print("cluster on last semester")
                     if cluster["retake"] > 0:
-                        test = retake_cluster(cluster, output_structure, year_index, False)
-                        print("extend" + str(test))
+                        to_extend = retake_cluster(cluster, output_structure, year_index, False)
                     else:
                         year["lastCluster"].append(cluster)
                     level_two.remove(cluster)
@@ -323,8 +317,6 @@ def transform_clusters(input_json):
                 else:
                     cluster_index += 1
 
-            print("level two after: " + str(level_two))
-
             if check: break
             check = True
 
@@ -332,7 +324,6 @@ def transform_clusters(input_json):
             threshold += 1
 
         if to_extend:
-            print("TO EXTEND")
             level_two.extend(to_extend)
             to_extend=[]
 
@@ -342,7 +333,93 @@ def transform_clusters(input_json):
             add_level(output_structure)
 
 
+    #LEVEL 3
+
+    to_extend = []
+    threshold = 0
+    check = False
+    year_index = 0
+    while year_index < len(output_structure):
+        year = output_structure[year_index]
+
+        if threshold >= 2 and "one" not in year["levelsFirst"] and "two" not in year["levelsFirst"] and is_free(year["firstCluster"]):
+
+            cluster_index = 0
+            while cluster_index < len(level_three):
+                cluster = level_three[cluster_index]
+
+                if cluster["first_semester"]:
+                    if cluster["retake"] > 0:
+                        to_extend.extend(retake_cluster(cluster, output_structure, year_index, True))
+                    else:
+                        year["firstCluster"].append(cluster)
+                    level_three.remove(cluster)
+                    if "three" not in year["levelsFirst"]:
+                        year["levelsFirst"].append("three")
+                else:
+                    cluster_index +=1
+
+            if check: break
+            check = True
+
+        if "two" in year["levelsFirst"]:
+            threshold += 1
+
+        if threshold >= 2 and "one" not in year["levelsLast"] and is_free(year["firstCluster"]):
+
+            cluster_index = 0
+            while cluster_index < len(level_three):
+                cluster = level_three[cluster_index]
+                if cluster["last_semester"]:
+                    if cluster["retake"] > 0:
+                        to_extend = retake_cluster(cluster, output_structure, year_index, False)
+                    else:
+                        year["lastCluster"].append(cluster)
+                    level_three.remove(cluster)
+                    if "three" not in year["levelsLast"]:
+                        year["levelsLast"].append("three")
+                else:
+                    cluster_index += 1
+
+            if check: break
+            check = True
+
+        if "two" in year["levelsLast"]:
+            threshold += 1
+
+        year_index += 1
+
+
+    #LEVEL 0  (free choice position and afstuderen)
+
+    check = 0
+    for cluster in level_zero:
+
+
+
+        if freechoice_name in cluster["name"]:
+            for year in output_structure:
+                if not year["levelsFirst"] and cluster["first_semester"]:
+                    year["firstCluster"].append(cluster)
+                    year["levelsFirst"].append("zero")
+                    break
+                if not year["levelsLast"] and cluster["last_semester"]:
+                    year["lastCluster"].append(cluster)
+                    year["levelsLast"].append("zero")
+                    break
+
+        if cluster["name"] == afstuderen_name and check:
+            for year in output_structure:
+                if not year["levelsFirst"]:
+                    year["firstCluster"].append(cluster)
+                    year["levelsFirst"].append("zero")
+                if not year["levelsLast"]:
+                    year["lastCluster"].append(cluster)
+                    year["levelsLast"].append("zero")
+
     return output_structure
+
+
 
 
 print(transform_clusters(cluster_json))
