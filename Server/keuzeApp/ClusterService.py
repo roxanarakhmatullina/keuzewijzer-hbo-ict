@@ -3,10 +3,18 @@ import copy
 
 from django.template.context_processors import static
 
-from Server.keuzeApp.test import deduplicate_clusters_by_retake
-
-
 class ClusterService:
+
+    @staticmethod
+    def is_elegible(semester):
+
+        non_elegible = []   
+
+        for cluster in semester:
+            eligible_clusters = [cluster for cluster in semester if cluster.id not in non_elegible]
+
+        return eligible_clusters
+
     @staticmethod
     def is_free(semester):
         return all(cluster["retake"] == 0 for cluster in semester) if semester else True

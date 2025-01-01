@@ -70,7 +70,7 @@ class GraduateProfileClustersView(APIView):
 class ClusterView(View):
 
     def get(self, request, *args, **kwargs):
-        clusters = Cluster.objects.all()  # Query clusters
+        clusters = Cluster.objects.filter(free_choice=False)  # Query clusters
         serialized_clusters = ClusterSerializer(clusters, many=True)
         output_structure = ClusterService.transform_clusters(serialized_clusters.data)
         code = ClusterService.complies_prerequisites(output_structure)
@@ -111,36 +111,9 @@ class ClusterView(View):
 
 
 
-class ClusterView2(View):
-
-    def transform_clusters(self, input_json):
-
-        output_structure = []
-
-        for cluster in input_json:
-
-            cluster["graduateProfileTags"] = [profile["name"] for profile in cluster.pop("graduate_profiles")]
-
-            transformed_cluster = {
-                "id": cluster['id'],
-                "name": cluster["name"],
-                "link": cluster["link"],
-                "locked": cluster["locked"],
-                "free_choice": cluster["free_choice"],
-                "graduateProfileTags": cluster["graduateProfileTags"],
-                "autumn_semester": cluster["first_semester"],
-                "spring_semester": cluster["last_semester"],
-                "order": cluster["order"],
-             }
-            output_structure.append(transformed_cluster)
-
-
-        return output_structure
-
-
+class ClusterView_all(View):
 
     def get(self, request, *args, **kwargs):
-
-        clusters = Cluster.objects.all()  # Example query
+        clusters = Cluster.objects.filter(free_choice=False)  # Query clusters
         serialized_clusters = ClusterSerializer(clusters, many=True)
         return JsonResponse(serialized_clusters.data, safe=False, status=200)
