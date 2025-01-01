@@ -1,6 +1,11 @@
 
 import copy
 
+from django.template.context_processors import static
+
+from Server.keuzeApp.test import deduplicate_clusters_by_retake
+
+
 class ClusterService:
     @staticmethod
     def is_free(semester):
@@ -26,9 +31,8 @@ class ClusterService:
 
     @staticmethod
     def complies_prerequisites(studyYear):
-        # Logic from `complies_prerequisites`
+
         complied = []
-        level_three = False
 
         for year in studyYear:
             for cluster in year["firstCluster"]:
@@ -43,12 +47,45 @@ class ClusterService:
                     if all(requisite_id not in complied for requisite_id in cluster["requisites"]):
                         return cluster["id"]
 
-            if not level_three and ("three" in year["levelsFirst"] or "three" in year["levelsLast"]):
-                level_three = True
+        return 0
 
-        return 0 if level_three else -1
+    @staticmethod
+    def deduplicate_clusters(clusters):
+
+        highest_retake_clusters = {}
+
+        for cluster in clusters:
+            cluster_id = cluster["id"]
+            if (cluster_id not in highest_retake_clusters or
+                    cluster["retake"] > highest_retake_clusters[cluster_id]["retake"]):
+                highest_retake_clusters[cluster_id] = cluster
+
+        return list(highest_retake_clusters.values())
+
+    @staticmethod
+    def decompress_validate_studyyear (studyYear):
+
+        clusters = []
+
+        if ClusterService.complies_prerequisites(studyYear): return
+
+        for year in studyYear:
+
+            if sum(1 for cluster in year["firstCluster"] if cluster.get("chosen", False)):
+                return False
+            if sum(1 for cluster in year["firstCluster"] if cluster.get("chosen", False)):
+                return False
 
 
+            for cluster in year["firstCluster"]:
+                clusters.append(cluster)
+
+            for cluster in year["lastCluster"]:
+                clusters.append(cluster)
+
+        unique_clusters = deduplicate_clusters_by_retake(clusters)
+
+        return unique_clusters
 
     @staticmethod
     def retake_cluster(cluster, output_structure, current_index, autumn):

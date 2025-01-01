@@ -1,9 +1,347 @@
 from itertools import chain
 import copy
 
+
+studyYear1 =[
+      {
+        "id": "1",
+        "firstCluster": [
+          {
+            "id": 4,
+            "name": "Propedeuse 1",
+            "link": "",
+            "locked": True,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 1
+          }
+        ],
+        "lastCluster": [
+          {
+            "id": 5,
+            "name": "Propedeuse 2",
+            "link": "",
+            "locked": True,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": False,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 1
+          }
+        ],
+        "levelsFirst": [
+          "one"
+        ],
+        "levelsLast": [
+          "one"
+        ]
+      },
+      {
+        "id": "2",
+        "firstCluster": [
+          {
+            "id": 6,
+            "name": "Microcontrollers",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          },
+          {
+            "id": 9,
+            "name": "Business Process Management",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          },
+          {
+            "id": 14,
+            "name": "Cyber Security",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          },
+          {
+            "id": 15,
+            "name": "Object Oriented Software Design & Development",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          }
+        ],
+        "lastCluster": [
+          {
+            "id": 11,
+            "name": "Web Development",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": False,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          },
+          {
+            "id": 16,
+            "name": "Cloud Automation",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": False,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          },
+          {
+            "id": 17,
+            "name": "Data Science",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": False,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          },
+          {
+            "id": 18,
+            "name": "User Interface",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": False,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          },
+          {
+            "id": 19,
+            "name": "Internet of Things",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": False,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 2
+          }
+        ],
+        "levelsFirst": [
+          "two"
+        ],
+        "levelsLast": [
+          "two"
+        ]
+      },
+      {
+        "id": "3",
+        "firstCluster": [
+          {
+            "id": 20,
+            "name": "Cloud Security Governance",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 3
+          },
+          {
+            "id": 21,
+            "name": "Machine Learning",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 3
+          },
+          {
+            "id": 22,
+            "name": "Management of IT",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 3
+          },
+          {
+            "id": 23,
+            "name": "User Experience Design",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 3
+          },
+          {
+            "id": 24,
+            "name": "Quality in Software Development",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 3
+          },
+          {
+            "id": 25,
+            "name": "Computer Engineering",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": False,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 3
+          }
+        ],
+        "lastCluster": [
+          {
+            "id": 26,
+            "name": "Vrije keuze 1",
+            "link": "",
+            "locked": False,
+            "free_choice": True,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 0
+          }
+        ],
+        "levelsFirst": [
+          "three"
+        ],
+        "levelsLast": [
+          "zero"
+        ]
+      },
+      {
+        "id": "4",
+        "firstCluster": [
+          {
+            "id": 27,
+            "name": "Vrije keuze 2",
+            "link": "",
+            "locked": False,
+            "free_choice": True,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 0
+          }
+        ],
+        "lastCluster": [
+          {
+            "id": 28,
+            "name": "Afstuderen",
+            "link": "",
+            "locked": False,
+            "free_choice": False,
+            "graduateProfileTags": [],
+            "first_semester": True,
+            "last_semester": True,
+            "retake": 0,
+            "chosen": False,
+            "prerequisite_ids": [],
+            "category_value": 0
+          }
+        ],
+        "levelsFirst": [
+          "zero"
+        ],
+        "levelsLast": [
+          "zero"
+        ]
+      }
+    ]
+
+
+
 cluster_json = [
 {
-    "id": 4,
+    "id": 3,
     "category_value": 1,
     "name": "Propedeuse 2",
     "description": "Propedeuse one description sample",
@@ -12,13 +350,13 @@ cluster_json = [
     "first_semester": True,
     "last_semester": True,
     "free_choice": False,
-    "chosen": False,
+    "chosen": True,
     "retake": 0,
     "category_id": 1,
     "prerequisite_ids": []
 },
     {
-    "id": 4,
+    "id": 2,
     "category_value": 1,
     "name": "Propedeuse 1",
     "description": "Propedeuse one description sample",
@@ -58,7 +396,7 @@ cluster_json = [
     "last_semester": False,
     "free_choice": False,
     "chosen": True,
-    "retake": 1,
+    "retake": 2,
     "category_id": 2,
     "prerequisite_ids": []
 },
@@ -73,11 +411,53 @@ cluster_json = [
     "last_semester": True,
     "free_choice": False,
     "chosen": False,
-    "retake": 0,
+    "retake": 1,
     "category_id": 2,
     "prerequisite_ids": []
 },
 ]
+
+
+def decompress_validate_studyyear(studyYear):
+    clusters = []
+
+    if complies_prerequisites(studyYear): return
+
+    for year in studyYear:
+
+        if sum(1 for cluster in year["firstCluster"] if cluster.get("chosen", False)):
+            return False
+        if sum(1 for cluster in year["firstCluster"] if cluster.get("chosen", False)):
+            return False
+
+        for cluster in year["firstCluster"]:
+            clusters.append(cluster)
+
+        for cluster in year["lastCluster"]:
+            clusters.append(cluster)
+
+    unique_clusters = deduplicate_clusters(clusters)
+
+    return unique_clusters
+
+
+
+def test(struct):
+
+    first_chosen_count = sum(1 for cluster in struct if cluster.get("chosen",False))
+    print(first_chosen_count)
+
+
+def deduplicate_clusters(clusters):
+    highest_retake_clusters = {}
+
+    for cluster in clusters:
+        cluster_id = cluster["id"]
+        if (cluster_id not in highest_retake_clusters or
+                cluster["retake"] > highest_retake_clusters[cluster_id]["retake"]):
+            highest_retake_clusters[cluster_id] = cluster
+
+    return list(highest_retake_clusters.values())
 
 
 def add_level(output_structure):
@@ -99,9 +479,7 @@ def add_level(output_structure):
 
 
 def complies_prerequisites(studyYear):
-    # Logic from `complies_prerequisites`
     complied = []
-    level_three = False
 
     for year in studyYear:
         for cluster in year["firstCluster"]:
@@ -116,10 +494,7 @@ def complies_prerequisites(studyYear):
                 if all(requisite_id not in complied for requisite_id in cluster["requisites"]):
                     return cluster["id"]
 
-        if not level_three and ("three" in year["levelsFirst"] or "three" in year["levelsLast"]):
-            level_three = True
-
-    return 0 if level_three else -1
+    return 0
 
 
 def retake_cluster(cluster, output_structure, current_index, autumn):
@@ -198,7 +573,6 @@ def transform_clusters(input_json):
             "name": cluster["name"],
             "link": cluster["link"],
             "locked": cluster["locked"],
-            "free_choice": cluster["free_choice"],
             "first_semester": cluster["first_semester"],
             "last_semester": cluster["last_semester"],
             "retake": cluster["retake"],
@@ -422,4 +796,4 @@ def transform_clusters(input_json):
 
 
 
-print(transform_clusters(cluster_json))
+print(transform_clusters(decompress_validate_studyyear(studyYear1)))
