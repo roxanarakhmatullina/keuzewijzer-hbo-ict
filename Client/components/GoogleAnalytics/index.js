@@ -46,6 +46,20 @@ const GoogleAnalytics = ({ id }) => {
         setShowModal(false);
     };
 
+    const rejectAll = () => {
+        const allConsent = {
+            necessary: false,
+            statistics: false,
+        };
+        const consentData = {
+            consent: allConsent,
+            date: new Date().toISOString(),
+        };
+        setConsent(allConsent);
+        localStorage.setItem('ga-consent-keuzewijzerhboict', JSON.stringify(consentData));
+        setShowModal(false);
+    }
+
     const acceptAll = () => {
         const allConsent = {
             necessary: true,
@@ -55,6 +69,7 @@ const GoogleAnalytics = ({ id }) => {
             consent: allConsent,
             date: new Date().toISOString(),
         };
+        
         setConsent(allConsent);
         localStorage.setItem('ga-consent-keuzewijzerhboict', JSON.stringify(consentData));
         setShowModal(false);
@@ -123,9 +138,14 @@ const GoogleAnalytics = ({ id }) => {
                                 Opslaan
                             </button>
                             <button
+                                onClick={rejectAll}
+                                className={"w-full h-[50px] md:h-[40px] font-bold bg-[#d0e2f5] text-[#124477] text-[14px]  rounded-[10px] p-[10px] box-border cursor-pointer flex justify-center align-middle items-center"}>
+                                Weigeren
+                            </button>
+                            <button
                                 onClick={acceptAll}
                                 className={"w-full h-[50px] md:h-[40px] font-bold bg-[#124477] text-[14px] text-white rounded-[10px] p-[10px] box-border cursor-pointer flex justify-center align-middle items-center"}>
-                                Accepteren
+                                Alles accepteren
                             </button>
                         </div>
                     </div>

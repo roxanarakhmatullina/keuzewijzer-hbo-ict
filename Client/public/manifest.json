@@ -1,0 +1,15 @@
+{
+  "name": "Keuzewijzer HBO-ICT",
+  "short_name": "Keuzewijzer",
+  "description": "Keuzewijzer voor de opleiding HBO-ICT",
+  "start_url": "/",
+  "theme_color": "#fff",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
