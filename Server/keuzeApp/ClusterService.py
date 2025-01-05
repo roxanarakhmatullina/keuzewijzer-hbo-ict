@@ -91,7 +91,7 @@ class ClusterService:
             for cluster in year["lastCluster"]:
                 clusters.append(cluster)
 
-        unique_clusters = deduplicate_clusters_by_retake(clusters)
+        unique_clusters = ClusterService.deduplicate_clusters(clusters)
 
         return unique_clusters
 
@@ -147,10 +147,8 @@ class ClusterService:
     @staticmethod
     def transform_clusters(input_json):
 
-        # No puede haber dos edlegidos que se posicionarian en la misma
-
         output_structure = []
-        for i in range(3):
+        for i in range(4):
             ClusterService.add_level(output_structure)
 
         propedeuze_name = "Propedeuse 1"
@@ -164,18 +162,21 @@ class ClusterService:
 
         for cluster in input_json:
 
+            cluster["graduateProfileTags"] = [(item["graduate_profile_id"]["name"], item["cohort_id"]["name"]) for item in
+                                              cluster.pop("cohorts_profiles")]
+
             transformed_cluster = {
                 "id": cluster["id"],
                 "name": cluster["name"],
                 "link": cluster["link"],
                 "locked": cluster["locked"],
-                "free_choice": cluster["free_choice"],
                 "first_semester": cluster["first_semester"],
                 "last_semester": cluster["last_semester"],
                 "retake": cluster["retake"],
                 "chosen": cluster["chosen"],
                 "requisites": cluster["prerequisite_ids"],
                 "category_value": cluster["category_value"],
+                "graduateProfileTags" : cluster["graduateProfileTags"],
             }
 
             if cluster["category_value"] == 1:
@@ -229,7 +230,7 @@ class ClusterService:
                         break
 
                     elif current_cluster["last_semester"] and "one" not in year["levelsLast"] and ClusterService.is_free(
-                            year["firstCluster"]):
+                            year["lastCluster"]):
                         if current_cluster["retake"] == 0:
                             year["lastCluster"].append(current_cluster)
                         else:
@@ -254,7 +255,7 @@ class ClusterService:
                 cluster_index = 0
                 while cluster_index < len(level_two):
                     cluster = level_two[cluster_index]
-                    if cluster["first_semester"]:
+                    if cluster["first_semester"] and ClusterService.is_free(year["firstCluster"]):
                         if cluster["retake"] > 0:
                             to_extend.extend(ClusterService.retake_cluster(cluster, output_structure, year_index, True))
                         else:
@@ -264,20 +265,20 @@ class ClusterService:
                             year["levelsFirst"].append("two")
                     else:
                         cluster_index += 1
-                if check: break
+                if check and not level_two: break
                 check = True
 
             if "one" in year["levelsFirst"]:
                 threshold += 1
 
-            if threshold >= 2 and "one" not in year["levelsLast"] and ClusterService.is_free(year["firstCluster"]):
+            if threshold >= 2 and "one" not in year["levelsLast"] and ClusterService.is_free(year["lastCluster"]):
 
                 cluster_index = 0
                 while cluster_index < len(level_two):
                     cluster = level_two[cluster_index]
-                    if cluster["last_semester"]:
+                    if cluster["last_semester"] and ClusterService.is_free(year["lastCluster"]):
                         if cluster["retake"] > 0:
-                            to_extend = ClusterService.retake_cluster(cluster, output_structure, year_index, False)
+                            to_extend.extend(ClusterService.retake_cluster(cluster, output_structure, year_index, False))
                         else:
                             year["lastCluster"].append(cluster)
                         level_two.remove(cluster)
@@ -286,7 +287,7 @@ class ClusterService:
                     else:
                         cluster_index += 1
 
-                if check: break
+                if check and not level_two: break
                 check = True
 
             if "one" in year["levelsLast"]:
@@ -310,13 +311,14 @@ class ClusterService:
         while year_index < len(output_structure):
             year = output_structure[year_index]
 
-            if threshold >= 2 and "one" not in year["levelsFirst"] and "two" not in year["levelsFirst"] and ClusterService.is_free(year["firstCluster"]):
+            if threshold >= 2 and "one" not in year["levelsFirst"] and "two" not in year["levelsFirst"] and ClusterService.is_free(
+                    year["firstCluster"]):
 
                 cluster_index = 0
                 while cluster_index < len(level_three):
                     cluster = level_three[cluster_index]
 
-                    if cluster["first_semester"]:
+                    if cluster["first_semester"] and ClusterService.is_free(year["firstCluster"]):
                         if cluster["retake"] > 0:
                             to_extend.extend(ClusterService.retake_cluster(cluster, output_structure, year_index, True))
                         else:
@@ -327,20 +329,22 @@ class ClusterService:
                     else:
                         cluster_index += 1
 
-                if check: break
+                if check and not level_three: break
                 check = True
 
             if "two" in year["levelsFirst"]:
                 threshold += 1
 
-            if threshold >= 2 and "one" not in year["levelsLast"]and "two" not in year["levelsLast"] and ClusterService.is_free(year["lastCluster"]):
+            if threshold >= 2 and "one" not in year["levelsLast"] and "one" not in year["levelsFirst"] and ClusterService.is_free(
+                    year["lastCluster"]):
 
                 cluster_index = 0
                 while cluster_index < len(level_three):
                     cluster = level_three[cluster_index]
-                    if cluster["last_semester"]:
+                    print("process cluster : " + cluster["name"])
+                    if cluster["last_semester"] and ClusterService.is_free(year["lastCluster"]):
                         if cluster["retake"] > 0:
-                            to_extend = ClusterService.retake_cluster(cluster, output_structure, year_index, False)
+                            to_extend.extend(ClusterService.retake_cluster(cluster, output_structure, year_index, False))
                         else:
                             year["lastCluster"].append(cluster)
                         level_three.remove(cluster)
@@ -349,73 +353,76 @@ class ClusterService:
                     else:
                         cluster_index += 1
 
-                if check: break
+                if check and not level_three: break
                 check = True
 
             if "two" in year["levelsLast"]:
                 threshold += 1
 
+            if to_extend:
+                level_three.extend(to_extend)
+                to_extend = []
+
             year_index += 1
+
+            if level_three and year_index == len(output_structure):
+                ClusterService.add_level(output_structure)
 
         # LEVEL 0  (free choice position and afstuderen)
 
+        check = True
+        cluster_index =0
+        while cluster_index<len(level_zero):
+            cluster = level_zero[cluster_index]
+            print("process cluster " + cluster["name"] + "check " + str(check))
+            #force afstuderent to be last
+            if check:
+                level_zero.append(level_zero.pop(0))
+                cluster_index -= 1
+                print("remove one")
+                if cluster["name"] == afstuderen_name:
+                    check = False
 
-        check1 = False
-        check2 = False
-        while level_zero:
-            cluster = level_zero[0]
-            if cluster["name"] == afstuderen_name and check1 and check2:
-                year_index=0
-                while year_index <= len(output_structure):
+            elif freechoice_name in cluster["name"]:
+
+                year_index = 0
+                while year_index < len(output_structure):
                     year = output_structure[year_index]
-
-                    if not year["levelsFirst"]:
+                    if not year["levelsFirst"] and cluster["first_semester"]:
                         year["firstCluster"].append(cluster)
                         year["levelsFirst"].append("zero")
                         break
-
-                    elif not year["levelsLast"]:
+                    if not year["levelsLast"] and cluster["last_semester"]:
                         year["lastCluster"].append(cluster)
                         year["levelsLast"].append("zero")
                         break
 
-                    year_index +=1
-                level_zero.remove(cluster)
+                    year_index += 1
 
-            elif cluster["name"] == afstuderen_name:
-                level_zero.append(level_zero.pop(0))
-
-            if freechoice_name in cluster["name"]:
-                year_index=0
-
-                while year_index < len(output_structure):
-
-                    year = output_structure[year_index]
-                    if not year["levelsFirst"] and cluster["first_semester"]:
-                        year["firstCluster"].append(cluster)
-                        if "zero" not in year["levelsFirst"]:
-                            year["levelsFirst"].append("zero")
-                        level_zero.remove(cluster)
-                        if check1:
-                            check2 = True
-                        else:
-                            check1 = True
-                        break
-
-                    elif not year["levelsLast"] and cluster["last_semester"]:
-                        year["lastCluster"].append(cluster)
-                        if "zero" not in year["levelsLast"]:
-                            year["levelsLast"].append("zero")
-                        level_zero.remove(cluster)
-                        if check1:
-                            check2 = True
-                        else:
-                            check1 = True
-                        break
-
-                    elif year_index+1 == len(output_structure) and level_zero:
+                    if year_index == len(output_structure):
                         ClusterService.add_level(output_structure)
 
-                    year_index +=1
+            elif cluster["name"] == afstuderen_name:
+                year_index = 0
+                while year_index < len(output_structure):
+                    year = output_structure[year_index]
+                    print ("test loop")
+                    if not year["levelsFirst"]:
+                        year["firstCluster"].append(cluster)
+                        year["levelsFirst"].append("zero")
+                        break
+                    if not year["levelsLast"]:
+                        year["lastCluster"].append(cluster)
+                        year["levelsLast"].append("zero")
+                        break
+                    year_index += 1
+
+                    if year_index == len(output_structure):
+                        ClusterService.add_level(output_structure)
+
+
+
+            cluster_index+=1
 
         return output_structure
+

@@ -13,7 +13,7 @@ from django.http import JsonResponse
 
 from .models import Category, Cluster, GraduateProfile, Cohort
 from .serializers import CategorySerializer, ClusterSerializer, GraduateProfileSerializer, CohortSerializer, MessageSerializer
-from .clusterService import ClusterService
+from .ClusterService import ClusterService
 
 
 def index(request):
@@ -106,12 +106,12 @@ class ClusterView(View):
                 "last_semester": cluster.last_semester,
                 "free_choice": cluster.free_choice,
             }
-            return JsonResponse(self.transform_clusters(response_data), status=201)
+            return JsonResponse(ClusterService.transform_clusters(response_data), status=201)
 
 
 
 
-class ClusterView_all(View):
+class ClusterViewAll(View):
 
     def get(self, request, *args, **kwargs):
         clusters = Cluster.objects.filter(free_choice=False)  # Query clusters

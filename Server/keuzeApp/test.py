@@ -1,7 +1,6 @@
 from itertools import chain
 import copy
 
-
 studyYear1 =[
       {
         "id": "1",
@@ -337,9 +336,298 @@ studyYear1 =[
       }
     ]
 
+clusters_json =[
+    {
+        "id": 4,
+        "cohorts_profiles": [],
+        "category_value": 1,
+        "name": "Propedeuse 1",
+        "description": "Propedeuse one description sample",
+        "link": "",
+        "locked": True,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 1,
+        "prerequisite_ids": []
+    },
+    {
+        "id": 5,
+        "cohorts_profiles": [],
+        "category_value": 1,
+        "name": "Propedeuse 2",
+        "description": "Propedeuse two sample description",
+        "link": "",
+        "locked": True,
+        "first_semester": False,
+        "last_semester": True,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 1,
+        "prerequisite_ids": []
+    },
+    {
+        "id": 6,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Microcontrollers",
+        "description": "Microcontrollers semester description",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": []
+    },
+    {
+        "id": 9,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Business Process Management",
+        "description": "Business process management semester description",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": []
+    },
+    {
+        "id": 11,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Web Development",
+        "description": "Web development semester description",
+        "link": "",
+        "locked": False,
+        "first_semester": False,
+        "last_semester": True,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": [15]
+    },
+    {
+        "id": 14,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Cyber Security",
+        "description": "cyber security",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": []
+    },
+    {
+        "id": 15,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Object Oriented Software Design & Development",
+        "description": "OOSDD",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": []
+    },
+    {
+        "id": 16,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Cloud Automation",
+        "description": "CA",
+        "link": "",
+        "locked": False,
+        "first_semester": False,
+        "last_semester": True,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": [14]
+    },
+      {
+        "id": 17,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Data Science",
+        "description": "DA",
+        "link": "",
+        "locked": False,
+        "first_semester": False,
+        "last_semester": True,
+        "free_choice": False,
+        "chosen": True,
+        "retake": 2,
+        "category_id": 2,
+        "prerequisite_ids": [9, 14, 15]
+      },
+      {
+        "id": 18,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "User Interface",
+        "description": "UI",
+        "link": "",
+        "locked": False,
+        "first_semester": False,
+        "last_semester": True,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": [9, 15]
+      },
+      {
+        "id": 19,
+        "cohorts_profiles": [],
+        "category_value": 2,
+        "name": "Internet of Things",
+        "description": "IoT",
+        "link": "",
+        "locked": False,
+        "first_semester": False,
+        "last_semester": True,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 2,
+        "prerequisite_ids": [6]
+      },
+      {
+        "id": 20,
+        "cohorts_profiles": [],
+        "category_value": 3,
+        "name": "Cloud Security Governance",
+        "description": "CSG",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 3,
+        "prerequisite_ids": [16, 17]
+      },
+      {
+        "id": 21,
+        "cohorts_profiles": [],
+        "category_value": 3,
+        "name": "Machine Learning",
+        "description": "ML",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 3,
+        "prerequisite_ids": [17]
+      },
+      {
+        "id": 22,
+        "cohorts_profiles": [],
+        "category_value": 3,
+        "name": "Management of IT",
+        "description": "MoIT",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 3,
+        "prerequisite_ids": [17, 18]
+      },
+      {
+        "id": 23,
+        "cohorts_profiles": [],
+        "category_value": 3,
+        "name": "User Experience Design",
+        "description": "UED",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 3,
+        "prerequisite_ids": [18]
+      },
+      {
+        "id": 24,
+        "cohorts_profiles": [],
+        "category_value": 3,
+        "name": "Quality in Software Development",
+        "description": "QSD",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 3,
+        "prerequisite_ids": [11, 17, 18, 19]
+      },
+      {
+        "id": 25,
+        "cohorts_profiles": [],
+        "category_value": 3,
+        "name": "Computer Engineering",
+        "description": "CE",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": False,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 3,
+        "prerequisite_ids": [19]
+      },
+      {
+        "id": 28,
+        "cohorts_profiles": [],
+        "category_value": 0,
+        "name": "Afstuderen",
+        "description": "Graduation",
+        "link": "",
+        "locked": False,
+        "first_semester": True,
+        "last_semester": True,
+        "free_choice": False,
+        "chosen": False,
+        "retake": 0,
+        "category_id": 4,
+        "prerequisite_ids": []
+      }
+    ]
 
-
-cluster_json = [
+cluster_json_test = [
 {
     "id": 3,
     "category_value": 1,
@@ -542,7 +830,7 @@ def retake_cluster(cluster, output_structure, current_index, autumn):
 
         if times >=0 and year_index == len(output_structure):
             add_level(output_structure)
-
+    print("Displaced " + str(displaced_clusters))
     return displaced_clusters
 
 def is_free(semester):
@@ -552,7 +840,7 @@ def transform_clusters(input_json):
 
 
     # No puede haber dos edlegidos que se posicionarian en la misma
-
+    print("test")
     output_structure = []
     for i in range(3):
         add_level(output_structure)
@@ -565,6 +853,8 @@ def transform_clusters(input_json):
     level_two = []
     level_three = []
     level_zero = []
+
+    print(str(level_three))
 
     for cluster in input_json:
 
@@ -592,6 +882,9 @@ def transform_clusters(input_json):
 
     cluster_index = 0
     check = True
+
+
+
 
     # LEVEL ONE
 
@@ -631,7 +924,7 @@ def transform_clusters(input_json):
                     year["levelsFirst"].append("one")
                     break
 
-                elif current_cluster["last_semester"] and "one" not in year["levelsLast"] and is_free(year["firstCluster"]):
+                elif current_cluster["last_semester"] and "one" not in year["levelsLast"] and is_free(year["lastCluster"]):
                     if current_cluster["retake"] == 0:
                         year["lastCluster"].append(current_cluster)
                     else:
@@ -659,7 +952,7 @@ def transform_clusters(input_json):
             cluster_index = 0
             while cluster_index < len(level_two):
                 cluster = level_two[cluster_index]
-                if cluster["first_semester"]:
+                if cluster["first_semester"] and is_free(year["firstCluster"]):
                     if cluster["retake"] > 0:
                         to_extend.extend(retake_cluster(cluster, output_structure, year_index, True))
                     else:
@@ -669,20 +962,20 @@ def transform_clusters(input_json):
                         year["levelsFirst"].append("two")
                 else:
                     cluster_index +=1
-            if check: break
+            if check and not level_two: break
             check = True
 
         if "one" in year["levelsFirst"]:
             threshold += 1
 
-        if threshold >= 2 and "one" not in year["levelsLast"] and is_free(year["firstCluster"]):
+        if threshold >= 2 and "one" not in year["levelsLast"] and is_free(year["lastCluster"]):
 
             cluster_index = 0
             while cluster_index < len(level_two):
                 cluster = level_two[cluster_index]
-                if cluster["last_semester"]:
+                if cluster["last_semester"] and is_free(year["lastCluster"]):
                     if cluster["retake"] > 0:
-                        to_extend = retake_cluster(cluster, output_structure, year_index, False)
+                        to_extend.extend(retake_cluster(cluster, output_structure, year_index, False))
                     else:
                         year["lastCluster"].append(cluster)
                     level_two.remove(cluster)
@@ -691,7 +984,7 @@ def transform_clusters(input_json):
                 else:
                     cluster_index += 1
 
-            if check: break
+            if check and not level_two: break
             check = True
 
         if "one" in year["levelsLast"]:
@@ -722,7 +1015,7 @@ def transform_clusters(input_json):
             while cluster_index < len(level_three):
                 cluster = level_three[cluster_index]
 
-                if cluster["first_semester"]:
+                if cluster["first_semester"]and is_free(year["firstCluster"]):
                     if cluster["retake"] > 0:
                         to_extend.extend(retake_cluster(cluster, output_structure, year_index, True))
                     else:
@@ -733,20 +1026,21 @@ def transform_clusters(input_json):
                 else:
                     cluster_index +=1
 
-            if check: break
+            if check and not level_three: break
             check = True
 
         if "two" in year["levelsFirst"]:
             threshold += 1
 
-        if threshold >= 2 and "one" not in year["levelsLast"] and is_free(year["firstCluster"]):
+        if threshold >= 2 and "one" not in year["levelsLast"] and "one" not in year["levelsFirst"] and is_free(year["lastCluster"]):
 
             cluster_index = 0
             while cluster_index < len(level_three):
                 cluster = level_three[cluster_index]
-                if cluster["last_semester"]:
+                print("process cluster : " + cluster["name"])
+                if cluster["last_semester"] and is_free(year["lastCluster"]):
                     if cluster["retake"] > 0:
-                        to_extend = retake_cluster(cluster, output_structure, year_index, False)
+                        to_extend.extend(retake_cluster(cluster, output_structure, year_index, False))
                     else:
                         year["lastCluster"].append(cluster)
                     level_three.remove(cluster)
@@ -755,24 +1049,38 @@ def transform_clusters(input_json):
                 else:
                     cluster_index += 1
 
-            if check: break
+            if check and not level_three: break
             check = True
 
         if "two" in year["levelsLast"]:
             threshold += 1
 
+        if to_extend:
+            level_three.extend(to_extend)
+            to_extend=[]
+
         year_index += 1
+
+        if level_three and year_index == len(output_structure):
+            add_level(output_structure)
 
 
     #LEVEL 0  (free choice position and afstuderen)
+    print("level 0 " + str(len(level_zero)))
 
     check = 0
     for cluster in level_zero:
 
+        print("test level 0 name " + cluster["name"])
 
 
         if freechoice_name in cluster["name"]:
-            for year in output_structure:
+
+            print("test freechoice")
+
+            year_index =0
+            while year_index <len(output_structure):
+                year = output_structure[year_index]
                 if not year["levelsFirst"] and cluster["first_semester"]:
                     year["firstCluster"].append(cluster)
                     year["levelsFirst"].append("zero")
@@ -781,19 +1089,32 @@ def transform_clusters(input_json):
                     year["lastCluster"].append(cluster)
                     year["levelsLast"].append("zero")
                     break
+                year_index +=1
+
+                if year_index== len(output_structure):
+                    add_level(output_structure)
 
         if cluster["name"] == afstuderen_name and check:
-            for year in output_structure:
+
+            print("test afstud")
+
+            year_index = 0
+            while year_index < len(output_structure):
+                year = output_structure[year_index]
+
                 if not year["levelsFirst"]:
                     year["firstCluster"].append(cluster)
                     year["levelsFirst"].append("zero")
                 if not year["levelsLast"]:
                     year["lastCluster"].append(cluster)
                     year["levelsLast"].append("zero")
+                year_index += 1
+                if year_index== len(output_structure):
+                    add_level(output_structure)
 
     return output_structure
 
 
 
 
-print(transform_clusters(decompress_validate_studyyear(studyYear1)))
+print(transform_clusters(clusters_json))
