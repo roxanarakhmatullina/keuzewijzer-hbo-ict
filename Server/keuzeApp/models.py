@@ -1,6 +1,5 @@
 from django.db import models
-
-
+from django.core.exceptions import ValidationError
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
@@ -36,10 +35,24 @@ class Cluster(models.Model):
     last_semester = models.BooleanField(default=False)
     free_choice = models.BooleanField(default=False)
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    chosen = models.BooleanField(default=False)
+    retake = models.IntegerField(default=0)
 
+    prerequisite_ids = models.ManyToManyField(
+        'self',
+        blank=True,
+        symmetrical=False, # Set to False to allow one-way relationships (a cluster can have prerequisites but not vice versa)
+        related_name='dependent_clusters'  # Reverse relation for querying dependent clusters
+    )
+
+    def clean(self):
+        # Ensure a cluster cannot have itself as a prerequisite
+        if self in self.prerequisite_ids.all():
+            raise ValidationError("A cluster cannot be its own prerequisite.")
 
     def __str__(self):
         return self.name
+
 
 
 class ClusterGraduateProfileCohort(models.Model):

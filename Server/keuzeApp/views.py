@@ -13,6 +13,7 @@ from django.http import JsonResponse
 
 from .models import Category, Cluster, GraduateProfile, Cohort
 from .serializers import CategorySerializer, ClusterSerializer, GraduateProfileSerializer, CohortSerializer, MessageSerializer
+from .ClusterService import ClusterService
 
 
 def index(request):
@@ -69,139 +70,12 @@ class GraduateProfileClustersView(APIView):
 class ClusterView(View):
 
     def get(self, request, *args, **kwargs):
-
-        clusters = Cluster.objects.all()  # Example query
+        clusters = Cluster.objects.filter(free_choice=False)  # Query clusters
         serialized_clusters = ClusterSerializer(clusters, many=True)
-        return JsonResponse(self.transform_clusters(serialized_clusters.data), safe=False, status=200)
-
-    def transform_clusters(self, input_json):
-
-        output_structure = [
-            {"id": "1", "firstCluster": [], "lastCluster": [], "levelsFirst": [], "levelsLast": []},
-            {"id": "2", "firstCluster": [], "lastCluster": [], "levelsFirst": [], "levelsLast": []},
-            {"id": "3", "firstCluster": [], "lastCluster": [], "levelsFirst": [], "levelsLast": []},
-            {"id": "4", "firstCluster": [], "lastCluster": [], "levelsFirst": [], "levelsLast": []},
-        ]
-
-        level_one = []
-        level_two = []
-        level_three = []
-        level_zero = []
-
-        for cluster in input_json:
-
-            cluster["graduateProfileTags"] = [(item["graduate_profile_id"]["name"], item["cohort_id"]["name"]) for item in cluster.pop("cohorts_profiles")]
-
-            transformed_cluster = {
-                "id": cluster['id'],
-                "name": cluster["name"],
-                "link": cluster["link"],
-                "locked": cluster["locked"],
-                "free_choice": cluster["free_choice"],
-                "graduateProfileTags": cluster["graduateProfileTags"],
-                "first_semester": cluster["first_semester"],
-                "last_semester": cluster["last_semester"],
-            }
-
-            if (cluster["category_value"] == 1):
-                level_one.append(transformed_cluster)
-
-            elif (cluster["category_value"] == 2):
-                level_two.append(transformed_cluster)
-
-            elif (cluster["category_value"] == 3):
-                level_three.append(transformed_cluster)
-
-            elif (cluster["category_value"] == 0):
-                level_zero.append(transformed_cluster)
-
-
-        for cluster in level_one:
-            if (cluster["first_semester"] ):
-                output_structure[0]["firstCluster"].append(cluster)
-
-                if "one" not in output_structure[0]["levelsFirst"]:
-                    output_structure[0]["levelsFirst"].append("one")
-
-            elif (cluster["last_semester"]):
-                output_structure[0]["lastCluster"].append(cluster)
-
-                if "one" not in output_structure[0]["levelsLast"]:
-                    output_structure[0]["levelsLast"].append("one")
-
-
-
-        threshold = 0
-        check = False
-        for year in output_structure:
-
-            if threshold >= 2:
-                for cluster in level_two:
-                    if cluster["first_semester"]:
-                        year["firstCluster"].append(cluster)
-                        if "two" not in year["levelsFirst"]:
-                            year["levelsFirst"].append("two")
-
-                if check: break
-                check = True
-
-            if "one" in year["levelsFirst"]:
-                threshold += 1
-
-            if threshold >= 2:
-                for cluster in level_two:
-                    if cluster["last_semester"]:
-                        year["lastCluster"].append(cluster)
-                        if "two" not in year["levelsLast"]:
-                            year["levelsLast"].append("two")
-                if check: break
-                check = True
-
-            if "one" in year["levelsLast"]:
-                threshold += 1
-
-
-
-        threshold = 0
-        check = False
-        for year in output_structure:
-            if threshold >= 2:
-                for cluster in level_three:
-                    if cluster["first_semester"]:
-                        year["firstCluster"].append(cluster)
-                        if "three" not in year["levelsFirst"]:
-                            year["levelsFirst"].append("three")
-                if check: break
-                check = True
-
-            if "two" in year["levelsFirst"]:
-                threshold += 1
-
-            if threshold >= 2:
-                for cluster in level_three:
-                    if cluster["last_semester"]:
-                        year["lastCluster"].append(cluster)
-                        if "three" not in year["levelsLast"]:
-                            year["levelsLast"].append("three")
-                if check: break
-                check = True
-
-            if "two" in year["levelsLast"]:
-                threshold += 1
-
-        for cluster in level_zero:
-            for year in output_structure:
-                if not year["levelsFirst"] and cluster["first_semester"]:
-                    year["firstCluster"].append(cluster)
-                    year["levelsFirst"].append("zero")
-                    break
-                if not year["levelsLast"] and cluster["last_semester"]:
-                    year["lastCluster"].append(cluster)
-                    year["levelsLast"].append("zero")
-                    break
-        return output_structure
-
-
+        output_structure = ClusterService.transform_clusters(serialized_clusters.data)
+        code = ClusterService.complies_prerequisites(output_structure)
+        response = {"data": output_structure, "code": code}
+        return JsonResponse(response, safe=False, status=200)
 
     def post(self, request, *args, **kwargs):
 
@@ -232,41 +106,14 @@ class ClusterView(View):
                 "last_semester": cluster.last_semester,
                 "free_choice": cluster.free_choice,
             }
-            return JsonResponse(self.transform_clusters(response_data), status=201)
+            return JsonResponse(ClusterService.transform_clusters(response_data), status=201)
 
 
 
 
-class ClusterView2(View):
-
-    def transform_clusters(self, input_json):
-
-        output_structure = []
-
-        for cluster in input_json:
-
-            cluster["graduateProfileTags"] = [profile["name"] for profile in cluster.pop("graduate_profiles")]
-
-            transformed_cluster = {
-                "id": cluster['id'],
-                "name": cluster["name"],
-                "link": cluster["link"],
-                "locked": cluster["locked"],
-                "free_choice": cluster["free_choice"],
-                "graduateProfileTags": cluster["graduateProfileTags"],
-                "autumn_semester": cluster["first_semester"],
-                "spring_semester": cluster["last_semester"],
-                "order": cluster["order"],
-             }
-            output_structure.append(transformed_cluster)
-
-
-        return output_structure
-
-
+class ClusterViewAll(View):
 
     def get(self, request, *args, **kwargs):
-
-        clusters = Cluster.objects.all()  # Example query
+        clusters = Cluster.objects.filter(free_choice=False)  # Query clusters
         serialized_clusters = ClusterSerializer(clusters, many=True)
         return JsonResponse(serialized_clusters.data, safe=False, status=200)

@@ -54,12 +54,12 @@ class Migration(migrations.Migration):
             name='ClusterGraduateProfileCohort',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cluster', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cohorts_profiles', to='keuzeApp.cluster')),
-                ('cohort', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='keuzeApp.cohort')),
-                ('graduate_profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='keuzeApp.graduateprofile')),
+                ('cluster_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cohorts_profiles', to='keuzeApp.cluster')),
+                ('cohort_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='keuzeApp.cohort')),
+                ('graduate_profile_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='keuzeApp.graduateprofile')),
             ],
             options={
-                'unique_together': {('graduate_profile', 'cluster', 'cohort')},
+                'unique_together': {('graduate_profile_id', 'cluster_id', 'cohort_id')},
             },
         ),
     ]
