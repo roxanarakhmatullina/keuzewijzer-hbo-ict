@@ -29,15 +29,15 @@ builder.Services.AddCors(options =>
             builder
                 .WithOrigins("http://localhost:3000",
                     "http://localhost:3001",
-                    "https://keuzewijzerhboict.nl", 
-                    "http://keuzewijzerhboict.nl", 
+                    "https://keuzewijzerhboict.nl",
+                    "http://keuzewijzerhboict.nl",
                     "http://keuzewijzerhboict.nl:3001",
                     "https://keuzewijzerhboict.nl:3001",
                     "https://keuzewijzerhboict.nl:3000",
-                    "http://keuzewijzerhboict.nl:3000"
-                    )
+                    "http://keuzewijzerhboict.nl:3000")
                 .WithMethods("GET", "POST", "DELETE")
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowCredentials(); // Enable credentials support
         });
 });
 
