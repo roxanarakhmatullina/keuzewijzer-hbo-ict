@@ -50,7 +50,7 @@ build-dashboard:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$DASHBOARD_TAG -f Client/dockerfile ./Client
+    - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$DASHBOARD_TAG -f dashboard/dockerfile ./dashboard
     - docker push $IMAGE_NAME:$DASHBOARD_TAG
   only:
     - test/matz-testing-CI  
@@ -81,8 +81,8 @@ build-server:
      --build-arg EMAIL_USR=$EMAIL_USR \
      --build-arg JWT_AUDIENCE=$JWT_AUDIENCE \
      --build-arg JWT_ISSUER=$JWT_ISSUER \
-     --build-arg JWT_SECRET=$JWT_SECRET
-     -t $IMAGE_NAME:$SERVER_TAG -f Server/dockerfile ./Server
+     --build-arg JWT_SECRET=$JWT_SECRET \
+     -t $IMAGE_NAME:$SERVER_TAG -f Server/Server/Dockerfile ./Server\Server
     - docker push $IMAGE_NAME:$SERVER_TAG
   only:
     - test/matz-testing-CI
