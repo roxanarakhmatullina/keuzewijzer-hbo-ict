@@ -38,11 +38,6 @@ ENV JWT_SECRET=${JWT_SECRET}
 # Now the connection string will also be an environment variable
 ENV CONNECTION_STRING="Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD};"
 
-RUN echo "DB_HOST=$DB_HOST" \
-    && echo "DB_PORT=$DB_PORT" \
-    && echo "DB_USER=$DB_USER" \
-    && echo "DB_PASSWORD=$DB_PASSWORD" \
-    && echo "DB_NAME=$DB_NAME"
 
 EXPOSE 5125
 
