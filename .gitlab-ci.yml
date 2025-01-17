@@ -23,8 +23,6 @@ build-client:
   stage: build
   tags:
     - build-client
-  services:
-    - docker:20.10.16-dind
   variables:
     DOCKER_TLS_CERTDIR: ""
   before_script:
@@ -55,8 +53,6 @@ build-server:
  stage: build
  tags:
    - build-server
- services:
-   - docker:20.10.16-dind
  variables:
    DOCKER_TLS_CERTDIR: ""
  before_script:
