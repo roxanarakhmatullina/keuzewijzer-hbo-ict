@@ -161,6 +161,7 @@ const UsersPage = () => {
                     onChange={(e) => handleChange("email", e.target.value)}
                     placeholder={"E-mailadres"}
                     label={"E-mailadres"}
+                    required
                 />
 
                 <Select
@@ -170,6 +171,13 @@ const UsersPage = () => {
                     label={"Rol"}
                     optionLabelName={"name"}
                     optionValueName={"id"}
+                    required
+                    info={() => (
+                        <>
+                            <p>Admin: Kan alles</p>
+                            <p>Maintainer: Kan alles, behalve gebruikers aanmaken.</p>
+                        </>
+                    )}
                 />
             </Popup>
 

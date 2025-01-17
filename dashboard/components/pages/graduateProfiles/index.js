@@ -9,6 +9,7 @@ import Popup from "@/components/popup";
 import Input from "@/components/input";
 import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
+import Label from "@/components/label";
 
 const GraduateProfilePage = () => {
     const [graduateProfiles, setGraduateProfiles] = useState([]);
@@ -197,6 +198,7 @@ const GraduateProfilePage = () => {
                             onChange={(e) => handleChange("name", e.target.value)}
                             placeholder={"Naam"}
                             label={"Naam"}
+                            required
                         />
 
                         <Input
@@ -205,6 +207,10 @@ const GraduateProfilePage = () => {
                             onChange={(e) => handleChange("color", e.target.value)}
                             placeholder={"Kleur"}
                             label={"Kleur"}
+                            required
+                            info={() => (
+                                <p>Een afstudeerprofiel heeft een unieke kleur nodig.</p>
+                            )}
                         />
 
                         <Input
@@ -213,10 +219,17 @@ const GraduateProfilePage = () => {
                             onChange={(e) => handleChange("link", e.target.value)}
                             label={"Link"}
                             placeholder={"https://example.com"}
+                            info={() => (
+                                <p>Een webpagina waarna verwezen kan worden voor meer informatie.</p>
+                            )}
                         />
 
                         <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <label className={"w-full font-bold"}>Cohorten</label>
+                            <Label text={"Cohorten:"} info={
+                                () => (
+                                    <p>Selecteer één of meerdere cohorten; dit verbindt de afstudeerprofiel met één of meer cohorten.</p>
+                                )
+                            }/>
                             <div
                                 className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
                                 {graduateProfileCohorts && cohorts?.map((cohort, id) => (

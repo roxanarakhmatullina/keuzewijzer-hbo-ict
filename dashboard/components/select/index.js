@@ -1,12 +1,14 @@
 'use client';
 import { useEffect, useState, useRef } from "react";
 import UnfoldMore from '@mui/icons-material/UnfoldMore';
+import Label from "@/components/label";
 
-const Select = ({ options, value, onChange, label, optionValueName, optionLabelName }) => {
+const Select = ({ options, value, onChange, label, optionValueName, optionLabelName, required, info }) => {
     const [selected, setSelected] = useState(value);
     const [folded, setFolded] = useState(false);
     const [dropdownStyle, setDropdownStyle] = useState({});
     const selectRef = useRef(null);
+    const [hoverInfo, setHoverInfo] = useState(false);
 
     useEffect(() => {
         setSelected(value);
@@ -59,7 +61,7 @@ const Select = ({ options, value, onChange, label, optionValueName, optionLabelN
 
     return (
         <div className="flex flex-col w-full">
-            <label className="font-bold text-black">{label}</label>
+            <Label text={label} required={required} info={info} />
             <div
                 ref={selectRef}
                 onClick={toggleDropdown}

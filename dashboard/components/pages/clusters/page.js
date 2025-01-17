@@ -10,6 +10,7 @@ import Input from "@/components/input";
 import Select from "@/components/select";
 import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
+import Label from "@/components/label";
 
 const ClustersPage = () => {
     const [clusters, setClusters] = useState([]);
@@ -324,6 +325,7 @@ const ClustersPage = () => {
                             onChange={(e) => handleChange("name", e.target.value)}
                             placeholder={"Naam"}
                             label={"Naam"}
+                            required
                         />
 
                         <Input
@@ -332,6 +334,10 @@ const ClustersPage = () => {
                             onChange={(e) => handleChange("link", e.target.value)}
                             placeholder={"Link"}
                             label={"Link"}
+                            required
+                            info={() => (
+                                <p>Een webpagina waarna verwezen kan worden voor meer informatie.</p>
+                            )}
                         />
 
                         <Select
@@ -346,10 +352,27 @@ const ClustersPage = () => {
                             label={"Level"}
                             optionLabelName={"name"}
                             optionValueName={"id"}
+                            required
+                            info={() => (
+                                <>
+                                    <p>Level 0: Clusters die worden ingevuld op lege plekken (Zoals &#34;vrije ruimte&#34;)</p>
+                                    <p>Level 1: Clusters die de studie route starten (Zoals &#34;Propedeuse&#34;)</p>
+                                    <p>Level 2: Niveau 2 clusters</p>
+                                    <p>Level 3: Niveau 3 clusters</p>
+                                    <p>Level 4: Clusters die als laatste worden ingevuld (Zoals &#34;Afstuderen&#34;)</p>
+                                </>
+                            )}
                         />
 
                         <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <label className={"w-full font-bold"}>Wordt gegeven in:</label>
+                            <Label text={"Wordt gegeven in:"} required info={
+                                () => (
+                                    <>
+                                        <p>Eerste semester (Herfst): September - Januari</p>
+                                        <p>Tweede semester (Lente): Februari - Juni</p>
+                                    </>
+                                )
+                            }/>
                             <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
                                 <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
                                     <input
@@ -374,8 +397,12 @@ const ClustersPage = () => {
                         </div>
 
                         {(clusterDTO && clusterDTO?.level === 0) && (
-                            <div className={"w-full flex flex-row gap-[5px] justify-start align-middle items-center"}>
-                                <label className={"w-auto font-bold"}>Is vrije ruimte:</label>
+                            <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-start"}>
+                                <Label text={"Vrije ruimte:"} info={
+                                    () => (
+                                        <p>Een vrije ruimte wordt wordt ingevuld op een lege plek doormiddel van level 0, vanuit hier kunnen weer meerdere clusters gekozen worden.</p>
+                                    )
+                                }/>
 
                                 <div
                                     onClick={() => handleChange("isFreeChoice", !clusterDTO?.isFreeChoice)}
@@ -388,8 +415,12 @@ const ClustersPage = () => {
                         )}
 
 
-                        <div className={"w-full flex flex-row gap-[5px] justify-start align-middle items-center"}>
-                            <label className={"w-auto font-bold"}>Staat vast:</label>
+                        <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-start"}>
+                            <Label text={"Staat vast:"} info={
+                                () => (
+                                    <p>Een verplichte cluster wat niet veranderd kan worden, behalve wanneer iemand dit cluster niet heeft gehaald.</p>
+                                )
+                            }/>
 
                             <div
                                 onClick={() => handleChange("isLocked", !clusterDTO?.isLocked)}
@@ -401,7 +432,11 @@ const ClustersPage = () => {
                         </div>
 
                         <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <label className={"w-full font-bold"}>Cohorten:</label>
+                            <Label text={"Cohorten:"} info={
+                                () => (
+                                    <p>Selecteer één of meerdere cohorten; dit verbindt de cluster met één of meer cohorten.</p>
+                                )
+                            }/>
                             <div
                                 className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
                                 {clusterCohorts && cohorts?.map((cohort, id) => (
@@ -422,7 +457,11 @@ const ClustersPage = () => {
                         </div>
 
                         <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <label className={"w-full font-bold"}>Afstudeerprofielen:</label>
+                            <Label text={"Afstudeerprofielen:"} info={
+                                () => (
+                                    <p>Selecteer één of meerdere Afstudeerprofielen; dit verbindt de cluster met één of meer Afstudeerprofielen.</p>
+                                )
+                            }/>
                             <div
                                 className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
                                 {clusterGraduateProfiles && graduateProfiles?.map((profile, id) => (

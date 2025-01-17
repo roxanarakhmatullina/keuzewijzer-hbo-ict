@@ -20,7 +20,7 @@ const Pages = () => {
                 className={`${loading && "pointer-events-none"} max-w-[1366px] w-full bg-[#fff] rounded-[12px] p-[20px] box-border flex flex-col gap-[25px] justify-start items-center align-middle`}>
                 {currentPage === "Dashboard" ? (
                     <HomePage/>
-                ) : currentPage === "Cohorts" ? (
+                ) : currentPage === "Cohorten" ? (
                     <CohortsPage/>
                 ) : currentPage === "Afstudeerprofielen" ? (
                     <GraduateProfiles/>

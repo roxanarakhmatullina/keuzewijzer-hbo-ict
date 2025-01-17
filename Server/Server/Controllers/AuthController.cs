@@ -160,10 +160,12 @@ public class AuthController : ControllerBase
 
         var authSigningKey = new SymmetricSecurityKey(keyBytes);
 
+        var expirationTime = DateTime.UtcNow.AddHours(2);
+        
         var token = new JwtSecurityToken(
             issuer: _configuration["JWT_ISSUER"],  // Access issuer from environment variable
             audience: _configuration["JWT_AUDIENCE"],  // Access audience from environment variable
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JWT_EXPIRATION_MINUTES"])),
+            expires: expirationTime,
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );

@@ -75,7 +75,7 @@ deploy-client:
 deploy-dashboard:
   stage: deploy
   tags:
-    - build-dashboard
+    - docker-deploy
   before_script:
     - chmod 400 $SSH_KEY
   script:

@@ -1,8 +1,9 @@
 'use client'
 import {useEffect, useState} from "react";
 import Search from '@mui/icons-material/Search';
+import Label from "@/components/label";
 
-const Input = ({label, type, defaultValue, value, onChange, placeholder, required, disabled}) => {
+const Input = ({label, type, defaultValue, value, onChange, placeholder, required, disabled, info}) => {
     const [error, setError] = useState(false);
 
     const handleChange = (e) => {
@@ -37,7 +38,7 @@ const Input = ({label, type, defaultValue, value, onChange, placeholder, require
 
     return (
         <div className={`flex flex-col w-full ${disabled && "brightness-95"}`}>
-            {label && <label className="w-full h-[30px] flex justify-start align-middle items-center font-bold text-black">{label}</label>}
+            <Label text={label} required={required} info={info} />
             {(type === "text" || type === "email" || type === "password" || type === "url") && (
                 <input
                     type={type}

@@ -59,9 +59,7 @@ const AuthProvider = ({ children }) => {
                     message: err.status === 401 ? "De ingevoerde gegevens zijn onjuist." : "Er is iets misgegaan bij het inloggen. Probeer het later opnieuw."
                 });
             })
-            .finally(
-                setLoading(false)
-            )
+            .finally(() => setLoading(false));
     };
 
     // Logout

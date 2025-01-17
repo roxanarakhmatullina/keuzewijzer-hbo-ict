@@ -18,7 +18,7 @@ const Navigation = () => {
         <>
             <div className={"top-0 left-0 min-w-[250px] w-1/5"}/>
             <nav
-                className={"fixed top-0 left-0 w-1/5 min-w-[250px] max-h-[100vh] h-[100vh] bg-[#fff] shadow-lg p-[20px] box-border flex flex-col gap-[25px] z-[3]"}>
+                className={"fixed top-0 left-0 w-1/5 min-w-[250px] max-h-[100vh] h-[100%] bg-[#fff] shadow-lg p-[20px] box-border flex flex-col gap-[25px] z-[3]"}>
                 <div className={"w-full h-auto flex flex-auto flex-row gap-[10px] justify-start items-center"}>
                     <Image
                         src={"/logo.png"}
@@ -38,7 +38,7 @@ const Navigation = () => {
                     </NavLink>
 
                     {/*  Cohorts   */}
-                    <NavLink title={"Cohorts"}>
+                    <NavLink title={"Cohorten"}>
                         <DateRange/>
                     </NavLink>
 

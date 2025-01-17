@@ -160,6 +160,7 @@ const CohortsPage = () => {
                     onChange={(e) => handleChangeCohort(e.target.value, cohortDTO?.id)}
                     placeholder={"Naam"}
                     label={"Naam"}
+                    required
                 />
 
                 {state === "edit" && (
@@ -173,6 +174,10 @@ const CohortsPage = () => {
                         optionLabelName={"label"}
                         optionValueName={"value"}
                         label={"Zichtbaar"}
+                        required
+                        info={() => (
+                            <p>Het is verstandig wanneer je begint met een studie route te maken, je de zichtbaarheid nog uit zet, om fouten te voorkomen.</p>
+                        )}
                     />
                 )}
             </Popup>
