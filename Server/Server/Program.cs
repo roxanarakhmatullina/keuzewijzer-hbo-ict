@@ -9,8 +9,15 @@ using Server.Data;
 using Server.Models;
 using Server.Services;
 using Swashbuckle.AspNetCore.Filters;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load environment variables from .env.local
+Env.Load(".env.local");
+
+// Add environment variables to the configuration (for Docker and .env.local)
+builder.Configuration.AddEnvironmentVariables();
 
 // Configure CORS
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -43,17 +50,17 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]))
+            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? jwtSettings["Issuer"],  // Use env variable if available
+            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? jwtSettings["Audience"],  // Same for Audience
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? jwtSettings["Secret"]))  // Same for Secret
         };
     });
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddScoped<UserSeeder>();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
@@ -62,7 +69,7 @@ builder.Services.AddSwaggerGen(options =>
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
     });
-    
+
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
