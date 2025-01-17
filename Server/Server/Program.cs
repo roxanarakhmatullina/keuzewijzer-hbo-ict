@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Load environment variables from .env.local
 Env.Load(".env.local");
 
-// Add environment variables to the configuration (for Docker and .env.local)
+// Add environment variables to configuration
 builder.Configuration.AddEnvironmentVariables();
 
 // Configure CORS
@@ -33,8 +33,16 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Configure JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("JWT");
+
+var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET");
+if (string.IsNullOrEmpty(secretKey))
+{
+    throw new InvalidOperationException("JWT_SECRET environment variable is not set.");
+}
+
+var key = Encoding.UTF8.GetBytes(secretKey);
+Console.WriteLine("Secret key (Base64): " + Convert.ToBase64String(key));
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -44,23 +52,39 @@ builder.Services.AddAuthentication(options =>
     {
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters()
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? jwtSettings["Issuer"],  // Use env variable if available
-            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? jwtSettings["Audience"],  // Same for Audience
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? jwtSettings["Secret"]))  // Same for Secret
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
         };
     });
 
 // Add services to the container
 builder.Services.AddScoped<UserSeeder>();
 builder.Services.AddControllers();
+
+// Configure database connection string
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configure email settings from environment variables
+builder.Services.Configure<EmailSettings>(options =>
+{
+    options.From = Environment.GetEnvironmentVariable("EMAIL_FROM");
+    options.SmtpServer = Environment.GetEnvironmentVariable("EMAIL_SMTP_SERVER");
+    options.Port = int.Parse(Environment.GetEnvironmentVariable("EMAIL_PORT") ?? "587");
+    options.Username = Environment.GetEnvironmentVariable("EMAIL_USERNAME");
+    options.Password = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
+});
+
+builder.Services.AddTransient<EmailService>();
+
+// Swagger setup for API
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
@@ -75,13 +99,12 @@ builder.Services.AddSwaggerGen(options =>
 
 // Configure Identity
 builder.Services.AddIdentityCore<IdentityUser>()
-    .AddRoles<IdentityRole>() // This adds roles management
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<EmailService>();
 
 var app = builder.Build();
 

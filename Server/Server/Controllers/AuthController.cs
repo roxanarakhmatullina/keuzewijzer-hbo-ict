@@ -137,6 +137,12 @@ public class AuthController : ControllerBase
 
     private string GenerateJwtToken(IdentityUser user)
     {
+        var secretKey = _configuration["JWT_SECRET"];  // Read secret from environment variable
+        if (string.IsNullOrEmpty(secretKey))
+        {
+            throw new ArgumentException("JWT Secret is missing or empty in the environment variables.");
+        }
+
         var authClaims = new[]
         {
             new Claim(ClaimTypes.Email, user.Email),
@@ -145,11 +151,19 @@ public class AuthController : ControllerBase
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        // Ensure the key length is valid
+        var keyBytes = Encoding.UTF8.GetBytes(secretKey);
+        if (keyBytes.Length < 16)
+        {
+            throw new ArgumentException("JWT Secret key is too short. It should be at least 16 bytes.");
+        }
+
+        var authSigningKey = new SymmetricSecurityKey(keyBytes);
+
         var token = new JwtSecurityToken(
-            issuer: _configuration["JWT:Issuer"],
-            audience: _configuration["JWT:Audience"],
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JWT:ExpirationMinutes"])),
+            issuer: _configuration["JWT_ISSUER"],  // Access issuer from environment variable
+            audience: _configuration["JWT_AUDIENCE"],  // Access audience from environment variable
+            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JWT_EXPIRATION_MINUTES"])),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );

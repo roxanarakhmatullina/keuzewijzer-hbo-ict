@@ -1,47 +1,62 @@
-namespace Server.Services;
-using System.Net;
-using System.Net.Mail;
-
-public class EmailService
+namespace Server.Services
 {
-    private readonly IConfiguration _configuration;
+    using System.Net;
+    using System.Net.Mail;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Options;
 
-    public EmailService(IConfiguration configuration)
+    public class EmailService
     {
-        _configuration = configuration;
+        private readonly IConfiguration _configuration;
+        private readonly EmailSettings _emailSettings;
+
+        public EmailService(IConfiguration configuration, IOptions<EmailSettings> emailSettings)
+        {
+            _configuration = configuration;
+            _emailSettings = emailSettings.Value;
+        }
+
+        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        {
+            try
+            {
+                var fromEmail = _emailSettings.From;
+                var smtpServer = _emailSettings.SmtpServer;
+                var port = _emailSettings.Port;
+                var username = _emailSettings.Username;
+                var password = _emailSettings.Password;
+
+                using var smtpClient = new SmtpClient(smtpServer, port)
+                {
+                    Credentials = new NetworkCredential(username, password),
+                    EnableSsl = true
+                };
+
+                var mailMessage = new MailMessage
+                {
+                    From = new MailAddress(fromEmail),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
+                mailMessage.To.Add(toEmail);
+
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+                throw;
+            }
+        }
     }
     
-    public async Task SendEmailAsync(string toEmail, string subject, string body)
+    public class EmailSettings
     {
-        try
-        {
-            var fromEmail = _configuration["EmailSettings:From"];
-            var smtpServer = _configuration["EmailSettings:SmtpServer"];
-            var port = int.Parse(_configuration["EmailSettings:Port"]);
-            var username = _configuration["EmailSettings:Username"];
-            var password = _configuration["EmailSettings:Password"];
-
-            using var smtpClient = new SmtpClient(smtpServer, port)
-            {
-                Credentials = new NetworkCredential(username, password),
-                EnableSsl = true
-            };
-
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(fromEmail),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            };
-            mailMessage.To.Add(toEmail);
-
-            await smtpClient.SendMailAsync(mailMessage);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error sending email: {ex.Message}");
-            throw;
-        }
+        public string From { get; set; }
+        public string SmtpServer { get; set; }
+        public int Port { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }

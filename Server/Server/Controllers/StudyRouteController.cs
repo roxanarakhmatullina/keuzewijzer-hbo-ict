@@ -244,14 +244,8 @@ namespace Server.Controllers
                 };
 
                 // Insert the original cluster directly after the failed cluster
-                if (retakenCluster.FirstSemester)
-                {
-                    studyRouteDto[studyRouteIndex].FirstSemester.Insert(0, originalCluster);
-                }
-                else if (retakenCluster.LastSemester)
-                {
-                    studyRouteDto[studyRouteIndex].LastSemester.Insert(0, originalCluster);
-                }
+                if (retakenCluster.FirstSemester) studyRouteDto[studyRouteIndex].FirstSemester.Insert(0, originalCluster);
+                else if (retakenCluster.LastSemester) studyRouteDto[studyRouteIndex].LastSemester.Insert(0, originalCluster);
 
                 // Remove the retaken flag from the original cluster
                 clusters.Remove(retakenCluster);
@@ -272,25 +266,13 @@ namespace Server.Controllers
             {
                 if (cluster.FirstSemester && cluster.LastSemester)
                 {
-                    if (alternatingFlag)
-                    {
-                        studyYearClusters.FirstSemester.Add(cluster);
-                    }
-                    else
-                    {
-                        studyYearClusters.LastSemester.Add(cluster);
-                    }
+                    if (alternatingFlag) studyYearClusters.FirstSemester.Add(cluster);
+                    else studyYearClusters.LastSemester.Add(cluster);
 
                     alternatingFlag = !alternatingFlag; // Toggle for next conflict
                 }
-                else if (cluster.FirstSemester)
-                {
-                    studyYearClusters.FirstSemester.Add(cluster);
-                }
-                else if (cluster.LastSemester)
-                {
-                    studyYearClusters.LastSemester.Add(cluster);
-                }
+                else if (cluster.FirstSemester) studyYearClusters.FirstSemester.Add(cluster);
+                else if (cluster.LastSemester) studyYearClusters.LastSemester.Add(cluster);
             }
 
             return studyYearClusters;
