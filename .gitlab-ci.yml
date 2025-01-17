@@ -5,10 +5,12 @@ stages:
 
 variables:
   IMAGE_NAME: matzleeflang/keuzewijzer
-  FRONTEND_TAG: "$CI_COMMIT_SHA-Nextjs-app"
-  BACKEND_TAG: "$CI_COMMIT_SHA-Django-app"
-  FRONTEND_NAME: Nextjs-app
-  BACKEND_NAME: Django-app
+  CLIENT_TAG: "$CI_COMMIT_SHA-client"
+  DASHBOARD_TAG: "$CI_COMMIT_SHA-dashboard"
+  SERVER_TAG: "$CI_COMMIT_SHA-server"
+  CLIENT_NAME: client
+  DASHBOARD_NAME: dashboard
+  SERVER_NAME: server
 
 #tests-django:
 #  stage: test
@@ -17,7 +19,7 @@ variables:
 #  tags:
 #    - python
 
-build-frontend:
+build-client:
   stage: build
   tags:
     - docker-build
@@ -31,12 +33,31 @@ build-frontend:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
-    - docker push $IMAGE_NAME:$FRONTEND_TAG
+    - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$CLIENT_TAG -f Client/dockerfile ./Client
+    - docker push $IMAGE_NAME:$CLIENT_TAG
   only:
-    - main  
+    - test/matz-testing-CI  
 
-build-backend:
+build-dashboard:
+  stage: build
+  tags:
+    - docker-build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+    NEXT_PUBLIC_API_URL: "$API_URL"
+  before_script:
+    - docker info
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$DASHBOARD_TAG -f Client/dockerfile ./Client
+    - docker push $IMAGE_NAME:$DASHBOARD_TAG
+  only:
+    - test/matz-testing-CI  
+
+build-server:
   stage: build
   tags:
     - docker-build
@@ -49,13 +70,27 @@ build-backend:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build -t $IMAGE_NAME:$BACKEND_TAG -f Server/dockerfile ./Server
-    - docker push $IMAGE_NAME:$BACKEND_TAG
+    - docker build \
+     --build-arg DB_HOST=$DB_HOST \
+     --build-arg DB_PORT=$DB_PORT \
+     --build-arg DB_USER=$DB_USER \
+     --build-arg DB_PASSWORD=$DB_PASSWORD \
+     --build-arg DB_NAME=$DB_NAME \
+     --build-arg EMAIL_FROM=$EMAIL_FROM \
+     --build-arg EMAIL_PASS=$EMAIL_PASS \
+     --build-arg EMAIL_PORT=$EMAIL_PORT \
+     --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER \
+     --build-arg EMAIL_USR=$EMAIL_USR \
+     --build-arg JWT_AUDIENCE=$JWT_AUDIENCE \
+     --build-arg JWT_ISSUER=$JWT_ISSUER \
+     --build-arg JWT_SECRET=$JWT_SECRET
+     -t $IMAGE_NAME:$SERVER_TAG -f Server/dockerfile ./Server
+    - docker push $IMAGE_NAME:$SERVER_TAG
   only:
-    - main
+    - test/matz-testing-CI
 
 
-deploy-frontend:
+deploy-client:
   stage: deploy
   tags:
     - docker-deploy
@@ -64,12 +99,12 @@ deploy-frontend:
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker ps -a --filter "name=$FRONTEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5000:3000 --name $FRONTEND_NAME $IMAGE_NAME:$FRONTEND_TAG"
+      docker ps -a --filter "name=$CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 3000:3000 --name $CLIENT_NAME $IMAGE_NAME:$CLIENT_TAG"
   only:
-    - main
+    - test/matz-testing-CI
 
-deploy-backend:
+deploy-dashboard:
   stage: deploy
   tags:
     - docker-deploy
@@ -78,8 +113,22 @@ deploy-backend:
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-      docker ps -a --filter "name=$BACKEND_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 8000:8000 --name $BACKEND_NAME $IMAGE_NAME:$BACKEND_TAG &&
+      docker ps -a --filter "name=$DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 3001:3001 --name $DASHBOARD_NAME $IMAGE_NAME:$DASHBOARD_TAG"
+  only:
+    - test/matz-testing-CI
+
+deploy-server:
+  stage: deploy
+  tags:
+    - docker-deploy
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 5125:5125 --name $SERVER_NAME $IMAGE_NAME:$SERVER_TAG &&
       docker images prune -a"
   only:
-    - main
+    - test/matz-testing-CI
