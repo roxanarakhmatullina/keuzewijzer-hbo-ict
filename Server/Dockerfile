@@ -36,7 +36,7 @@ ENV JWT_ISSUER=${JWT_ISSUER}
 ENV JWT_SECRET=${JWT_SECRET}
 
 # Now the connection string will also be an environment variable
-ENV CONNECTION_STRING="Host=${DB_HOST};Port=${DB_PORT};Username=${DB_USER};Password=${DB_PASSWORD};Database=${DB_NAME}"
+ENV CONNECTION_STRING="Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD};"
 
 EXPOSE 5125
 
