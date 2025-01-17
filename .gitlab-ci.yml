@@ -98,7 +98,7 @@ deploy-dashboard:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3001:3001 --name $DASHBOARD_NAME $IMAGE_NAME:$DASHBOARD_TAG"
+      docker run -d -p 3001:3000 --name $DASHBOARD_NAME $IMAGE_NAME:$DASHBOARD_TAG"
   only:
     - test/matz-testing-CI
 
