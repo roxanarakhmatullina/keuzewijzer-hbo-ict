@@ -19,7 +19,6 @@ ARG JWT_SECRET
 
 # Construct the connection string from build arguments
 ARG CONNECTION_STRING
-RUN export CONNECTION_STRING="Host=${DB_HOST};Port=${DB_PORT};Username=${DB_USER};Password=${DB_PASSWORD};Database=${DB_NAME}"
 
 # Use the build arguments to set environment variables in the container
 ENV DB_HOST=${DB_HOST}
@@ -37,7 +36,7 @@ ENV JWT_ISSUER=${JWT_ISSUER}
 ENV JWT_SECRET=${JWT_SECRET}
 
 # Now the connection string will also be an environment variable
-ENV CONNECTION_STRING=${CONNECTION_STRING}
+ENV CONNECTION_STRING="Host=${DB_HOST};Port=${DB_PORT};Username=${DB_USER};Password=${DB_PASSWORD};Database=${DB_NAME}"
 
 EXPOSE 5125
 
