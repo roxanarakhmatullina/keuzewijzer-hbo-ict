@@ -1,8 +1,8 @@
 'use client'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useGraduateProfile} from "@/hooks";
 
-const GraduateProfile = ({name, color}) => {
+const GraduateProfile = ({id, name, color}) => {
     const [isHovered, setIsHovered] = React.useState(false);
     const {selectedGraduateProfile, setSelectedGraduateProfile} = useGraduateProfile();
 
@@ -36,7 +36,7 @@ const GraduateProfile = ({name, color}) => {
             onTouchStart={handleHover}
             onTouchEnd={handleHover}
 
-            onClick={() => setSelectedGraduateProfile({name, color})}
+            onClick={() => setSelectedGraduateProfile({id, name, color})}
             onKeyDown={handleEnterKey}
 
              // Accessibility enhancements

@@ -1,31 +1,30 @@
 'use client';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Navigation from '@/components/navigation';
 import StudyYear from "@/components/studyYear";
-import {useGraduateProfile, useStudyYear} from "@/hooks";
+import {useError, useGraduateProfile, useStudyYear} from "@/hooks";
+import {api} from "@/hooks/api";
 
 const Home = () => {
-    const {currentSavedStudyYear, studyYears} = useStudyYear();
+    const {studyYears, startedStudyYear, setStudyYears} = useStudyYear();
     const {selectedGraduateProfile} = useGraduateProfile();
+    const {setErrors, errors} = useError()
 
-    const startingYear = parseInt(currentSavedStudyYear, 10);
-
-    const handleShowClusters = (clusters) => {
-        if (clusters && clusters.length > 0) {
-            // Check if selectedGraduateProfile and StartingYear are set
-            if (selectedGraduateProfile && startingYear) {
-                // Filter the clusters based on graduateProfileTags
-                return clusters.filter(cluster =>
-                    cluster.graduateProfileTags.some(([profileName, year]) =>
-                        profileName === selectedGraduateProfile.name && year === startingYear.toString()
-                    )
-                );
-            } else {
-                return clusters;
-            }
+    useEffect(() => {
+        if(selectedGraduateProfile && selectedGraduateProfile?.id) {
+            // fetch study years
+            api.get(`/StudyRoute/cohort/${startedStudyYear?.id}/graduateProfile/${selectedGraduateProfile?.id}/`).then(res => {
+                setStudyYears(res.data);
+            }).catch(error => {
+                setErrors([...errors, {
+                    id: new Date().getTime(),
+                    type: "clusters",
+                    message: 'Er is iets misgegaan bij het ophalen van de clusters. Probeer het later opnieuw.',
+                    error: error,
+                }]);
+            });
         }
-        return [];
-    };
+    }, [selectedGraduateProfile]);
 
     return (
         <div className={"w-screen flex flex-row pt-[50px] md:pt-[0px] gap-0"}>
@@ -36,18 +35,13 @@ const Home = () => {
             <div
                 className={`${selectedGraduateProfile ? "flex" : "hidden"} max-w-[1366px] relative w-full xl:p-[50px] p-[20px] pt-[50px] pb-[50px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}>
                 {/* Scrollable content for StudyYears */}
-                {selectedGraduateProfile && studyYears && studyYears.length > 0 && studyYears.map((_, index) => {
-                    const fromYear = (startingYear + index).toString();
-                    const toYear = (startingYear + index + 1).toString();
-
-
+                {selectedGraduateProfile && studyYears && studyYears.length > 0 && studyYears.map((studyYear, index) => {
                     return (
                         <React.Fragment key={"study-year-" + index}>
                             <StudyYear
-                                fromYear={fromYear}
-                                toYear={toYear}
-                                firstClusters={handleShowClusters(studyYears[index]?.firstCluster)}
-                                secondClusters={handleShowClusters(studyYears[index]?.lastCluster)}
+                                year={studyYear?.year}
+                                firstClusters={studyYear?.firstSemester}
+                                secondClusters={studyYear?.lastSemester}
                                 selectedGraduateProfile={selectedGraduateProfile}
                                 studyYears={studyYears}
                                 isLastStudyYear={index === studyYears.length - 1}

@@ -5,7 +5,7 @@ import {useGraduateProfile} from "@/hooks";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, children}) => {
+const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, children}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -18,15 +18,12 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
 
     useEffect(() => {
         if(firstClusters && secondClusters && firstClusters.length > 0 && secondClusters.length > 0) {
-            const first = firstClusters.every(cluster => cluster.locked);
-            const second = secondClusters.every(cluster => cluster.locked);
+            const first = firstClusters.every(cluster => cluster.isLocked);
+            const second = secondClusters.every(cluster => cluster.isLocked);
             setIsLocked(first && second);
         }
     }, [firstClusters, secondClusters]);
 
-    const formatYear = (year) => {
-        return "'" + year.toString().substring(2);
-    }
 
     const handleColor = () => {
         if(selectedGraduateProfile) {
@@ -55,7 +52,7 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
                 className={"relative transition ease-in-out duration-300 top-0 left-0 min-w-[75px] min-h-[75px] rounded-full flex justify-center align-middle items-center"}>
                 <h1
                     style={{color: handleColor()}}
-                    className={"text-l transition ease-in-out duration-300 font-bold"}>{formatYear(fromYear)}/{formatYear(toYear)}</h1>
+                    className={"text-l transition ease-in-out duration-300 font-bold"}>{year}</h1>
             </div>
 
             {/* Clusters */}
@@ -69,10 +66,15 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
                 )}
 
                 {/* First Cluster */}
-                <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor} />
+                {firstClusters && firstClusters.length > 0 && (
+                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor} />
+                )}
 
                 {/* Last Cluster */}
-                <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor} />
+                {secondClusters && secondClusters.length > 0 && (
+                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor} />
+                )}
+
             </div>
 
             {/* Show graduate icon */}

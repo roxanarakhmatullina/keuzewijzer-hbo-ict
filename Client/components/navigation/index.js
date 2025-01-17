@@ -1,5 +1,5 @@
 'use client'
-import React, {useState} from 'react'
+import React, {use, useEffect, useState} from 'react'
 import {useGoogleAnalytics, useGraduateProfile, useStudyYear} from "@/hooks";
 import Logo from "@/icons/logo";
 import StartStudy from "@/components/navigation/startStudy";
@@ -12,7 +12,6 @@ const Navigation = () => {
     const [navbarOpen, setNavbarOpen] = useState(true);
     const {graduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile} = useGraduateProfile();
     const {startedStudyYear, setStartedStudyYear} = useStudyYear();
-    const {setShowModal} = useGoogleAnalytics();
 
     return (
         <div
@@ -41,7 +40,7 @@ const Navigation = () => {
                             className={`w-full md:max-w-[300px] hover:brightness-95 cursor-pointer flex flex-row gap-[10px] justify-between bg-[#EFEFEFFF] p-[10px] box-border rounded-[8px] align-middle items-center border-0`}>
                             <p
                                 className={"w-full text-[13px] text-left md:text-center font-bold box-border flex justify-between items-center align-middle"}>
-                                Gestart in {startedStudyYear}
+                                Gestart in {startedStudyYear?.name}
                             </p>
                             <div
                                 className={"w-[30px] h-[30px] flex justify-center align-middle items-center p-[7px] bg-transparent rounded-full"}>

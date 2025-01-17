@@ -2,7 +2,7 @@
 import React, {useEffect} from 'react'
 import {useGraduateProfile, useError, useStudyYear} from "@/hooks";
 import SkeletonLoader from "@/components/loaders/skeletonLoader";
-import {fetchApi} from "@/hooks/api";
+import {api} from "@/hooks/api";
 
 const StartStudy = ({navbarOpen}) => {
     const {selectedGraduateProfile} = useGraduateProfile();
@@ -11,9 +11,8 @@ const StartStudy = ({navbarOpen}) => {
 
     useEffect(() => {
         // Fetching the study years.
-        fetchApi("/cohorts/").then(data => {
-            const cohortYears = data.map(cohort => cohort.name);
-            setAvailableStudyYears(cohortYears);
+        api.get("/Cohort").then(res => {
+            setAvailableStudyYears(res.data);
         })
         .catch(error => {
             setErrors([...errors, {
@@ -26,7 +25,7 @@ const StartStudy = ({navbarOpen}) => {
     }, []);
 
     useEffect(() => {
-        if(startedStudyYear !== null && startedStudyYear?.length !== 4) {
+        if(startedStudyYear !== null && startedStudyYear?.name?.length !== 4) {
             setStartedStudyYear(null);
             window.location.href = "https://keuzewijzerhboict.nl/v1";
         }
@@ -44,22 +43,22 @@ const StartStudy = ({navbarOpen}) => {
                 <>
                     <p className={"w-full text-center font-bold"}>Wanneer ben je gestart met je studie?</p>
                     <div className={"w-full h-auto flex flex-col gap-[10px] justify-center align-middle items-center box-border rounded-[12px]"}>
-                        {availableStudyYears && availableStudyYears.length > 0 ? availableStudyYears.map((studyYear, index) => (
+                        {availableStudyYears && availableStudyYears?.length > 0 ? availableStudyYears.map((studyYear, index) => (
                             <div key={index} onClick={() => setCurrentSavedStudyYear(studyYear)} onKeyDown={(event) => handleKeyDown(event, studyYear)} // Handle keyboard events
                             tabIndex={0} // Make div focusable via Tab key
                                  className={"hover:brightness-95 w-full h-[50px] bg-[#f3f3f3] rounded-[12px] p-[10px] box-border cursor-pointer flex justify-start flex-row gap-[10px] align-middle items-center"}>
                                 <div
                                     className={"w-[25px] h-[25px] border-[3px] box-border border-[#124477] bg-transparent rounded-full flex justify-center align-middle items-center"}>
                                     <div
-                                        className={`${currentSavedStudyYear === studyYear ? "w-[15px] h-[15px]" : "w-[0px] h-[0px]"} ease-in-out duration-300 rounded-full bg-[#124477]`}/>
+                                        className={`${currentSavedStudyYear?.name === studyYear?.name ? "w-[15px] h-[15px]" : "w-[0px] h-[0px]"} ease-in-out duration-300 rounded-full bg-[#124477]`}/>
                                 </div>
-                                <p className={"text-[#124477] text-[14px] font-bold"}>{studyYear}</p>
+                                <p className={"text-[#124477] text-[14px] font-bold"}>{studyYear?.name}</p>
                             </div>
                         )) : <SkeletonLoader/>}
 
                         {errors && errors.length > 0 && (
                             errors.filter(error => error.type === "studyyears").map((error) => (
-                                <div key={error.id} className={"w-full h-auto p-[20px] border-[1px] border-[#c00c00] bg-[rgba(255,0,0,0.1)] rounded-[12px] box-border"}>
+                                <div key={error?.id} className={"w-full h-auto p-[20px] border-[1px] border-[#c00c00] bg-[rgba(255,0,0,0.1)] rounded-[12px] box-border"}>
                                     {error.message}
                                 </div>
                             ))
