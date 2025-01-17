@@ -67,16 +67,16 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                 )}
 
                 <div className={"flex flex-row gap-[10px] justify-center align-middle items-center"}>
-                    {!isFreeChoice && (
-                        <div
-                            onMouseEnter={handleHoverLink}
-                            onMouseLeave={handleHoverLink}
-                            onTouchStart={handleHoverLink}
-                            onTouchEnd={handleHoverLink}
-                            className={"w-[30px] h-[30px] bg-[#b4c7db] rounded-full p-[7px] box-border flex justify-center align-middle items-center"}>
-                            <Retry/>
-                        </div>
-                    )}
+                    {/*{!isFreeChoice && (*/}
+                    {/*    <div*/}
+                    {/*        onMouseEnter={handleHoverLink}*/}
+                    {/*        onMouseLeave={handleHoverLink}*/}
+                    {/*        onTouchStart={handleHoverLink}*/}
+                    {/*        onTouchEnd={handleHoverLink}*/}
+                    {/*        className={"w-[30px] h-[30px] bg-[#b4c7db] rounded-full p-[7px] box-border flex justify-center align-middle items-center"}>*/}
+                    {/*        <Retry/>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
 
                     <div
                         onMouseEnter={handleHoverLink}
@@ -88,7 +88,7 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                         tabIndex={link ? 0 : -1} // Focusable if `link` is present
                         role={link ? "button" : undefined} // Interactive if `link` exists
                         style={{backgroundColor: link && !isFreeChoice ? "#b4c7db" : isFreeChoice ? "#c5c5c5" : "#656565"}}
-                        className={"cluster-info relative cursor-pointer w-[30px] h-[30px] rounded-full flex justify-center align-middle items-center"}>
+                        className={"cluster-info relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"}>
                         <p className={`${link ? "text-black" : isFreeChoice ? "text-[#999]" : "text-[#c5c5c5]"} text-md font-black`}>i</p>
                     </div>
                 </div>
