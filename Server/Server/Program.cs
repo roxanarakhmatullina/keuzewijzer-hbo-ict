@@ -33,7 +33,9 @@ builder.Services.AddCors(options =>
                     "http://keuzewijzerhboict.nl", 
                     "http://keuzewijzerhboict.nl:3001",
                     "https://keuzewijzerhboict.nl:3001",
-                    "https://keuzewijzerhboict.nl:3000")
+                    "https://keuzewijzerhboict.nl:3000",
+                    "http://keuzewijzerhboict.nl:3000"
+                    )
                 .WithMethods("GET", "POST", "DELETE")
                 .AllowAnyHeader();
         });
