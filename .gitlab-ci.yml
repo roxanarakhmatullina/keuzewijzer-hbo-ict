@@ -34,7 +34,8 @@ build-client:
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$CLIENT_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$CLIENT_TAG
-
+  only:
+    - test/matz-testing-CI  
 
 build-dashboard:
   stage: build
@@ -51,7 +52,8 @@ build-dashboard:
   script:
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$DASHBOARD_TAG -f dashboard/dockerfile ./dashboard
     - docker push $IMAGE_NAME:$DASHBOARD_TAG
-
+  only:
+    - test/matz-testing-CI  
 
 build-server:
   stage: build
@@ -66,23 +68,10 @@ build-server:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build \
-     --build-arg DB_HOST=$DB_HOST \
-     --build-arg DB_PORT=$DB_PORT \
-     --build-arg DB_USER=$DB_USER \
-     --build-arg DB_PASSWORD=$DB_PASSWORD \
-     --build-arg DB_NAME=$DB_NAME \
-     --build-arg EMAIL_FROM=$EMAIL_FROM \
-     --build-arg EMAIL_PASS=$EMAIL_PASS \
-     --build-arg EMAIL_PORT=$EMAIL_PORT \
-     --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER \
-     --build-arg EMAIL_USR=$EMAIL_USR \
-     --build-arg JWT_AUDIENCE=$JWT_AUDIENCE \
-     --build-arg JWT_ISSUER=$JWT_ISSUER \
-     --build-arg JWT_SECRET=$JWT_SECRET \
-     -t $IMAGE_NAME:$SERVER_TAG -f Server/Server/Dockerfile ./Server\Server
+    - docker build --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USER=$DB_USER --build-arg DB_PASSWORD=$DB_PASSWORD --build-arg DB_NAME=$DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$JWT_AUDIENCE --build-arg JWT_ISSUER=$JWT_ISSUER --build-arg JWT_SECRET=$JWT_SECRET -t $IMAGE_NAME:$SERVER_TAG -f Server/Server/Dockerfile ./Server\Server
     - docker push $IMAGE_NAME:$SERVER_TAG
-
+  only:
+    - test/matz-testing-CI
 
 
 deploy-client:
@@ -96,7 +85,8 @@ deploy-client:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 3000:3000 --name $CLIENT_NAME $IMAGE_NAME:$CLIENT_TAG"
-
+  only:
+    - test/matz-testing-CI
 
 deploy-dashboard:
   stage: deploy
@@ -109,7 +99,8 @@ deploy-dashboard:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 3001:3001 --name $DASHBOARD_NAME $IMAGE_NAME:$DASHBOARD_TAG"
-
+  only:
+    - test/matz-testing-CI
 
 deploy-server:
   stage: deploy
@@ -123,4 +114,5 @@ deploy-server:
       docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5125:5125 --name $SERVER_NAME $IMAGE_NAME:$SERVER_TAG &&
       docker images prune -a"
-
+  only:
+    - test/matz-testing-CI
