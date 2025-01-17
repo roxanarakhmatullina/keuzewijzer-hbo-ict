@@ -68,7 +68,7 @@ build-server:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USER=$DB_USER --build-arg DB_PASSWORD=$DB_PASSWORD --build-arg DB_NAME=$DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$JWT_AUDIENCE --build-arg JWT_ISSUER=$JWT_ISSUER --build-arg JWT_SECRET=$JWT_SECRET -t $IMAGE_NAME:$SERVER_TAG -f Server/Dockerfile ./Server
+    - docker build --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USER=$DB_USER --build-arg DB_PASSWORD=$DB_PASS --build-arg DB_NAME=$DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$JWT_AUDIENCE --build-arg JWT_ISSUER=$JWT_ISSUER --build-arg JWT_SECRET=$JWT_SECRET -t $IMAGE_NAME:$SERVER_TAG -f Server/Dockerfile ./Server
     - docker push $IMAGE_NAME:$SERVER_TAG
   only:
     - test/matz-testing-CI
