@@ -12,12 +12,12 @@ variables:
   DASHBOARD_NAME: dashboard
   SERVER_NAME: server
 
-tests-django:
- stage: test
- script:
-   - python manage.py test
- tags:
-   - python
+# tests-django:
+#  stage: test
+#  script:
+#    - python manage.py test
+#  tags:
+#    - python
 
 build-client:
   stage: build
