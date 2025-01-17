@@ -21,7 +21,7 @@ const Navigation = () => {
                 className={"fixed top-0 left-0 w-1/5 min-w-[250px] max-h-[100vh] h-[100%] bg-[#fff] shadow-lg p-[20px] box-border flex flex-col gap-[25px] z-[3]"}>
                 <div className={"w-full h-auto flex flex-auto flex-row gap-[10px] justify-start items-center"}>
                     <Image
-                        src={"/logo.png"}
+                        src={"/dashboard/logo.png"}
                         width={50}
                         height={50}
                         alt={"Logo"}

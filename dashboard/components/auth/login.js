@@ -48,6 +48,7 @@ const LoginPage = () => {
                     onChange={(e) => handleChange("email", e.target.value)}
                     placeholder={"E-mailadres"}
                     label={"E-mailadres"}
+                    required
                 />
 
                 <Input
@@ -56,6 +57,7 @@ const LoginPage = () => {
                     onChange={(e) => handleChange("password", e.target.value)}
                     placeholder={"Wachtwoord"}
                     label={"Wachtwoord"}
+                    required
                 />
 
                 {authDTO && (
