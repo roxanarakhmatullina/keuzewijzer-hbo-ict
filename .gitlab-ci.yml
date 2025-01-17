@@ -112,7 +112,7 @@ deploy-server:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5125:5125 --name $SERVER_NAME $IMAGE_NAME:$SERVER_TAG &&
+      docker run -d -p 5125:8080 --name $SERVER_NAME $IMAGE_NAME:$SERVER_TAG &&
       docker images prune -a"
   only:
     - test/matz-testing-CI
