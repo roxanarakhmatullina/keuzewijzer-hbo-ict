@@ -461,17 +461,19 @@ const ClustersPage = () => {
                             optionValueName={"id"}
                         />
 
-                        <MultiSelection
-                            label={"Voorafgaande clusters:"}
-                            info={() => (
-                                <p>Selecteer één of meerdere clusters; dit cluster kan alleen gedaan worden als van te voren al één van de geselecteerde voorafgaande clusters is gedaan.</p>
-                            )}
-                            options={prerequisites}
-                            onChange={(state, value) => handleChangePrerequisites(state, value)}
-                            selectedOptions={clusterPrerequisites}
-                            optionLabelName={"name"}
-                            optionValueName={"id"}
-                        />
+                        {!clusterDTO.isFreeChoice && (
+                            <MultiSelection
+                                label={"Voorafgaande clusters:"}
+                                info={() => (
+                                    <p>Selecteer één of meerdere clusters; dit cluster kan alleen gedaan worden als van te voren al één van de geselecteerde voorafgaande clusters is gedaan.</p>
+                                )}
+                                options={prerequisites}
+                                onChange={(state, value) => handleChangePrerequisites(state, value)}
+                                selectedOptions={clusterPrerequisites}
+                                optionLabelName={"name"}
+                                optionValueName={"id"}
+                            />
+                        )}
                     </>
                 )}
             </Popup>
