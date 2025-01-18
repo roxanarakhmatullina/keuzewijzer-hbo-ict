@@ -10,6 +10,7 @@ import Input from "@/components/input";
 import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
 import Label from "@/components/label";
+import MultiSelection from "@/components/multiselection";
 
 const GraduateProfilePage = () => {
     const [graduateProfiles, setGraduateProfiles] = useState([]);
@@ -224,30 +225,17 @@ const GraduateProfilePage = () => {
                             )}
                         />
 
-                        <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <Label text={"Cohorten:"} info={
-                                () => (
-                                    <p>Selecteer één of meerdere cohorten; dit verbindt de afstudeerprofiel met één of meer cohorten.</p>
-                                )
-                            }/>
-                            <div
-                                className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                                {graduateProfileCohorts && cohorts?.map((cohort, id) => (
-                                    <div key={"cohort-" + id}
-                                         className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
-                                        <div
-                                            onClick={(e) => handleChangeCohort(!graduateProfileCohorts.some(ch => ch === cohort.id), cohort.id)}
-                                            className={`${graduateProfileCohorts.some(ch => ch === cohort.id) && "bg-blue-600"} cursor-pointer border-[1px] border-gray-300 flex justify-center align-middle items-center min-w-[25px] max-w-[25px] min-h-[25px] max-h-[25px] rounded-md`}>
-                                            {graduateProfileCohorts.some(ch => ch === cohort.id) && (
-                                                <Check className={"text-white text-2xl font-bold"}/>
-                                            )}
-                                        </div>
-
-                                        <label>{cohort.name}</label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <MultiSelection
+                            label={"Cohorten:"}
+                            info={() => (
+                                <p>Selecteer één of meerdere cohorten; dit verbindt de afstudeerprofiel met één of meer cohorten.</p>
+                            )}
+                            options={cohorts}
+                            onChange={(state, value) => handleChangeCohort(state, value)}
+                            selectedOptions={graduateProfileCohorts}
+                            optionLabelName={"name"}
+                            optionValueName={"id"}
+                        />
                     </>
                 )}
             </Popup>

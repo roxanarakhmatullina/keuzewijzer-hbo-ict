@@ -11,6 +11,7 @@ import Select from "@/components/select";
 import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
 import Label from "@/components/label";
+import MultiSelection from "@/components/multiselection";
 
 const ClustersPage = () => {
     const [clusters, setClusters] = useState([]);
@@ -431,57 +432,32 @@ const ClustersPage = () => {
                             </div>
                         </div>
 
-                        <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <Label text={"Cohorten:"} info={
-                                () => (
-                                    <p>Selecteer één of meerdere cohorten; dit verbindt de cluster met één of meer cohorten.</p>
-                                )
-                            }/>
-                            <div
-                                className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                                {clusterCohorts && cohorts?.map((cohort, id) => (
-                                    <div key={"cohort-" + id}
-                                         className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
-                                        <div
-                                            onClick={(e) => handleChangeCohort(!clusterCohorts.some(ch => ch === cohort.id), cohort.id)}
-                                            className={`${clusterCohorts.some(ch => ch === cohort.id) && "bg-blue-600"} cursor-pointer border-[1px] border-gray-300 flex justify-center align-middle items-center min-w-[25px] max-w-[25px] min-h-[25px] max-h-[25px] rounded-md`}>
-                                            {clusterCohorts.some(ch => ch === cohort.id) && (
-                                                <Check className={"text-white text-2xl font-bold"}/>
-                                            )}
-                                        </div>
+                        <MultiSelection
+                            label={"Cohorten:"}
+                            info={() => (
+                                <p>Selecteer één of meerdere cohorten; dit verbindt de afstudeerprofiel met één of meer cohorten.</p>
+                            )}
+                            options={cohorts}
+                            onChange={(state, value) => handleChangeCohort(state, value)}
+                            selectedOptions={clusterCohorts}
+                            optionLabelName={"name"}
+                            optionValueName={"id"}
+                        />
 
-                                        <label>{cohort.name}</label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
 
-                        <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <Label text={"Afstudeerprofielen:"} info={
-                                () => (
-                                    <p>Selecteer één of meerdere Afstudeerprofielen; dit verbindt de cluster met één of meer Afstudeerprofielen.</p>
-                                )
-                            }/>
-                            <div
-                                className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                                {clusterGraduateProfiles && graduateProfiles?.map((profile, id) => (
-                                    <div key={"profile-" + id}
-                                         className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
-
-                                        <div
-                                            onClick={() => handleChangeGraduateProfile(!clusterGraduateProfiles.some(gp => gp === profile.id), profile.id)}
-                                            style={{cursor: "pointer", width: "25px", height: "25px"}}
-                                            className={"w-[25px] h-[25px] box-border rounded-[8px] bg-[#f3f3f3] border-[1px] border-[#c5c5c5] flex justify-center align-middle items-center"}>
-                                            {clusterGraduateProfiles.some(gp => gp === profile.id) ?
-                                                <div style={{background: profile.color, borderRadius: "6px"}}
-                                                     className={"bg-black w-[20px] h-[20px]"}/> : ""}
-                                        </div>
-
-                                        <label>{profile.name}</label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <MultiSelection
+                            label={"Afstudeerprofielen:"}
+                            info={() => (
+                                <p>Selecteer één of meerdere Afstudeerprofielen; dit verbindt de cluster met één of meer
+                                    Afstudeerprofielen.</p>
+                            )}
+                            options={graduateProfiles}
+                            onChange={(state, value) => handleChangeGraduateProfile(state, value)}
+                            selectedOptions={clusterGraduateProfiles}
+                            optionLabelName={"name"}
+                            optionValueName={"id"}
+                        />
+                        
 
                         {clusterDTO && clusterDTO?.level >= 1 && (
                             <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>

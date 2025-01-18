@@ -1,14 +1,14 @@
 'use client';
 import { useEffect, useState, useRef } from "react";
 import UnfoldMore from '@mui/icons-material/UnfoldMore';
+import Check from '@mui/icons-material/Check';
 import Label from "@/components/label";
 
-const Select = ({ options, value, onChange, label, optionValueName, optionLabelName, required, info }) => {
+const Select = ({ options, value, onChange, label, optionValueName, optionLabelName, required, info, multiSelect }) => {
     const [selected, setSelected] = useState(value);
     const [folded, setFolded] = useState(false);
     const [dropdownStyle, setDropdownStyle] = useState({});
     const selectRef = useRef(null);
-    const [hoverInfo, setHoverInfo] = useState(false);
 
     useEffect(() => {
         setSelected(value);
@@ -60,12 +60,12 @@ const Select = ({ options, value, onChange, label, optionValueName, optionLabelN
     }, [folded]);
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full ">
             <Label text={label} required={required} info={info} />
             <div
                 ref={selectRef}
                 onClick={toggleDropdown}
-                className={`select relative min-h-[40px] flex justify-start align-middle items-center w-full px-1 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}>
+                className={`select bg-[#fff] relative min-h-[40px] flex justify-start align-middle items-center w-full px-1 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}>
                 <UnfoldMore className={"z-[101] bg-transparent hover:bg-gray-200 max-w-[30px] max-h-[30px] min-w-[30px] min-h-[30px] rounded-full box-border absolute right-0"} />
 
                 {folded && options && (
