@@ -27,13 +27,14 @@ const Home = () => {
     }, [selectedGraduateProfile]);
 
     return (
-        <div className={"w-screen flex flex-row pt-[50px] md:pt-[0px] gap-0"}>
+        <div className={"w-screen flex flex-row gap-0"}>
             {/* Sidebar */}
             <Navigation/>
 
             {/* Main Content */}
             <div
-                className={`${selectedGraduateProfile ? "flex" : "hidden"} max-w-[1366px] relative w-full xl:p-[50px] p-[20px] pt-[50px] pb-[50px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}>
+                className={`${selectedGraduateProfile ? "flex" : "hidden"} pt-[100px] max-w-[1366px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}>
+
                 {/* Scrollable content for StudyYears */}
                 {selectedGraduateProfile && studyYears && studyYears.length > 0 && studyYears.map((studyYear, index) => {
                     return (

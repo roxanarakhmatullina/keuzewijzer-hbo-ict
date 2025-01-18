@@ -26,10 +26,9 @@ const Input = ({label, type, defaultValue, value, onChange, placeholder, require
         if (required && input.value === "") return false;
         if(input.type === "email" && !validateEmail(input.value)) return false;
 
-        // check if doesn't contain any special characters except for numbers and "-" "'", " ", "." and "&"
-        if(input.type === "text" && !/^[a-zA-Z0-9-'.& ]+$/.test(input.value)) return false;
+        if (input.type === "text" && !/^[a-zA-Z0-9À-ÖØ-öø-ÿ '&()\-.,]{1,}$/.test(input.value)) return false;
 
-        if(input.type === "url" && !/^(ftp|http|https):\/\/[^ "]+$/.test(input.value)) return false;
+        if (input.type === "url" && !/^(https?:\/\/)?[a-zA-Z0-9.-]+\.(com|nl|org|net|edu|gov|info|io|biz|dev|xyz)$/i.test(input.value)) return false;
 
         if((input.type === "colored" || input.type === "color") && !/^#[0-9A-F]{6}$/i.test(input.value)) return false;
 

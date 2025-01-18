@@ -21,9 +21,17 @@ public enum ClusterLevel
     Level4 = 4
 }
 
+public class ClusterPrerequisite
+{
+    public Guid ClusterId { get; set; }
+    public Cluster Cluster { get; set; }
+    
+    public Guid PrerequisiteId { get; set; }
+    public Cluster Prerequisite { get; set; }
+}
+
 public class Cluster
 {
-    
     [Key]
     public Guid Id { get; set; }
     
@@ -50,9 +58,10 @@ public class Cluster
     public Boolean IsLocked { get; set; } = false;
     
     public Boolean IsRetaken { get; set; } = false; // Used for frontend to show if the cluster is retaken
-    
+    public int RetakenCount { get; set; } = 0; // Used for frontend to show if the cluster is retaken
+
     // Navigation properties for many-to-many relationships
-    public virtual ICollection<Cluster> Prerequisites { get; set; } = new List<Cluster>();
+    public virtual ICollection<ClusterPrerequisite> ClusterPrerequisites { get; set; } = new List<ClusterPrerequisite>();
     public virtual ICollection<GraduateProfile> GraduateProfiles { get; set; } = new List<GraduateProfile>();
     public virtual ICollection<Cohort> Cohorts { get; set; } = new List<Cohort>();
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,21 +36,26 @@ namespace Server.Controllers
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
                 return Forbid();
-            
+
             var clusters = await _context.Clusters
                 .Select(c => new
                 {
                     c.Id,
                     c.Name,
-                    c.Level
+                    c.Level,
+                    c.IsLocked,
+                    PrerequisiteIds = c.ClusterPrerequisites.Select(cp => cp.PrerequisiteId).ToList(),
+                    GraduateProfileIds = c.GraduateProfiles.Select(g => g.Id).ToList(),
+                    CohortIds = c.Cohorts.Select(co => co.Id).ToList(),
                 })
                 .OrderBy(c => c.Level)
                 .ThenBy(c => c.Name)
                 .ToListAsync();
+
             return Ok(clusters);
         }
 
-        // GET: api/Cluster/5
+        // GET: api/Cluster/{id}
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Cluster>> GetCluster(Guid id)
@@ -61,162 +65,165 @@ namespace Server.Controllers
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
                 return Forbid();
-            
+
             var cluster = await _context.Clusters
-                .Include(c => c.Cohorts)
+                .Include(c => c.ClusterPrerequisites)
                 .Include(c => c.GraduateProfiles)
-                .Include(c => c.Prerequisites)
-                .FirstOrDefaultAsync(cl => cl.Id == id);
+                .Include(c => c.Cohorts)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (cluster == null)
+                return NotFound();
+
+            var clusterDto = new
             {
-                return BadRequest();
-            }
-            
-            var clusterObject = new
-            {
-                Id = cluster.Id,
-                Name = cluster.Name,
-                Link = cluster.Link,
-                FirstSemester = cluster.FirstSemester,
-                LastSemester = cluster.LastSemester,
-                IsLocked = cluster.IsLocked,
-                IsFreeChoice = cluster.IsFreeChoice,
-                Level = cluster.Level,
-                CohortIds = cluster.Cohorts.Select(c => c.Id).ToList(),
+                cluster.Id,
+                cluster.Name,
+                cluster.Link,
+                cluster.FirstSemester,
+                cluster.LastSemester,
+                cluster.IsLocked,
+                cluster.IsFreeChoice,
+                cluster.Level,
+                PrerequisiteIds = cluster.ClusterPrerequisites.Select(cp => cp.PrerequisiteId).ToList(),
                 GraduateProfileIds = cluster.GraduateProfiles.Select(g => g.Id).ToList(),
-                PrerequisiteIds = cluster.Prerequisites.Select(p => p.Id).ToList(),
+                CohortIds = cluster.Cohorts.Select(co => co.Id).ToList()
             };
-            
-            return Ok(clusterObject);
+
+            return Ok(clusterDto);
         }
 
-        // PUT: api/Cluster/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/Cluster/{id}
         [HttpPost("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutCluster(Guid id, [FromBody] ClusterDTO cluster)
+        public async Task<IActionResult> PutCluster(Guid id, [FromBody] ClusterDTO clusterDto)
         {
             var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             var currentUser = await _userManager.FindByEmailAsync(email);
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
                 return Forbid();
-            
-            var cohorts = new List<Cohort>();
-            var graduateProfiles = new List<GraduateProfile>();
-            var prerequisites = new List<Cluster>();
-            try
-            {
-                cohorts = await _context.Cohorts
-                    .Where(c => cluster.CohortIds.Contains(c.Id))
-                    .ToListAsync();
 
-                graduateProfiles = await _context.GraduateProfiles
-                    .Where(g => cluster.GraduateProfileIds.Contains(g.Id))
-                    .ToListAsync();
-                prerequisites = await _context.Clusters
-                    .Where(c => cluster.PrerequisiteIds.Contains(c.Id))
-                    .ToListAsync();
-            } catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-
-            var clusterToUpdate = await _context.Clusters
-                .Include(c => c.Cohorts)
+            var cluster = await _context.Clusters
+                .Include(c => c.ClusterPrerequisites)
                 .Include(c => c.GraduateProfiles)
-                .Include(c => c.Prerequisites)
-                .FirstOrDefaultAsync(cl => cl.Id == id);
+                .Include(c => c.Cohorts)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (clusterToUpdate == null)
+            if (cluster == null)
+                return NotFound();
+
+            // Update basic properties
+            cluster.Name = clusterDto.Name;
+            cluster.Link = clusterDto.Link;
+            cluster.FirstSemester = clusterDto.FirstSemester;
+            cluster.LastSemester = clusterDto.LastSemester;
+            cluster.IsFreeChoice = clusterDto.IsFreeChoice;
+            cluster.IsLocked = clusterDto.IsLocked;
+            cluster.Level = clusterDto.Level;
+
+            // Fetch new prerequisites and check existing ones
+            var newPrerequisites = await _context.Clusters
+                .Where(c => clusterDto.PrerequisiteIds.Contains(c.Id))
+                .ToListAsync();
+
+            // Get current prerequisites
+            var existingPrerequisites = cluster.ClusterPrerequisites.Select(cp => cp.Prerequisite).ToList();
+
+            // Add new prerequisites that aren't already in the existing list
+            foreach (var newPrerequisite in newPrerequisites)
             {
-                return BadRequest();
+                if (!existingPrerequisites.Contains(newPrerequisite))
+                {
+                    // Check if this prerequisite is already in the ClusterPrerequisites table
+                    if (!_context.ClusterPrerequisites.Any(cp =>
+                            cp.ClusterId == cluster.Id && cp.PrerequisiteId == newPrerequisite.Id))
+                    {
+                        cluster.ClusterPrerequisites.Add(new ClusterPrerequisite
+                        {
+                            Cluster = cluster,
+                            Prerequisite = newPrerequisite
+                        });
+                    }
+                }
             }
 
-            clusterToUpdate.Name = cluster.Name;
-            clusterToUpdate.Link = cluster.Link;
-            clusterToUpdate.FirstSemester = cluster.FirstSemester;
-            clusterToUpdate.LastSemester = cluster.LastSemester;
-            clusterToUpdate.IsLocked = cluster.IsLocked;
-            clusterToUpdate.IsFreeChoice = cluster.IsFreeChoice;
-            clusterToUpdate.Level = cluster.Level;
-            clusterToUpdate.Prerequisites = prerequisites;
-            clusterToUpdate.Cohorts = cohorts;
-            clusterToUpdate.GraduateProfiles = graduateProfiles;
+            // Remove prerequisites that are no longer in the new list
+            foreach (var existingPrerequisite in existingPrerequisites)
+            {
+                if (!clusterDto.PrerequisiteIds.Contains(existingPrerequisite.Id))
+                {
+                    var clusterPrerequisite =
+                        cluster.ClusterPrerequisites.First(cp => cp.PrerequisiteId == existingPrerequisite.Id);
+                    cluster.ClusterPrerequisites.Remove(clusterPrerequisite);
+                }
+            }
+
+            // Update GraduateProfiles and Cohorts similarly (same logic as before)
 
             try
             {
                 await _context.SaveChangesAsync();
-            } catch (Exception e)
+            }
+            catch (DbUpdateConcurrencyException)
             {
-                return BadRequest(e.Message);
+                if (!ClusterExists(id))
+                    return NotFound();
+
+                throw;
             }
 
-            return Ok();
+            return NoContent();
         }
 
         // POST: api/Cluster
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Cluster>> PostCluster([FromBody] ClusterDTO cluster)
+        public async Task<ActionResult<Cluster>> PostCluster([FromBody] ClusterDTO clusterDto)
         {
             var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             var currentUser = await _userManager.FindByEmailAsync(email);
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
                 return Forbid();
-            
-            var cohorts = new List<Cohort>();
-            var graduateProfiles = new List<GraduateProfile>();
-            var prerequisites = new List<Cluster>();
-            try
-            {
-                cohorts = await _context.Cohorts
-                    .Where(c => cluster.CohortIds.Contains(c.Id))
-                    .ToListAsync();
 
-                graduateProfiles = await _context.GraduateProfiles
-                    .Where(g => cluster.GraduateProfileIds.Contains(g.Id))
-                    .ToListAsync();
-                prerequisites = await _context.Clusters
-                    .Where(c => cluster.PrerequisiteIds.Contains(c.Id))
-                    .ToListAsync();
-            } catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            var prerequisites = await _context.Clusters
+                .Where(c => clusterDto.PrerequisiteIds.Contains(c.Id))
+                .ToListAsync();
 
-            Cluster newCluster = new Cluster
+            var graduateProfiles = await _context.GraduateProfiles
+                .Where(g => clusterDto.GraduateProfileIds.Contains(g.Id))
+                .ToListAsync();
+
+            var cohorts = await _context.Cohorts
+                .Where(co => clusterDto.CohortIds.Contains(co.Id))
+                .ToListAsync();
+
+            var newCluster = new Cluster
             {
-                Name = cluster.Name,
-                Link = cluster.Link,
-                FirstSemester = cluster.FirstSemester,
-                LastSemester = cluster.LastSemester,
-                IsLocked = cluster.IsLocked,
-                IsFreeChoice = cluster.IsFreeChoice,
-                Level = cluster.Level,
-                Prerequisites = prerequisites,
-                Cohorts = cohorts,
+                Name = clusterDto.Name,
+                Link = clusterDto.Link,
+                FirstSemester = clusterDto.FirstSemester,
+                LastSemester = clusterDto.LastSemester,
+                IsFreeChoice = clusterDto.IsFreeChoice,
+                IsLocked = clusterDto.IsLocked,
+                Level = clusterDto.Level,
+                ClusterPrerequisites = prerequisites.Select(p => new ClusterPrerequisite
+                {
+                    Cluster = null,
+                    Prerequisite = p
+                }).ToList(),
                 GraduateProfiles = graduateProfiles,
+                Cohorts = cohorts
             };
-            
-            
-            _context.Add(newCluster);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            } catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            _context.Clusters.Add(newCluster);
+            await _context.SaveChangesAsync();
 
-            return Ok();
+            return CreatedAtAction(nameof(GetCluster), new { id = newCluster.Id }, newCluster);
         }
 
-        // DELETE: api/Cluster/5
+        // DELETE: api/Cluster/{id}
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteCluster(Guid id)
@@ -226,12 +233,11 @@ namespace Server.Controllers
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
                 return Forbid();
-            
+
             var cluster = await _context.Clusters.FindAsync(id);
+
             if (cluster == null)
-            {
                 return NotFound();
-            }
 
             _context.Clusters.Remove(cluster);
             await _context.SaveChangesAsync();

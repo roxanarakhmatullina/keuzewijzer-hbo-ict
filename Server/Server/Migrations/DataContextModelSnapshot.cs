@@ -269,9 +269,6 @@ namespace Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ClusterId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("FirstSemester")
                         .HasColumnType("boolean");
 
@@ -298,11 +295,27 @@ namespace Server.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
+                    b.Property<int>("RetakenCount")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ClusterId");
-
                     b.ToTable("Clusters");
+                });
+
+            modelBuilder.Entity("Server.Models.ClusterPrerequisite", b =>
+                {
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PrerequisiteId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ClusterId", "PrerequisiteId");
+
+                    b.HasIndex("PrerequisiteId");
+
+                    b.ToTable("ClusterPrerequisites");
                 });
 
             modelBuilder.Entity("Server.Models.Cohort", b =>
@@ -449,16 +462,28 @@ namespace Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Server.Models.Cluster", b =>
+            modelBuilder.Entity("Server.Models.ClusterPrerequisite", b =>
                 {
-                    b.HasOne("Server.Models.Cluster", null)
-                        .WithMany("Prerequisites")
-                        .HasForeignKey("ClusterId");
+                    b.HasOne("Server.Models.Cluster", "Cluster")
+                        .WithMany("ClusterPrerequisites")
+                        .HasForeignKey("ClusterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Cluster", "Prerequisite")
+                        .WithMany()
+                        .HasForeignKey("PrerequisiteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cluster");
+
+                    b.Navigation("Prerequisite");
                 });
 
             modelBuilder.Entity("Server.Models.Cluster", b =>
                 {
-                    b.Navigation("Prerequisites");
+                    b.Navigation("ClusterPrerequisites");
                 });
 #pragma warning restore 612, 618
         }

@@ -228,10 +228,9 @@ const ClustersPage = () => {
         }));
     }
 
-    const handleEdit = (e, cluster) => {
-        handlePopup(e, true);
-        setState("edit");
-        api.get(`/Cluster/${cluster.id}`)
+    const handleEdit = async (e, cluster) => {
+        setLoading(true);
+        await api.get(`/Cluster/${cluster.id}`)
             .then(res => {
                 const data = res.data;
                 setClusterCohorts(data.cohortIds);
@@ -250,6 +249,10 @@ const ClustersPage = () => {
                     graduateProfileIds: data.graduateProfileIds,
                     prerequisiteIds: data.prerequisiteIds,
                 });
+            }).finally(() => {
+                setLoading(false);
+                handlePopup(e, true);
+                setState("edit");
             });
     }
 
@@ -457,25 +460,18 @@ const ClustersPage = () => {
                             optionLabelName={"name"}
                             optionValueName={"id"}
                         />
-                        
 
-                        {clusterDTO && clusterDTO?.level >= 1 && (
-                            <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                                <label className={"w-full font-bold"}>Voorafgaande clusters:</label>
-                                <div
-                                    className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                                    {clusterPrerequisites && prerequisites.filter((pre => pre.id !== clusterDTO?.id))?.map((prerequisites, id) => (
-                                        <div key={"profile-" + id}
-                                             className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
-                                            <input type={"checkbox"}
-                                                   checked={clusterPrerequisites.some(gp => gp === prerequisites.id)}
-                                                   onChange={(e) => handleChangePrerequisites(e.target.checked, prerequisites.id)}/>
-                                            <label>{prerequisites.name}</label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                        <MultiSelection
+                            label={"Voorafgaande clusters:"}
+                            info={() => (
+                                <p>Selecteer één of meerdere clusters; dit cluster kan alleen gedaan worden als van te voren al één van de geselecteerde voorafgaande clusters is gedaan.</p>
+                            )}
+                            options={prerequisites}
+                            onChange={(state, value) => handleChangePrerequisites(state, value)}
+                            selectedOptions={clusterPrerequisites}
+                            optionLabelName={"name"}
+                            optionValueName={"id"}
+                        />
                     </>
                 )}
             </Popup>

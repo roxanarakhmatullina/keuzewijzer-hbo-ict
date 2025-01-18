@@ -13,5 +13,6 @@ public class SmallClusterDTO
     public Boolean IsFreeChoice { get; set; }
     public Boolean IsLocked { get; set; }
     public Boolean IsRetaken { get; set; }
+    public int RetakenCount { get; set; }
     public List<PrerequisiteDTO> Prerequisites { get; set; }
 }

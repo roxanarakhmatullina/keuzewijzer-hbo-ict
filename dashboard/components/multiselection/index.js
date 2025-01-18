@@ -34,7 +34,7 @@ const MultiSelection = ({ label, info, required, options, selectedOptions, onCha
         <div className={"w-full flex flex-col gap-[5px]"}>
             <Label text={label} info={info} required={required} />
             {options?.length > 0 && (
-                <div className={"flex flex-row gap-[5px] flex-wrap bg-[#f3f3f3] p-[10px] box-border rounded-md"}>
+                <div className={"multiselect flex flex-row gap-[5px] flex-wrap bg-[#f3f3f3] p-[10px] box-border rounded-md"}>
                     <Select
                         options={availableOptions}
                         optionLabelName={"name"}

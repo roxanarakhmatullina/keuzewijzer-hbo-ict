@@ -21,8 +21,15 @@ const Select = ({ options, value, onChange, label, optionValueName, optionLabelN
 
     const toggleDropdown = () => {
         if (!folded && selectRef.current) {
-            const rect = selectRef.current.getBoundingClientRect();
-            const dropdownHeight = 150; // Max dropdown height
+            // Check if parent has not a multiselect else take the parent of the multiselect bounding
+            let rect;
+            if(selectRef.current.parentElement.classList.contains("multiselect")) {
+                rect = selectRef.current.parentElement.getBoundingClientRect();
+            } else {
+                rect = selectRef.current.getBoundingClientRect();
+            }
+
+            const dropdownHeight = 250; // Max dropdown height
             const viewportHeight = window.innerHeight;
 
             const shouldMoveUp = rect.bottom + dropdownHeight > viewportHeight;
@@ -66,12 +73,12 @@ const Select = ({ options, value, onChange, label, optionValueName, optionLabelN
                 ref={selectRef}
                 onClick={toggleDropdown}
                 className={`select bg-[#fff] relative min-h-[40px] flex justify-start align-middle items-center w-full px-1 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}>
-                <UnfoldMore className={"z-[101] bg-transparent hover:bg-gray-200 max-w-[30px] max-h-[30px] min-w-[30px] min-h-[30px] rounded-full box-border absolute right-0"} />
+                <UnfoldMore className={"bg-transparent hover:bg-gray-200 max-w-[30px] max-h-[30px] min-w-[30px] min-h-[30px] rounded-full box-border absolute right-0"} />
 
                 {folded && options && (
                     <div
                         style={dropdownStyle}
-                        className={"absolute left-0 w-full z-[100] rounded-md max-h-[150px] overflow-y-scroll h-auto bg-white border-[1px] border-gray-300 shadow-lg shadow-black/30 box-border flex flex-col justify-center align-middle items-center"}>
+                        className={"absolute left-0 w-full z-[100] rounded-md max-h-[250px] overflow-y-scroll h-auto bg-white border-[1px] border-gray-300 shadow-lg shadow-black/30 box-border flex flex-col justify-center align-middle items-center"}>
                         {options?.map((option, index) => (
                             <button
                                 key={index}
