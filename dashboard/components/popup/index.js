@@ -37,16 +37,15 @@ const Popup = ({
         }
     }, [isOpen, children]);
 
-
     return (
         isOpen && (
             <div
-                className="fixed z-[1000] top-0 left-0 w-full h-full p-[20px] box-border bg-black bg-opacity-30 flex justify-center items-center"
+                className="fixed z-[1000] top-0 left-0 w-[100vw] h-[100vh] p-[20px] box-border bg-black bg-opacity-30 flex justify-center items-center"
                 onClick={(e) => !loading && onCancel(e)}
             >
                 <div
                     id="popup"
-                    className="w-full max-w-[768px] h-auto max-h-[calc(100vh-40px)] min-h-[250px] bg-[#fff] p-[0px] box-border rounded-[12px] flex flex-col justify-center align-middle items-center"
+                    className="w-full max-w-[768px] h-auto max-h-[100%] min-h-[250px] bg-[#fff] p-[0px] box-border rounded-[12px] flex flex-col justify-center align-middle items-center"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="w-full p-[20px] flex flex-col gap-[5px] justify-center align-middle items-center">
@@ -57,14 +56,13 @@ const Popup = ({
                         <div
                             ref={popupContentRef}
                             id="popup-content"
-                            className="w-full h-full max-h-[768px] gap-[25px] p-[20px] box-border overflow-y-auto flex flex-col justify-center align-middle items-center"
+                            className="w-full h-auto max-h-[768px] overflow-y-auto p-[20px] box-border flex flex-col gap-[25px]"
                         >
                             {children}
                         </div>
                     )}
                     {(onAccept || onCancel) && !loading && (
-                        <div
-                            className="w-full p-[20px] box-border flex flex-row gap-[10px] justify-end align-middle items-center">
+                        <div className="w-full p-[20px] box-border flex flex-row gap-[10px] justify-end align-middle items-center">
                             {onAccept && (
                                 <button
                                     onClick={(canAccept && canAccept === true ? onAccept : null) || onAccept}
