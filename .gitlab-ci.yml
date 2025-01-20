@@ -97,6 +97,6 @@ deploy-server:
      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
      docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
      docker run -d -p 5125:8080 --name $SERVER_NAME --network DB_connect $IMAGE_NAME:$SERVER_TAG &&
-     docker images prune -a"
+     docker image prune -a"
  only:
    - test/matz-testing-CI
