@@ -19,11 +19,13 @@ build-client:
   variables:
     DOCKER_TLS_CERTDIR: ""
   cache:
-    key: ${CI_COMMIT_REF_SLUG}-client
+    key: "$CI_COMMIT_REF_SLUG-dashboard"
     paths:
       - Client/node_modules/
       - Client/.npm/
   before_script:
+    - apk update && apk add --no-cache nodejs npm
+    - npm --version
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
@@ -42,11 +44,13 @@ build-dashboard:
   variables:
     DOCKER_TLS_CERTDIR: ""
   cache:
-    key: ${CI_COMMIT_REF_SLUG}-dashboard
+    key: "$CI_COMMIT_REF_SLUG-dashboard"
     paths:
       - dashboard/node_modules/
       - dashboard/.npm/
   before_script:
+    - apk update && apk add --no-cache nodejs npm
+    - npm --version
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
