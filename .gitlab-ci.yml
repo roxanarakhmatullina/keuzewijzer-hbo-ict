@@ -10,12 +10,12 @@ variables:
   FRONTEND_NAME: Nextjs-app
   BACKEND_NAME: Django-app
 
-# tests-django:
-#   stage: test
-#   script:
-#     - python manage.py test
-#   tags:
-#     - python
+#tests-django:
+#  stage: test
+#  script:
+#    - python manage.py test
+#  tags:
+#    - python
 
 build-frontend:
   stage: build
@@ -27,22 +27,14 @@ build-frontend:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
     NEXT_PUBLIC_API_URL: "$API_URL"
-  cache:
-    key: ${CI_COMMIT_REF_SLUG}
-    paths:
-      - Client/node_modules/
-      - Client/.npm/
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - cd Client
-    - npm ci # Use cached dependencies if available
-    - cd ..
     - docker build --pull --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $IMAGE_NAME:$FRONTEND_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$FRONTEND_TAG
   only:
-    - main
+    - main  
 
 build-backend:
   stage: build
@@ -61,6 +53,7 @@ build-backend:
     - docker push $IMAGE_NAME:$BACKEND_TAG
   only:
     - main
+
 
 deploy-frontend:
   stage: deploy
