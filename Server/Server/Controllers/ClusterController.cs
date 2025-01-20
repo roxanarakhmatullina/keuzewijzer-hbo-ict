@@ -117,11 +117,23 @@ namespace Server.Controllers
             cluster.IsFreeChoice = clusterDto.IsFreeChoice;
             cluster.IsLocked = clusterDto.IsLocked;
             cluster.Level = clusterDto.Level;
+            
+            
+            var graduateProfiles = await _context.GraduateProfiles
+                .Where(g => clusterDto.GraduateProfileIds.Contains(g.Id))
+                .ToListAsync();
+
+            var cohorts = await _context.Cohorts
+                .Where(co => clusterDto.CohortIds.Contains(co.Id))
+                .ToListAsync();
 
             // Fetch new prerequisites and check existing ones
             var newPrerequisites = await _context.Clusters
                 .Where(c => clusterDto.PrerequisiteIds.Contains(c.Id))
                 .ToListAsync();
+            
+            cluster.GraduateProfiles = graduateProfiles;
+            cluster.Cohorts = cohorts;
 
             // Get current prerequisites
             var existingPrerequisites = cluster.ClusterPrerequisites.Select(cp => cp.Prerequisite).ToList();
