@@ -12,7 +12,7 @@ const Popup = ({children, title, description, isOpen, canAccept, onAccept, onCan
                 onClick={(e) => !loading && onCancel(e)}>
                 <div
                     id={"popup"}
-                    className={"w-full max-w-[768px] h-auto max-h-[768px] bg-[#fff] p-[0px] box-border rounded-[12px] flex flex-col justify-center align-middle items-center"}
+                    className={"w-full max-w-[768px] h-auto max-h-[100%] min-h-[250px] md:max-h-[75vh] bg-[#fff] p-[0px] box-border rounded-[12px] flex flex-col justify-center align-middle items-center"}
                     onClick={(e) => e.stopPropagation()}>
                     <div className={"w-full p-[20px] flex flex-col gap-[5px] justify-center align-middle items-center"}>
                         {title && <h1 className={"text-xl font-bold"}>{title}</h1>}

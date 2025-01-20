@@ -117,8 +117,7 @@ namespace Server.Controllers
             cluster.IsFreeChoice = clusterDto.IsFreeChoice;
             cluster.IsLocked = clusterDto.IsLocked;
             cluster.Level = clusterDto.Level;
-            
-            
+
             var graduateProfiles = await _context.GraduateProfiles
                 .Where(g => clusterDto.GraduateProfileIds.Contains(g.Id))
                 .ToListAsync();
@@ -131,44 +130,38 @@ namespace Server.Controllers
             var newPrerequisites = await _context.Clusters
                 .Where(c => clusterDto.PrerequisiteIds.Contains(c.Id))
                 .ToListAsync();
-            
+
             cluster.GraduateProfiles = graduateProfiles;
             cluster.Cohorts = cohorts;
 
-            // Get current prerequisites
-            var existingPrerequisites = cluster.ClusterPrerequisites.Select(cp => cp.Prerequisite).ToList();
-
-            // Add new prerequisites that aren't already in the existing list
+            // get cluster prerequisites
+            var clusterPrerequisites = cluster.ClusterPrerequisites.ToList();
+            
+            // Remove prerequisites that are not in the new list
+            foreach (var cp in clusterPrerequisites)
+            {
+                if (!clusterDto.PrerequisiteIds.Contains(cp.PrerequisiteId))
+                {
+                    cluster.ClusterPrerequisites.Remove(cp);
+                }
+            }
+            
+            // Add new prerequisites that are not in the old list
             foreach (var newPrerequisite in newPrerequisites)
             {
-                if (!existingPrerequisites.Contains(newPrerequisite))
+                if (!clusterPrerequisites.Any(cp => cp.PrerequisiteId == newPrerequisite.Id))
                 {
-                    // Check if this prerequisite is already in the ClusterPrerequisites table
-                    if (!_context.ClusterPrerequisites.Any(cp =>
-                            cp.ClusterId == cluster.Id && cp.PrerequisiteId == newPrerequisite.Id))
+                    cluster.ClusterPrerequisites.Add(new ClusterPrerequisite
                     {
-                        cluster.ClusterPrerequisites.Add(new ClusterPrerequisite
-                        {
-                            Cluster = cluster,
-                            Prerequisite = newPrerequisite
-                        });
-                    }
+                        Cluster = cluster,
+                        Prerequisite = newPrerequisite
+                    });
                 }
             }
-
-            // Remove prerequisites that are no longer in the new list
-            foreach (var existingPrerequisite in existingPrerequisites)
-            {
-                if (!clusterDto.PrerequisiteIds.Contains(existingPrerequisite.Id))
-                {
-                    var clusterPrerequisite =
-                        cluster.ClusterPrerequisites.First(cp => cp.PrerequisiteId == existingPrerequisite.Id);
-                    cluster.ClusterPrerequisites.Remove(clusterPrerequisite);
-                }
-            }
+            
+            
 
             // Update GraduateProfiles and Cohorts similarly (same logic as before)
-
             try
             {
                 await _context.SaveChangesAsync();
