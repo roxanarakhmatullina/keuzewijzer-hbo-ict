@@ -28,8 +28,8 @@ const Input = ({ label, type, defaultValue, value, onChange, placeholder, requir
 
         if (!input.classList.contains("colored-input") && input.type === "text" && !/^[a-zA-Z0-9À-ÖØ-öø-ÿ '&()\-.,]{1,}$/.test(input.value)) return false;
 
-        if (input.type === "url" && !/^(https?:\/\/)?[a-zA-Z0-9.-]+\.(com|nl|org|net|edu|gov|info|io|biz|dev|xyz)$/i.test(input.value)) return false;
-
+        if (input.type === "url" && !/^(https?:\/\/)?[a-zA-Z0-9.-]+\.(com|nl|org|net|edu|gov|info|io|biz|dev|xyz)(\/)?$/i.test(input.value)) return false;
+        
         if (input.classList.contains("colored-input") && input.type === "color" && !/^#[0-9A-F]{6}$/i.test(input.value)) return false;
 
         return true;

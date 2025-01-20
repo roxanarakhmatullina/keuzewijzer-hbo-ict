@@ -180,6 +180,8 @@ namespace Server.Controllers
         // POST: api/Cluster
         [HttpPost]
         [Authorize]
+        [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Cluster>> PostCluster([FromBody] ClusterDTO clusterDto)
         {
             var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
@@ -188,6 +190,7 @@ namespace Server.Controllers
             if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
                 return Forbid();
 
+            // Fetch prerequisites, graduate profiles, and cohorts by their IDs
             var prerequisites = await _context.Clusters
                 .Where(c => clusterDto.PrerequisiteIds.Contains(c.Id))
                 .ToListAsync();
@@ -200,6 +203,7 @@ namespace Server.Controllers
                 .Where(co => clusterDto.CohortIds.Contains(co.Id))
                 .ToListAsync();
 
+            // Create the new Cluster entity
             var newCluster = new Cluster
             {
                 Name = clusterDto.Name,
@@ -209,19 +213,36 @@ namespace Server.Controllers
                 IsFreeChoice = clusterDto.IsFreeChoice,
                 IsLocked = clusterDto.IsLocked,
                 Level = clusterDto.Level,
+                // Assign the relationships without causing circular references
                 ClusterPrerequisites = prerequisites.Select(p => new ClusterPrerequisite
                 {
-                    Cluster = null,
-                    Prerequisite = p
+                    Prerequisite = p // Only store the reference to the prerequisite
                 }).ToList(),
                 GraduateProfiles = graduateProfiles,
                 Cohorts = cohorts
             };
 
+            // Add the new cluster to the context
             _context.Clusters.Add(newCluster);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCluster), new { id = newCluster.Id }, newCluster);
+            // Return the created cluster without any unnecessary circular references
+            var clusterDtoResult = new
+            {
+                newCluster.Id,
+                newCluster.Name,
+                newCluster.Link,
+                newCluster.FirstSemester,
+                newCluster.LastSemester,
+                newCluster.IsFreeChoice,
+                newCluster.IsLocked,
+                newCluster.Level,
+                PrerequisiteIds = newCluster.ClusterPrerequisites.Select(cp => cp.PrerequisiteId).ToList(),
+                GraduateProfileIds = newCluster.GraduateProfiles.Select(g => g.Id).ToList(),
+                CohortIds = newCluster.Cohorts.Select(co => co.Id).ToList()
+            };
+
+            return CreatedAtAction(nameof(GetCluster), new { id = newCluster.Id }, clusterDtoResult);
         }
 
         // DELETE: api/Cluster/{id}

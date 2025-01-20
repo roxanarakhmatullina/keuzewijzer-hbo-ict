@@ -35,7 +35,7 @@ const Popup = ({
             // Re-enable background scroll
             document.body.style.overflow = '';
         }
-    }, [isOpen, children]);
+    }, [isOpen]);
 
     return (
         isOpen && (

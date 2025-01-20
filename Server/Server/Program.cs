@@ -2,11 +2,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Server.Data;
-using Server.Models;
 using Server.Services;
 using Swashbuckle.AspNetCore.Filters;
 using DotNetEnv;
@@ -49,7 +47,6 @@ if (string.IsNullOrEmpty(secretKey))
 }
 
 var key = Encoding.UTF8.GetBytes(secretKey);
-Console.WriteLine("Secret key (Base64): " + Convert.ToBase64String(key));
 
 builder.Services.AddAuthentication(options =>
     {
