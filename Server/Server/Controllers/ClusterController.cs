@@ -43,10 +43,6 @@ namespace Server.Controllers
                     c.Id,
                     c.Name,
                     c.Level,
-                    c.IsLocked,
-                    PrerequisiteIds = c.ClusterPrerequisites.Select(cp => cp.PrerequisiteId).ToList(),
-                    GraduateProfileIds = c.GraduateProfiles.Select(g => g.Id).ToList(),
-                    CohortIds = c.Cohorts.Select(co => co.Id).ToList(),
                 })
                 .OrderBy(c => c.Level)
                 .ThenBy(c => c.Name)
