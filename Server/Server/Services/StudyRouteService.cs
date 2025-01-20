@@ -13,7 +13,7 @@ public class StudyRouteService
         return new StudyYearDTO
         {
             // Format the year as "startYear/XX" with zero-padded second part.
-            Year = $"{startYear}/{startYear + 1:D2}",
+            Year = $"'{startYear}/'{startYear + 1:D2}",
             FirstSemester = new List<SmallClusterDTO>(),
             LastSemester = new List<SmallClusterDTO>()
         };

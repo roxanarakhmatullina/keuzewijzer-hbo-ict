@@ -83,12 +83,24 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                         onMouseLeave={handleHoverLink}
                         onTouchStart={handleHoverLink}
                         onTouchEnd={handleHoverLink}
-                        onClick={() => (link && link !== "-") && window.open(link, "_blank")}
+                        onClick={() => {
+                            if (link && link !== "-") {
+                                const formattedLink = link.startsWith("http://") || link.startsWith("https://")
+                                    ? link
+                                    : `https://${link}`;
+                                window.open(formattedLink, "_blank");
+                            }
+                        }}
                         onKeyDown={handleKeyDownLink}
                         tabIndex={link ? 0 : -1} // Focusable if `link` is present
                         role={link ? "button" : undefined} // Interactive if `link` exists
-                        style={{backgroundColor: (link && link !== "-") && !isFreeChoice ? "#b4c7db" : isFreeChoice ? "#c5c5c5" : "#e5e5e5"}}
-                        className={"cluster-info relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"}>
+                        style={{
+                            backgroundColor:
+                                (link && link !== "-") && !isFreeChoice ? "#b4c7db" :
+                                    isFreeChoice ? "#c5c5c5" : "#e5e5e5"
+                        }}
+                        className="cluster-info relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"
+                    >
                         <p className={`${link ? "text-black" : isFreeChoice ? "text-[#999]" : "text-[#c5c5c5]"} text-lg font-black`}>i</p>
                     </div>
                 </div>
