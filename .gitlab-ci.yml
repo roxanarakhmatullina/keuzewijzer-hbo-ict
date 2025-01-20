@@ -18,10 +18,18 @@ build-client:
     - build-client
   variables:
     DOCKER_TLS_CERTDIR: ""
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-client
+    paths:
+      - Client/node_modules/
+      - Client/.npm/
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
+    - cd Client
+    - npm ci # Uses cached dependencies if available
+    - cd ..
     - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$CLIENT_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$CLIENT_TAG
   only:
@@ -33,30 +41,37 @@ build-dashboard:
     - build-dashboard
   variables:
     DOCKER_TLS_CERTDIR: ""
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-dashboard
+    paths:
+      - dashboard/node_modules/
+      - dashboard/.npm/
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
+    - cd dashboard
+    - npm ci # Uses cached dependencies if available
+    - cd ..
     - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$DASHBOARD_TAG -f dashboard/dockerfile ./dashboard
     - docker push $IMAGE_NAME:$DASHBOARD_TAG
   only:
     - test/matz-testing-CI
 
 build-server:
- stage: build
- tags:
-   - build-server
- variables:
-   DOCKER_TLS_CERTDIR: ""
- before_script:
-   - docker info
-   - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
- script:
-   - docker build --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USER=$DB_USER --build-arg DB_PASSWORD=$DB_PASS --build-arg DB_NAME=$DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$JWT_AUDIENCE --build-arg JWT_ISSUER=$JWT_ISSUER --build-arg JWT_SECRET=$JWT_SECRET -t $IMAGE_NAME:$SERVER_TAG -f Server/Dockerfile ./Server
-   - docker push $IMAGE_NAME:$SERVER_TAG
- only:
-   - test/matz-testing-CI
-
+  stage: build
+  tags:
+    - build-server
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker info
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USER=$DB_USER --build-arg DB_PASSWORD=$DB_PASS --build-arg DB_NAME=$DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$JWT_AUDIENCE --build-arg JWT_ISSUER=$JWT_ISSUER --build-arg JWT_SECRET=$JWT_SECRET -t $IMAGE_NAME:$SERVER_TAG -f Server/Dockerfile ./Server
+    - docker push $IMAGE_NAME:$SERVER_TAG
+  only:
+    - test/matz-testing-CI
 
 deploy-client:
   stage: deploy
@@ -87,16 +102,16 @@ deploy-dashboard:
     - test/matz-testing-CI
 
 deploy-server:
- stage: deploy
- tags:
-   - docker-deploy
- before_script:
-   - chmod 400 $SSH_KEY
- script:
-   - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
-     docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
-     docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-     docker run -d -p 5125:8080 --name $SERVER_NAME --network DB_connect $IMAGE_NAME:$SERVER_TAG &&
-     docker images prune -a"
- only:
-   - test/matz-testing-CI
+  stage: deploy
+  tags:
+    - docker-deploy
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 5125:8080 --name $SERVER_NAME --network DB_connect $IMAGE_NAME:$SERVER_TAG &&
+      docker images prune -a"
+  only:
+    - test/matz-testing-CI
