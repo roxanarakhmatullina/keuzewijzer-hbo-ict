@@ -99,4 +99,3 @@ deploy-server:
       docker image prune -a -f"
   only:
     - test/matz-testing-CI
-      
