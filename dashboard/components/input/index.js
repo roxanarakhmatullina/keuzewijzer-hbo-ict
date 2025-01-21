@@ -3,7 +3,7 @@ import { useState } from "react";
 import Search from '@mui/icons-material/Search';
 import Label from "@/components/label";
 
-const Input = ({ label, type, defaultValue, value, onChange, placeholder, required, disabled, info, state }) => {
+const Input = ({ label, type, defaultValue, value, onChange, placeholder, required, disabled, info, state, autoComplete }) => {
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState("");
 
@@ -60,6 +60,7 @@ const Input = ({ label, type, defaultValue, value, onChange, placeholder, requir
                             placeholder={placeholder}
                             required={required}
                             disabled={disabled}
+                            autoComplete={autoComplete}
                             className={`${error && "border-[1px] bg-red-100 border-red-600"} h-[40px] w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}
                         />
                     </div>

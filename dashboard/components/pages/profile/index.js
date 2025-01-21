@@ -29,7 +29,7 @@ const ProfilePage = () => {
     }
 
     const handleSave = () => {
-        if(state === "password") {
+        if(state === "edit") {
             setLoading(true);
             if(passwordDTO?.newPassword !== passwordDTO?.repeat_password) {
                 addAlert({
@@ -100,7 +100,7 @@ const ProfilePage = () => {
                     <button
                         onClick={() => {
                             setPopup(true);
-                            setState("password");
+                            setState("edit");
                             setPasswordDTO({
                                 oldPassword: "",
                                 newPassword: "",
@@ -141,17 +141,17 @@ const ProfilePage = () => {
             </div>
 
             <Popup
-                title={state === "delete" ? "Uitloggen" : state === "password" ? "Wachtwoord wijzigen" : ""}
+                title={state === "delete" ? "Uitloggen" : state === "edit" ? "Wachtwoord wijzigen" : ""}
                 isOpen={popup}
                 onCancel={() => setPopup(false)}
                 onAccept={() => state === "delete" ? logout() : handleSave()}
-                acceptText={state === "delete" ? "Uitloggen" : state === "password" ? "Wijzigen" : ""}
+                acceptText={state === "delete" ? "Uitloggen" : state === "edit" ? "Wijzigen" : ""}
                 description={state === "delete" ? "Je staat op het punt om uit te loggen, weet je het zeker? Je moet daarna opnieuw inloggen, voordat je weer nieuwe acties kunt doen." : ""}
                 cancelText={"Annuleren"}
-                canAccept={state === "delete" ? true : state === "password" ? (passwordDTO?.oldPassword !== "" && passwordDTO?.newPassword !== "" && passwordDTO.repeat_password !== "" && passwordDTO.newPassword === passwordDTO.repeat_password) : false}
+                canAccept={state === "delete" ? true : state === "edit" ? (passwordDTO?.oldPassword !== "" && passwordDTO?.newPassword !== "" && passwordDTO.repeat_password !== "" && passwordDTO.newPassword === passwordDTO.repeat_password) : false}
                 state={state}
             >
-                {state === "password" && (
+                {state === "edit" && (
                     <>
                         <Input
                             type={"password"}
@@ -159,6 +159,7 @@ const ProfilePage = () => {
                             onChange={(e) => handlePasswordChange("oldPassword", e.target.value)}
                             placeholder={"Huidige wachtwoord"}
                             label={"Huidige wachtwoord"}
+                            state={state}
                         />
 
                         <Input
@@ -167,6 +168,8 @@ const ProfilePage = () => {
                             onChange={(e) => handlePasswordChange("newPassword", e.target.value)}
                             placeholder={"Nieuw wachtwoord"}
                             label={"Nieuw wachtwoord"}
+                            autoComplete={"new-password"}
+                            state={state}
                         />
 
                         <Input
@@ -175,6 +178,8 @@ const ProfilePage = () => {
                             onChange={(e) => handlePasswordChange("repeat_password", e.target.value)}
                             placeholder={"Herhaal nieuw wachtwoord"}
                             label={"Herhaal nieuw wachtwoord"}
+                            autoComplete={"new-password"}
+                            state={state}
                         />
                     </>
                 )}

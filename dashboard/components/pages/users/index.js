@@ -194,6 +194,7 @@ const UsersPage = () => {
                     placeholder={"Wachtwoord"}
                     label={"Wachtwoord"}
                     state={state}
+                    autoComplete={"new-password"}
                     required
                 />
 
@@ -204,6 +205,7 @@ const UsersPage = () => {
                     placeholder={"Herhaal wachtwoord"}
                     label={"Herhaal wachtwoord"}
                     state={state}
+                    autoComplete={"new-password"}
                     required
                 />
             </Popup>
