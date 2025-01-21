@@ -75,12 +75,13 @@ namespace Server.Controllers
 
                 // Handle retaken clusters and dependencies
                 ProcessRetakenClusters(studyRoute, clusters);
+                
+                // Process Level 0 clusters for retakes
+                studyRoute = ProcessLevel0Clusters(studyRoute, clusters);
 
                 // Process Level 4 clusters after Level 0
                 ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4);
                 
-                // Process Level 0 clusters for retakes
-                studyRoute = ProcessLevel0Clusters(studyRoute, clusters);
 
                 return Ok(studyRoute);
             }
