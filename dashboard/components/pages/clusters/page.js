@@ -12,6 +12,7 @@ import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
 import Label from "@/components/label";
 import MultiSelection from "@/components/multiselection";
+import SearchView from "@/components/views/search";
 
 const ClustersPage = () => {
     const [clusters, setClusters] = useState([]);
@@ -276,40 +277,33 @@ const ClustersPage = () => {
     return (
         <>
             <div className={"w-full flex flex-col gap-[10px]"}>
-                <div className={"w-full flex flex-col-reverse md:flex-row justify-end align-middle md:items-center items-end gap-[10px] box-border"}>
-                    <Input
-                        type={"search"}
-                        placeholder={"Zoeken..."}
-                        onChange={handleFilter}
-                    />
-                    <button
-                        onClick={(e) => {
-                            handlePopup(e, true);
-                            setClusterDTO({
-                                id: "",
-                                name: "",
-                                link: "",
-                                isLocked: false,
-                                isFreeChoice: false,
-                                firstSemester: false,
-                                lastSemester: false,
-                                level: 0,
-                                cohortIds: [],
-                                graduateProfileIds: [],
-                                prerequisiteIds: [],
-                            });
-                            setCohorts([]);
-                            setGraduateProfiles([]);
-                            setPrerequisites([]);
-                            setClusterPrerequisites([]);
-                            setClusterCohorts([]);
-                            setClusterGraduateProfiles([]);
-                            setState("new");
-                        }}
-                        className={"hover:brightness-95 min-w-[100px] bg-[#f3f3f3] border-[1px] border-[#c5c5c5] rounded-[8px] p-[5px] box-border flex justify-center align-middle items-center"}>
-                        <Add/> Nieuw
-                    </button>
-                </div>
+
+                <SearchView
+                    onChange={handleFilter}
+                    handleNew={(e) => {
+                        setClusterDTO({
+                            id: "",
+                            name: "",
+                            link: "",
+                            isLocked: false,
+                            isFreeChoice: false,
+                            firstSemester: false,
+                            lastSemester: false,
+                            level: 0,
+                            cohortIds: [],
+                            graduateProfileIds: [],
+                            prerequisiteIds: [],
+                        });
+                        setCohorts([]);
+                        setGraduateProfiles([]);
+                        setPrerequisites([]);
+                        setClusterPrerequisites([]);
+                        setClusterCohorts([]);
+                        setClusterGraduateProfiles([]);
+                        setState("new");
+                        handlePopup(e, true);
+                    }}
+                />
 
                 <Table data={filteredClusters} handleEdit={handleEdit} handleDelete={handleDelete}/>
             </div>

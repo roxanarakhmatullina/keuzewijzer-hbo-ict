@@ -4,6 +4,7 @@ import Navigation from '@/components/navigation';
 import StudyYear from "@/components/studyYear";
 import {useError, useGraduateProfile, useStudyYear} from "@/hooks";
 import {api} from "@/hooks/api";
+import StudyRouteLoader from "@/components/loaders/studyRouteLoader";
 
 const Home = () => {
     const {studyYears, startedStudyYear, setStudyYears} = useStudyYear();
@@ -36,7 +37,7 @@ const Home = () => {
                 className={`${selectedGraduateProfile ? "flex" : "hidden"} pt-[100px] max-w-[1366px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}>
 
                 {/* Scrollable content for StudyYears */}
-                {selectedGraduateProfile && studyYears && studyYears.length > 0 && studyYears.map((studyYear, index) => {
+                {selectedGraduateProfile && studyYears && studyYears.length > 0 ? studyYears.map((studyYear, index) => {
                     return (
                         <React.Fragment key={"study-year-" + index}>
                             <StudyYear
@@ -83,7 +84,9 @@ const Home = () => {
                             )}
                         </React.Fragment>
                     );
-                })}
+                }) : (
+                    <StudyRouteLoader />
+                )}
             </div>
         </div>
     );

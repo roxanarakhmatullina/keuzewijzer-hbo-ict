@@ -1,9 +1,8 @@
 'use client'
-import React, {use, useEffect, useState} from 'react'
-import {useGoogleAnalytics, useGraduateProfile, useStudyYear} from "@/hooks";
+import React, {useState} from 'react'
+import {useGraduateProfile, useStudyYear} from "@/hooks";
 import Logo from "@/icons/logo";
 import StartStudy from "@/components/navigation/startStudy";
-import Link from "next/link";
 import Retry from "@/icons/retry";
 import MenuIcon from "@/icons/menu";
 import GraduateProfiles from "@/components/navigation/graduateProfiles";

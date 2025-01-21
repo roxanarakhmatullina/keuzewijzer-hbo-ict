@@ -150,7 +150,9 @@ namespace Server.Controllers
             Cohort cohort,
             List<StudyYearDTO> studyRoute,
             List<SmallClusterDTO> clusters,
-            ClusterLevel targetLevel)
+            ClusterLevel targetLevel,
+            Boolean checkPrerequisites = false
+            )
         {
             var levelClusters = clusters
                 .Where(cl => cl.Level == targetLevel)
@@ -184,7 +186,7 @@ namespace Server.Controllers
                         .Any(sy => sy.FirstSemester.Concat(sy.LastSemester).Any(cl => cl.Id == pr.Id)));
 
 
-                    if (true) // hasAtLeastOnePrerequisiteMet || !cluster.Prerequisites.Any()
+                    if (checkPrerequisites ? (hasAtLeastOnePrerequisiteMet || !cluster.Prerequisites.Any()) : true) // hasAtLeastOnePrerequisiteMet || !cluster.Prerequisites.Any()
                     {
                         // Add cluster to the appropriate semester
                         if (cluster.FirstSemester && !cluster.LastSemester)

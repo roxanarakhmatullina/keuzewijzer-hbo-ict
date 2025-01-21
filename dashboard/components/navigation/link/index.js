@@ -13,8 +13,8 @@ const NavLink = ({ children, title }) => {
     return (
         <div
             onClick={() => setCurrentPage(title)}
-            style={{backgroundColor: isActive ? "#2563eb" : "transparent"}}
-            className={`cursor-pointer transition ease-in-out w-full p-[10px] box-border rounded-[8px] bg-transparent flex flex-row gap-[10px] justify-start items-center ${isActive ? "bg-blue-600" : "bg-transparent"}`}>
+            style={{backgroundColor: isActive ? "#2563eb" : "white"}}
+            className={`hover:brightness-90 cursor-pointer transition ease-in-out w-full p-[10px] box-border rounded-[8px] flex flex-row gap-[10px] justify-start items-center`}>
             {React.Children.map(children, child =>
                 React.cloneElement(child, {
                     className: `${child.props.className} ${isActive ? 'text-white' : 'text-black'}`

@@ -8,6 +8,7 @@ import Popup from "@/components/popup";
 import Input from "@/components/input";
 import {useAlert} from "@/Providers/AlertProvider";
 import api from "@/hooks/api";
+import Button from "@/components/button";
 
 
 const ProfilePage = () => {
@@ -97,7 +98,8 @@ const ProfilePage = () => {
                         label={"Wachtwoord"}
                         disabled={true}
                     />
-                    <button
+                    <Button
+                        type={"primary"}
                         onClick={() => {
                             setPopup(true);
                             setState("edit");
@@ -107,22 +109,23 @@ const ProfilePage = () => {
                                 repeat_password: "",
                             });
                         }}
-                        className={"w-auto rounded-md p-[5px] h-[40px] box-border flex flex-row gap-[5px] justify-center align-middle items-center bg-[#f3f3f3] border-[1px] border-[#c5c5c5]"}>
-                        <Edit className={"text-black"}/>
-                        <p className={"text-black"}>Wijzigen</p>
-                    </button>
+                        >
+                        <Edit/>
+                        <p>Wijzigen</p>
+                    </Button>
                 </div>
 
                 <div className={"mt-[25px] w-full flex flex-row gap-[25px] justify-start items-center"}>
-                    <button
+                    <Button
+                        type={"secondary"}
                         onClick={() => {
                             setPopup(true);
                             setState("delete");
                         }}
                         className={"w-auto rounded-md p-[10px] box-border flex flex-row gap-[5px] justify-center align-middle items-center bg-red-200"}>
-                        <Logout className={"text-red-700 font-bold"}/>
-                        <p className={"text-red-700 font-bold"}>Uitloggen</p>
-                    </button>
+                        <Logout/>
+                        <p>Uitloggen</p>
+                    </Button>
 
                     {/*{user?.twoFactorEnabled ? (*/}
                     {/*    <></>*/}

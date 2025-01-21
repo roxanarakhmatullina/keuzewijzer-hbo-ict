@@ -94,7 +94,7 @@ const Table = ({ data, handleDelete, handleEdit }) => {
                                                 .map((color, index) => (
                                                 <div
                                                     key={index}
-                                                    className="z-[1] w-[20px] border-[1px] border-[#fff] h-[20px] rounded-[50%] mr-[-5px]"
+                                                    className="w-[20px] border-[1px] border-[#fff] h-[20px] rounded-[50%] mr-[-5px]"
                                                     style={{ backgroundColor: color }}
                                                 ></div>
                                             ))

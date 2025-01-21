@@ -21,6 +21,9 @@ export default {
           '100%': { transform: 'translateX(100%)' },
         },
       },
+      boxShadow: {
+        'inner-y': 'inset 0 2px 10px rgba(0, 0, 0, 0.1), inset 0 -2px 10px rgba(0, 0, 0, 0.06)',
+      },
     },
   },
   plugins: [],

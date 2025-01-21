@@ -1,7 +1,6 @@
 'use client'
 import React, {useState} from 'react';
 import {useAuth} from "@/Providers/AuthProvider";
-import Logo from "@/icons/logo";
 import Input from "@/components/input";
 import Image from "next/image";
 

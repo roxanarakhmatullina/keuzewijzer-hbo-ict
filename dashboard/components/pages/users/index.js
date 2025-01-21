@@ -10,6 +10,8 @@ import Input from "@/components/input";
 import Select from "@/components/select";
 import {useAlert} from "@/Providers/AlertProvider";
 import {filterData} from "@/hooks/filter";
+import Button from "@/components/button";
+import SearchView from "@/components/views/search";
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -136,27 +138,20 @@ const UsersPage = () => {
     return (
         <>
             <div className={"w-full flex flex-col gap-[10px]"}>
-                <div className={"w-full flex flex-col-reverse md:flex-row justify-end align-middle md:items-center items-end gap-[10px] box-border"}>
-                    <Input
-                        type={"search"}
-                        placeholder={"Zoeken..."}
-                        onChange={handleFilter}
+                <SearchView
+                    onChange={handleFilter}
+                    handleNew={(e) => {
+                        setUserDTO({
+                            email: "",
+                            role: "",
+                            password: "", // Clear password fields
+                            repeatPassword: "", // Clear password fields
+                        });
+                        setState("new");
+                        handlePopup(e, true);
+                    }}
                     />
-                    <button
-                        onClick={(e) => {
-                            handlePopup(e, true);
-                            setUserDTO({
-                                email: "",
-                                role: "",
-                                password: "", // Clear password fields
-                                repeatPassword: "", // Clear password fields
-                            });
-                            setState("new");
-                        }}
-                        className={"hover:brightness-95 min-w-[100px] bg-[#f3f3f3] border-[1px] border-[#c5c5c5] rounded-[8px] p-[5px] box-border flex justify-center align-middle items-center"}>
-                        <Add/> Nieuw
-                    </button>
-                </div>
+
                 <Table data={filteredUsers} handleDelete={handleDelete}/>
             </div>
 

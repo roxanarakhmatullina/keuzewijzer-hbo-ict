@@ -9,6 +9,7 @@ import Select from "@/components/select";
 import {useAuth} from "@/Providers/AuthProvider";
 import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
+import SearchView from "@/components/views/search";
 
 const CohortsPage = () => {
     const [cohorts, setCohorts] = useState([]);
@@ -122,26 +123,18 @@ const CohortsPage = () => {
     return (
         <>
             <div className={"w-full flex flex-col gap-[10px]"}>
-                <div className={"w-full flex flex-col-reverse md:flex-row justify-end align-middle md:items-center items-end gap-[10px] box-border"}>
-                    <Input
-                        type={"search"}
-                        onChange={handleFilter}
-                        placeholder={"Zoeken..."}
-                    />
-                    <button
-                        onClick={(e) => {
-                            handlePopup(e,true);
-                            setCohortDTO({
-                                id: "",
-                                name: "",
-                                isAvailable: "false",
-                            })
-                            setState("new");
-                        }}
-                        className={"hover:brightness-95 min-w-[100px] bg-[#f3f3f3] border-[1px] border-[#c5c5c5] rounded-[8px] p-[5px] box-border flex justify-center align-middle items-center"}>
-                        <Add/> Nieuw
-                    </button>
-                </div>
+                <SearchView
+                    onChange={handleFilter}
+                    handleNew={(e) => {
+                        setCohortDTO({
+                            id: "",
+                            name: "",
+                            isAvailable: "false",
+                        });
+                        setState("new");
+                        handlePopup(e, true);
+                    }}
+                />
 
                 <Table data={filteredCohorts} handleEdit={handleEdit} handleDelete={handleDelete}/>
             </div>

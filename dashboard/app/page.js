@@ -10,7 +10,7 @@ const DashboardPage = () => {
     const {user, loading} = useAuth();
     return (
         loading && !user ? <Loading/> : !loading && !user ? <LoginPage/> : user && (
-            <div className={`w-full h-full flex flex-row ${loading && !user ? "" : "animate"}`}>
+            <div className={`w-[100vw] h-[100vh] flex flex-row ${loading && !user ? "" : "animate"}`}>
                 <Navigation/>
                 <Pages/>
             </div>

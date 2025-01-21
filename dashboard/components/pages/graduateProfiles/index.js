@@ -11,6 +11,7 @@ import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
 import Label from "@/components/label";
 import MultiSelection from "@/components/multiselection";
+import SearchView from "@/components/views/search";
 
 const GraduateProfilePage = () => {
     const [graduateProfiles, setGraduateProfiles] = useState([]);
@@ -155,37 +156,30 @@ const GraduateProfilePage = () => {
     return (
         <>
             <div className={"w-full flex flex-col gap-[10px]"}>
-                <div className={"w-full flex flex-col-reverse md:flex-row justify-end align-middle md:items-center items-end gap-[10px] box-border"}>
-                    <Input
-                        type={"search"}
-                        onChange={handleFilter}
-                        placeholder={"Zoeken..."}
-                    />
+                <SearchView
+                    handleNew={(e) => {
+                        setGraduateProfileCohorts([]);
+                        setGraduateProfileDTO({
+                            id: "",
+                            name: "",
+                            color: "",
+                            link: null,
+                            cohortIds: [],
+                        });
+                        setState("new");
+                        handlePopup(e, true);
+                    }}
+                    onChange={handleFilter}
+                />
 
-                    <button
-                        onClick={(e) => {
-                            handlePopup(e, true);
-                            setGraduateProfileCohorts([]);
-                            setGraduateProfileDTO({
-                                id: "",
-                                name: "",
-                                color: "",
-                                link: null,
-                                cohortIds: [],
-                            });
-                            setState("new");
-                        }}
-                        className={"hover:brightness-95 min-w-[100px] bg-[#f3f3f3] border-[1px] border-[#c5c5c5] rounded-[8px] p-[5px] box-border flex justify-center align-middle items-center"}>
-                        <Add/> Nieuw
-                    </button>
-                </div>
                 <Table data={filteredGraduateProfiles} handleEdit={handleEdit} handleDelete={handleDelete}/>
             </div>
 
             <Popup
                 isOpen={popup}
                 title={state === "new" ? "Nieuwe Afstudeerprofiel" : state === "edit" ? "Aanpassen Afstudeerprofiel" : state === "delete" ? "Verwijder afstudeerprofiel" : ""}
-                onAccept={handleSave} onCancel={(e) => handlePopup(e, false)}
+                onAccept={handleSave}
+                onCancel={handlePopup}
                 acceptText={state === "delete" ? "Verwijder" : "Opslaan"} cancelText={"Annuleren"}
                 canAccept={graduateProfileDTO?.name && graduateProfileDTO?.color}
                 description={state === "delete" ? "Weet je zeker dat je dit afstudeerprofiel wilt verwijderen?" : ""}

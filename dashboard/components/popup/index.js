@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useRef } from "react";
 import { useAuth } from "@/Providers/AuthProvider";
+import Button from "@/components/button";
 
 const Popup = ({
                    children,
@@ -37,6 +38,20 @@ const Popup = ({
         }
     }, [isOpen]);
 
+    // on pressing escape close the popup
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (isOpen && e.key === 'Escape') {
+                e.preventDefault();
+                onCancel();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [isOpen, onCancel]);
+
     return (
         isOpen && (
             <div
@@ -45,7 +60,7 @@ const Popup = ({
             >
                 <div
                     id="popup"
-                    className="w-full max-w-[768px] h-auto max-h-[100%] min-h-[250px] bg-[#fff] p-[0px] box-border rounded-[12px] flex flex-col justify-center align-middle items-center"
+                    className="w-full max-w-[768px] h-auto max-h-[calc(100%-50px)] min-h-[100px] bg-[#fff] p-[0px] box-border rounded-[12px] flex flex-col justify-center align-middle items-center"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="w-full p-[20px] flex flex-col gap-[5px] justify-center align-middle items-center">
@@ -64,21 +79,22 @@ const Popup = ({
                     {(onAccept || onCancel) && !loading && (
                         <div className="w-full p-[20px] box-border flex flex-row gap-[10px] justify-end align-middle items-center">
                             {onAccept && (
-                                <button
+                                <Button
+                                    type={state === "delete" ? "danger" : "primary"}
+                                    disabled={!canAccept}
                                     onClick={(canAccept && canAccept === true ? onAccept : null) || onAccept}
-                                    className={`${!canAccept && "bg-gray-300 cursor-not-allowed pointer-events-none"} min-w-[100px] hover:brightness-95 md:w-auto w-full h-[40px] text-sm ${state && state === "delete" ? "bg-red-600" : "bg-blue-600"} text-white rounded-[8px] p-[10px] box-border`}
                                 >
                                     {acceptText ? acceptText : "Accept"}
-                                </button>
+                                </Button>
                             )}
                             {onCancel && (
-                                <button
+                                <Button
+                                    type="secondary"
                                     id="cancel"
                                     onClick={onCancel}
-                                    className="min-w-[100px] hover:brightness-95 md:w-auto w-full h-[40px] text-sm bg-gray-400 text-white rounded-[8px] p-[10px] box-border"
                                 >
                                     {cancelText ? cancelText : "Cancel"}
-                                </button>
+                                </Button>
                             )}
                         </div>
                     )}

@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState } from 'react';
+import React, {createContext, useContext, useEffect, useState} from 'react';
 
 const AlertContext = createContext();
 
@@ -35,9 +35,13 @@ const AlertProvider = ({ children }) => {
         }, 7500);
     };
 
+    useEffect(() => {
+        addAlert({ type: 'ok', message: 'Welcome to the dashboard!' });
+    }, []);
+
     return (
         <AlertContext.Provider value={{ addAlert }}>
-            <div className="fixed top-0 left-0 w-full h-full z-[3000] p-[20px] box-border pointer-events-none flex flex-col gap-[5px] justify-end align-middle items-center">
+            <div className="fixed top-0 left-0 w-full h-full z-[5000] p-[20px] box-border pointer-events-none flex flex-col gap-[5px] justify-end align-middle items-center">
                 {alerts.map((alert) => (
                     <div
                         key={alert.id}
