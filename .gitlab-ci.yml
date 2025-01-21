@@ -57,7 +57,6 @@ build-server:
   only:
     - test/matz-testing-CI
 
-
 deploy-client:
   stage: deploy
   tags:
@@ -97,6 +96,19 @@ deploy-server:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5125:8080 --name $SERVER_NAME --network DB_connect $IMAGE_NAME:$SERVER_TAG &&
-      docker image prune -a"
+  only:
+    - test/matz-testing-CI
+
+
+cleanup:
+  stage: cleanup
+  tags:
+    - docker-cleanup
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker image prune -a -f &&
+      docker container prune -f &&
+      docker volume prune -f"
   only:
     - test/matz-testing-CI
