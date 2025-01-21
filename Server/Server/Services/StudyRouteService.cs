@@ -1,3 +1,7 @@
+using System.Security.Cryptography.Pkcs;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using Server.Data;
 using Server.DataTransferObjects;
 using Server.Models;
 
@@ -5,6 +9,7 @@ namespace Server.Services;
 
 public class StudyRouteService
 {
+    
     public static StudyYearDTO CreateNewStudyYear(Cohort cohort, int yearNumber)
     {
         int cohortYear = int.Parse(cohort.Name.Substring(2, 2)); // Extracts the cohort year as an integer.

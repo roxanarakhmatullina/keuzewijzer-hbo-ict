@@ -22,7 +22,7 @@ const Pages = () => {
                     <HomePage/>
                 ) : currentPage === "Cohorten" ? (
                     <CohortsPage/>
-                ) : currentPage === "Afstudeerprofielen" ? (
+                ) : currentPage === "Afstudeerrichtingen" ? (
                     <GraduateProfiles/>
                 ) : currentPage === "Clusters" ? (
                     <ClustersPage/>

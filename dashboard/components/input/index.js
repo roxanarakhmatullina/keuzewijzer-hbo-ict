@@ -3,8 +3,9 @@ import { useState } from "react";
 import Search from '@mui/icons-material/Search';
 import Label from "@/components/label";
 
-const Input = ({ label, type, defaultValue, value, onChange, placeholder, required, disabled, info }) => {
+const Input = ({ label, type, defaultValue, value, onChange, placeholder, required, disabled, info, state }) => {
     const [error, setError] = useState(false);
+    const [errorText, setErrorText] = useState("");
 
     const handleChange = (e) => {
         if (validateInput(e)) {
@@ -24,27 +25,46 @@ const Input = ({ label, type, defaultValue, value, onChange, placeholder, requir
         const input = e.target;
 
         if (required && input.value === "") return false;
-        if (input.type === "email" && !validateEmail(input.value)) return false;
+        if (input.type === "email" && !validateEmail(input.value)) {
+            setErrorText("Voer een geldig e-mailadres in.");
+            return false;
+        }
+        if (!input.classList.contains("colored-input") && input.type === "text" && !/^[a-zA-Z0-9À-ÖØ-öø-ÿ '&()\-.,]{1,}$/.test(input.value)) {
+            setErrorText("Voer een geldige tekst in.");
+            return false
+        }
+        if (input.classList.contains("colored-input") && input.type === "color" && !/^#[0-9A-F]{6}$/i.test(input.value)) {
+            setErrorText("Voer een geldige hexadecimale kleur in.");
+            return false;
+        }
 
-        if (!input.classList.contains("colored-input") && input.type === "text" && !/^[a-zA-Z0-9À-ÖØ-öø-ÿ '&()\-.,]{1,}$/.test(input.value)) return false;
-        if (input.classList.contains("colored-input") && input.type === "color" && !/^#[0-9A-F]{6}$/i.test(input.value)) return false;
+        if (state && input.type === "password" && !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{12,}$/.test(input.value)) {
+            setErrorText("Het wachtwoord moet minimaal 12 tekens bevatten, een hoofdletter, een kleine letter en een cijfer.");
+            return false
+        }
 
+        setErrorText("");
         return true;
     };
 
     return (
-        <div className={`flex flex-col w-full ${disabled && "brightness-95"}`}>
+        <div className={`relative flex flex-col w-full ${disabled && "brightness-95"}`}>
             <Label text={label} required={required} info={info} />
             {(type === "text" || type === "email" || type === "password" || type === "url") && (
-                <input
-                    type={type}
-                    defaultValue={value}
-                    onChange={(e) => handleChange(e)}
-                    placeholder={placeholder}
-                    required={required}
-                    disabled={disabled}
-                    className={`${error && "border-[1px] border-red-600"} h-[40px] w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}
-                />
+                <>
+                    <div className={"w-full p-0 min-h-[40px] flex justify-center align-middle items-center flex-col"}>
+                        <input
+                            type={type}
+                            defaultValue={value}
+                            onChange={(e) => handleChange(e)}
+                            placeholder={placeholder}
+                            required={required}
+                            disabled={disabled}
+                            className={`${error && "border-[1px] bg-red-100 border-red-600"} h-[40px] w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}
+                        />
+                    </div>
+
+                </>
             )}
 
             {type === "search" && (
@@ -59,7 +79,7 @@ const Input = ({ label, type, defaultValue, value, onChange, placeholder, requir
                         disabled={disabled}
                         className="px-3 pl-[40px] h-[40px] py-2 mt-1 w-full bg-transparent border-0 focus-visible:outline-none"
                     />
-                    <Search className="left-[10px] absolute text-gray-500" />
+                    <Search className="left-[10px] absolute text-gray-500"/>
                 </div>
             )}
 
@@ -70,7 +90,7 @@ const Input = ({ label, type, defaultValue, value, onChange, placeholder, requir
                     placeholder={placeholder}
                     required={required}
                     disabled={disabled}
-                    className={`${error && "border-[1px] border-red-600"} w-full min-h-[150px] px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}
+                    className={`${error && "border-[1px] bg-red-100 border-red-600"} w-full min-h-[150px] px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500`}
                 />
             )}
 
@@ -103,6 +123,8 @@ const Input = ({ label, type, defaultValue, value, onChange, placeholder, requir
                     />
                 </div>
             )}
+
+            {error && (state === "edit" || state === "delete" || state === "new") && <p className="text-red-600 text-sm mt-1">{errorText}</p>}
         </div>
     );
 };

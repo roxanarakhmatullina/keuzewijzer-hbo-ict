@@ -18,6 +18,8 @@ const UsersPage = () => {
     const [userDTO, setUserDTO] = useState({
         email: "",
         role: "",
+        password: "", // Added for user creation
+        repeatPassword: "", // Added for password confirmation
     });
     const [popup, setPopup] = useState(false);
     const [state, setState] = useState(null);
@@ -26,6 +28,7 @@ const UsersPage = () => {
 
     useEffect(() => {
         fetchUsers();
+        fetchRoles(); // Fetch roles when component mounts
     }, []);
 
     const fetchUsers = async () => {
@@ -43,7 +46,7 @@ const UsersPage = () => {
             setRoles(res.data);
             setUserDTO((prev) => ({
                 ...prev,
-                role: res.data[0].id,
+                role: res.data[0]?.id, // Set the default role to the first available role
             }));
         });
     }
@@ -70,6 +73,16 @@ const UsersPage = () => {
     const handleSave = (e) => {
         setLoading(true);
         if(state === "new") {
+            if(userDTO.password !== userDTO.repeatPassword) {
+                addAlert({
+                    type: "error",
+                    message: "Wachtwoorden komen niet overeen."
+                });
+                setLoading(false);
+                return;
+            }
+
+            // Send userDTO data to create the new user
             api.post(`/Auth/create-user`, userDTO).then(res => {
                 fetchUsers();
                 setPopup(false);
@@ -79,9 +92,9 @@ const UsersPage = () => {
                     message: "Nieuwe gebruiker is aangemaakt, zie de mailbox van de aangemaakte gebruiker voor de inloggegevens."
                 });
             })
-            .finally(() => {
-                setLoading(false);
-            });
+                .finally(() => {
+                    setLoading(false);
+                });
         } else if(state === "delete") {
             api.delete(`/Auth/delete-user/${userDTO.id}`).then(res => {
                 fetchUsers();
@@ -92,18 +105,17 @@ const UsersPage = () => {
                     message: "Gebruiker is verwijderd."
                 });
             })
-            .catch(err => {
-                addAlert({
-                    type: "error",
-                    message: err.status === 403 ? "Je kunt jezelf niet verwijderen." : "Er is iets misgegaan bij het verwijderen van de gebruiker. Probeer het later opnieuw."
+                .catch(err => {
+                    addAlert({
+                        type: "error",
+                        message: err.status === 403 ? "Je kunt jezelf niet verwijderen." : "Er is iets misgegaan bij het verwijderen van de gebruiker. Probeer het later opnieuw."
+                    });
+                })
+                .finally(() => {
+                    setLoading(false);
                 });
-            })
-            .finally(() => {
-                setLoading(false);
-            });
         }
     }
-
 
     const handleDelete = (e, user) => {
         handlePopup(e, true);
@@ -136,9 +148,10 @@ const UsersPage = () => {
                             setUserDTO({
                                 email: "",
                                 role: "",
+                                password: "", // Clear password fields
+                                repeatPassword: "", // Clear password fields
                             });
                             setState("new");
-                            fetchRoles();
                         }}
                         className={"hover:brightness-95 min-w-[100px] bg-[#f3f3f3] border-[1px] border-[#c5c5c5] rounded-[8px] p-[5px] box-border flex justify-center align-middle items-center"}>
                         <Add/> Nieuw
@@ -150,7 +163,7 @@ const UsersPage = () => {
             <Popup
                 title={state === "new" ? "Nieuwe gebruiker" : state === "edit" ? "Aanpassen gebruiker" : state === "delete" ? "Verwijder gebruiker" : ""}
                 isOpen={popup} onCancel={handlePopup} onAccept={handleSave}
-                canAccept={userDTO?.email && userDTO?.role}
+                canAccept={state === "delete" ? (userDTO?.email && userDTO?.role) : (userDTO?.email && userDTO?.role && userDTO?.password && userDTO?.repeatPassword && userDTO?.password === userDTO?.repeatPassword)}
                 acceptText={state === "delete" ? "Verwijderen" : "Opslaan"} cancelText={"Annuleren"}
                 description={state === "delete" ? "Weet je zeker dat je deze gebruiker wilt verwijderen?" : ""}
                 state={state}
@@ -172,15 +185,28 @@ const UsersPage = () => {
                     optionLabelName={"name"}
                     optionValueName={"id"}
                     required
-                    info={() => (
-                        <>
-                            <p>Admin: Kan alles</p>
-                            <p>Maintainer: Kan alles, behalve gebruikers aanmaken.</p>
-                        </>
-                    )}
+                />
+
+                <Input
+                    type={"password"}
+                    value={userDTO?.password}
+                    onChange={(e) => handleChange("password", e.target.value)}
+                    placeholder={"Wachtwoord"}
+                    label={"Wachtwoord"}
+                    state={state}
+                    required
+                />
+
+                <Input
+                    type={"password"}
+                    value={userDTO?.repeatPassword}
+                    onChange={(e) => handleChange("repeatPassword", e.target.value)}
+                    placeholder={"Herhaal wachtwoord"}
+                    label={"Herhaal wachtwoord"}
+                    state={state}
+                    required
                 />
             </Popup>
-
         </>
     )
 }

@@ -7,8 +7,8 @@ import {api} from "@/hooks/api";
 
 const GraduateProfiles = ({setNavbarOpen}) => {
     const {selectedGraduateProfile, graduateProfiles, setGraduateProfiles} = useGraduateProfile();
-    const {setStudyYears, startedStudyYear} = useStudyYear();
-    const {errors, setErrors} = useError();
+    const {startedStudyYear} = useStudyYear();
+    const {errors} = useError();
 
     useEffect(() => {
         if (startedStudyYear && startedStudyYear.id) {
@@ -17,11 +17,7 @@ const GraduateProfiles = ({setNavbarOpen}) => {
             })
                 .then(res => {
                     setGraduateProfiles(res.data);
-                    console.log(res.data);
                 })
-                .catch(error => {
-                    console.error(error);
-                });
         }
     }, [startedStudyYear]);
 
@@ -29,7 +25,7 @@ const GraduateProfiles = ({setNavbarOpen}) => {
         <div
             className={`flex w-full md:max-w-[300px] h-auto flex-col gap-[15px] justify-center align-middle items-center`}>
             <p className={`w-full text-center ${selectedGraduateProfile ? "md:text-left md:text-[13px]" : ""} font-bold`}>
-                Afstudeerprofielen:
+                Afstudeerrichtingen:
             </p>
 
             {/* Profiles */}

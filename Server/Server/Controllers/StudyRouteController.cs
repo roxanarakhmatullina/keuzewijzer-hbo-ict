@@ -71,15 +71,16 @@ namespace Server.Controllers
                 {
                     ProcessLevel(cohort, studyRoute, clusters, level);
                 }
-
-                // Process Level 0 clusters for retakes
-                studyRoute = ProcessLevel0Clusters(studyRoute, clusters);
+                
 
                 // Handle retaken clusters and dependencies
                 ProcessRetakenClusters(studyRoute, clusters);
 
                 // Process Level 4 clusters after Level 0
                 ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4);
+                
+                // Process Level 0 clusters for retakes
+                studyRoute = ProcessLevel0Clusters(studyRoute, clusters);
 
                 return Ok(studyRoute);
             }
@@ -156,7 +157,7 @@ namespace Server.Controllers
                 // Process level 4 clusters after level 0
                 ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4);
                 ProcessRetakenClusters(studyRoute, clusters);
-               
+
                 return Ok(studyRoute);
             }
             catch (Exception e)
@@ -236,6 +237,7 @@ namespace Server.Controllers
 
             StudyYearDTO currentYearForNonRetaken;
 
+            // Ensure we have a study year for the current level
             if (studyRoute.Count <= (int)targetLevel - 1)
             {
                 currentYearForNonRetaken = StudyRouteService.CreateNewStudyYear(cohort, studyRoute.Count + 1);
@@ -246,8 +248,10 @@ namespace Server.Controllers
                 currentYearForNonRetaken = studyRoute[(int)targetLevel - 1];
             }
 
+            // Add Level 4 clusters to the last possible semester
             foreach (var cluster in levelClusters.Where(c => !c.IsRetaken))
             {
+                // If the cluster is a Level 4 and it doesn't have a semester yet, prioritize adding it to the last semester
                 if (cluster.FirstSemester && !cluster.LastSemester)
                 {
                     currentYearForNonRetaken.FirstSemester.Add(cluster);
@@ -258,35 +262,82 @@ namespace Server.Controllers
                 }
                 else
                 {
-                    if (currentYearForNonRetaken.FirstSemester.Count <= currentYearForNonRetaken.LastSemester.Count)
-                        currentYearForNonRetaken.FirstSemester.Add(cluster);
-                    else
+                    // For Level 4 clusters, check if last semester has space, else add to the first semester
+                    if (currentYearForNonRetaken.LastSemester.Count <= currentYearForNonRetaken.FirstSemester.Count)
                         currentYearForNonRetaken.LastSemester.Add(cluster);
+                    else
+                        currentYearForNonRetaken.FirstSemester.Add(cluster);
                 }
             }
-            
+
             clusters.RemoveAll(cl => levelClusters.Contains(cl));
         }
 
         private List<StudyYearDTO> ProcessLevel0Clusters(List<StudyYearDTO> studyYears, List<SmallClusterDTO> clusters)
         {
+            // Filter Level 0 clusters
             var level0Clusters = clusters
                 .Where(cl => cl.Level == ClusterLevel.Level0)
                 .OrderBy(cl => cl.Name)
                 .ToList();
 
-            foreach (var cluster in level0Clusters)
+            // Count Level 3 clusters across all years and semesters
+            var level3ClusterCount = studyYears.Sum(sy =>
+                sy.FirstSemester.Count(cl => cl.Level == ClusterLevel.Level3) +
+                sy.LastSemester.Count(cl => cl.Level == ClusterLevel.Level3));
+
+            // Check if there are any retaken clusters
+            var hasRetakenClusters = studyYears
+                .SelectMany(sy => sy.FirstSemester.Concat(sy.LastSemester))
+                .Any(cl => cl.IsRetaken);
+
+            // Only proceed if there are no retaken clusters and there are fewer than 2 level 3 clusters
+            if (!hasRetakenClusters && level3ClusterCount < 2)
             {
-                var targetYear = studyYears.FirstOrDefault(y =>
-                    y.FirstSemester.Count == 0 || y.LastSemester.Count == 0);
+                Console.WriteLine("Adding Level 0 clusters...");
 
-                if (targetYear == null)
-                    continue;
+                // Iterate through all study years and fill empty semesters with level 0 clusters
+                foreach (var year in studyYears)
+                {
+                    if (level0Clusters.Count == 0) break;
 
-                if (targetYear.FirstSemester.Count == 0)
-                    targetYear.FirstSemester.Add(cluster);
-                else
-                    targetYear.LastSemester.Add(cluster);
+                    // Add Level 0 clusters to first semester if there's space
+                    if (year.FirstSemester.Count == 0 && level0Clusters.Count > 0)
+                    {
+                        year.FirstSemester.Add(level0Clusters.First());
+                        level0Clusters.RemoveAt(0);
+                        Console.WriteLine($"Added Level 0 cluster {year.FirstSemester.Last().Name} to First Semester.");
+                    }
+
+                    // Add Level 0 clusters to last semester if there's space
+                    if (year.LastSemester.Count == 0 && level0Clusters.Count > 0)
+                    {
+                        year.LastSemester.Add(level0Clusters.First());
+                        level0Clusters.RemoveAt(0);
+                        Console.WriteLine($"Added Level 0 cluster {year.LastSemester.Last().Name} to Last Semester.");
+                    }
+
+                    // If all Level 0 clusters have been added, break the loop
+                    if (level0Clusters.Count == 0) break;
+                }
+            }
+            else
+            {
+                // add level 0 cluster on empty space
+                foreach (var year in studyYears)
+                {
+                    if (year.FirstSemester.Count == 0 && level0Clusters.Count > 0)
+                    {
+                        year.FirstSemester.Add(level0Clusters.First());
+                        level0Clusters.RemoveAt(0);
+                    }
+
+                    if (year.LastSemester.Count == 0 && level0Clusters.Count > 0)
+                    {
+                        year.LastSemester.Add(level0Clusters.First());
+                        level0Clusters.RemoveAt(0);
+                    }
+                }
             }
 
             return studyYears;

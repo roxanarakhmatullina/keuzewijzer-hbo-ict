@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,15 +17,12 @@ public class AuthController : ControllerBase
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _configuration;
     private readonly DataContext _context;
-    private readonly EmailService _emailService;
 
-    public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration, DataContext context, EmailService emailService)
+    public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration, DataContext context)
     {
         _userManager = userManager;
         _configuration = configuration;
         _context = context;
-        _emailService = emailService;
-        WarmUp();
     }
 
     [HttpGet("Users")]
@@ -97,44 +95,42 @@ public class AuthController : ControllerBase
         return Ok(new { Email = email, Role = role, TwoFactorAuthentication = twoFactorEnabled });
     }
     
-    private async Task WarmUp() {
-        var subject = "Account Keuzewijzer";
-        var body = "Warm up";
-
-        await _emailService.SendEmailAsync("noreply.keuzewijzer@gmail.com", subject, body);
-    }
     
     [HttpPost("create-user")]
     [Authorize]
     public async Task<IActionResult> CreateUser([FromBody] RegisterModel register)
     {
+        // Check if the current user is an admin
         var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         var currentUser = await _userManager.FindByEmailAsync(email);
         var currentUserRole = await _userManager.GetRolesAsync(currentUser);
         if (!currentUserRole.Contains("Admin"))
             return Forbid();
-        
+
+        // Validate that passwords match
+        if (register.Password != register.RepeatPassword)
+        {
+            return BadRequest("Passwords do not match.");
+        }
+
+        // Create user with the provided email and password
         var user = new IdentityUser { UserName = register.Email, Email = register.Email };
-        // create random password with uppercases, lowercases, numbers and special characters
-        var password = RandomPassword();
-        
-        var result = await _userManager.CreateAsync(user, password);
+        var result = await _userManager.CreateAsync(user, register.Password);
         if (!result.Succeeded)
             return BadRequest(result.Errors);
-        
+
+        // Assign role to the user
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == register.Role);
+        if (role == null)
+        {
+            return NotFound("Role not found.");
+        }
         
         await _userManager.AddToRoleAsync(user, role.Name);
         
-        // send email
-        var subject = "Account Keuzewijzer";
-        var body = $"Welkom bij de Keuzewijzer, Je account is aangemaakt. Je kunt inloggen met je e-mailadres en het volgende wachtwoord:  {password} Na dat je bent ingelogd, kun je je wachtwoord wijzigen. Met vriendelijke groet, Keuzewijzer";
-        
-        await _emailService.SendEmailAsync(register.Email, subject, body);
-        
         return Ok("User created successfully");
     }
-
+    
     private string GenerateJwtToken(IdentityUser user)
     {
         var secretKey = _configuration["JWT_SECRET"];  // Read secret from environment variable
@@ -252,6 +248,14 @@ public class RegisterModel
 {
     public string Email { get; set; }
     public string Role { get; set; }
+    
+    [MaxLength(128)]
+    [MinLength(12)]
+    public string Password { get; set; }
+        
+    [MaxLength(128)]
+    [MinLength(12)]
+    public string RepeatPassword { get; set; }
 }
 
 public class LoginModel

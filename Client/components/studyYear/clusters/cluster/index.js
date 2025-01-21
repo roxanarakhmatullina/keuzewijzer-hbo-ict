@@ -46,7 +46,7 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
             role="button" // Indicates interactivity for accessibility
             aria-pressed={openClusters} // ARIA state for toggleable behavior
             style={{zIndex: hoverCluster ? 2 : 0}}
-            className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+            className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
             <h1
                 style={{lineHeight: "1.25"}}
                 className={"text-left flex-auto text-[14px] font-bold"}>{name}</h1>
@@ -96,12 +96,12 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                         role={link ? "button" : undefined} // Interactive if `link` exists
                         style={{
                             backgroundColor:
-                                (link && link !== "-") && !isFreeChoice ? "#b4c7db" :
-                                    isFreeChoice ? "#c5c5c5" : "#e5e5e5"
+                                (link && link !== "-") ? "#b4c7db" : "#e5e5e5",
+                            color: (link && link !== "-") ? "#000" : "#c5c5c5",
                         }}
                         className="cluster-info relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"
                     >
-                        <p className={`${link ? "text-black" : isFreeChoice ? "text-[#999]" : "text-[#c5c5c5]"} text-lg font-black`}>i</p>
+                        <p className={`text-lg font-black`}>i</p>
                     </div>
                 </div>
 

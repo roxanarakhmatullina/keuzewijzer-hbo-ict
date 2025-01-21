@@ -77,17 +77,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure email settings from environment variables
-builder.Services.Configure<EmailSettings>(options =>
-{
-    options.From = Environment.GetEnvironmentVariable("EMAIL_FROM");
-    options.SmtpServer = Environment.GetEnvironmentVariable("EMAIL_SMTP_SERVER");
-    options.Port = int.Parse(Environment.GetEnvironmentVariable("EMAIL_PORT") ?? "587");
-    options.Username = Environment.GetEnvironmentVariable("EMAIL_USERNAME");
-    options.Password = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
-});
-
-builder.Services.AddTransient<EmailService>();
+builder.Services.AddTransient<StudyRouteService>();
 
 // Swagger setup for API
 builder.Services.AddSwaggerGen(options =>

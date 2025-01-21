@@ -301,6 +301,7 @@ const ClustersPage = () => {
                             setCohorts([]);
                             setGraduateProfiles([]);
                             setPrerequisites([]);
+                            setClusterPrerequisites([]);
                             setClusterCohorts([]);
                             setClusterGraduateProfiles([]);
                             setState("new");
