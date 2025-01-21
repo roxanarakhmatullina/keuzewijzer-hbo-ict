@@ -38,11 +38,13 @@ namespace Server.Controllers
                 return Forbid();
 
             var clusters = await _context.Clusters
+                .Include(cl => cl.GraduateProfiles)
                 .Select(c => new
                 {
                     c.Id,
                     c.Name,
                     c.Level,
+                    Colors = c.GraduateProfiles.Select(gp => gp.Color)
                 })
                 .OrderBy(c => c.Level)
                 .ThenBy(c => c.Name)

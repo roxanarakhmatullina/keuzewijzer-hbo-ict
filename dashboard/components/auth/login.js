@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {useAuth} from "@/Providers/AuthProvider";
 import Logo from "@/icons/logo";
 import Input from "@/components/input";
+import Image from "next/image";
 
 const LoginPage = () => {
     const {login, loading, setLoading} = useAuth();
@@ -32,7 +33,13 @@ const LoginPage = () => {
             <form className={"w-full shadow-2xl shadow-black/30 max-w-[500px] bg-[#fff] rounded-[12px] box-border p-[20px] pt-[50px] pb-[50px] flex flex-col gap-[25px]"} onSubmit={handleSubmit}>
                 <div className={"w-full h-auto flex flex-col gap-[10px]"}>
                     <div className={"flex flex-row gap-[10px] justify-center align-middle items-center"}>
-                        <Logo/>
+                        <Image
+                            src={"/dashboard/logo.png"}
+                            width={50}
+                            height={50}
+                            alt={"Logo"}
+                            className={"w-[50px] h-[50px] md:w-[50px] md:h-[50px]"}>
+                        </Image>
                         <h1 className={"flex justify-center align-middle items-center text-2xl font-bold"}>Keuzewijzer</h1>
                     </div>
                     {loading ?

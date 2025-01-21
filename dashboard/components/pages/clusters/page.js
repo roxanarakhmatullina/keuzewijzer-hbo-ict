@@ -450,10 +450,10 @@ const ClustersPage = () => {
 
 
                         <MultiSelection
-                            label={"Afstudeerprofielen:"}
+                            label={"Afstudeerrichtingen:"}
                             info={() => (
-                                <p>Selecteer één of meerdere Afstudeerprofielen; dit verbindt de cluster met één of meer
-                                    Afstudeerprofielen.</p>
+                                <p>Selecteer één of meerdere Afstudeerrichtingen; dit verbindt de cluster met één of meer
+                                    Afstudeerrichtingen.</p>
                             )}
                             options={graduateProfiles}
                             onChange={(state, value) => handleChangeGraduateProfile(state, value)}

@@ -91,82 +91,6 @@ namespace Server.Controllers
             }
         }
 
-        [HttpPost("cohort/{cohortId}/graduateProfile/{id}")]
-        public async Task<IActionResult> ValidateStudyRoute(Guid cohortId, Guid id,
-            [FromBody] StudyRouteDTO retrievedStudyRoute)
-        {
-            var cohort = await _context.Cohorts.FirstOrDefaultAsync(c => c.Id.Equals(cohortId));
-            if (cohort == null) return BadRequest("Cohort not found");
-
-            var graduateProfile = await _context.GraduateProfiles.FirstOrDefaultAsync(gp => gp.Id.Equals(id));
-            if (graduateProfile == null) return BadRequest("Graduate profile not found");
-
-            try
-            {
-                // Get all cluster IDs from the retrievedStudyRoute
-                var clusterIds = retrievedStudyRoute.StudyYears
-                    .SelectMany(sy => sy.FirstSemester.Concat(sy.LastSemester))
-                    .Select(c => c.Id)
-                    .ToList();
-
-                // See if they all match the clusters in the database
-                var allClustersExist = await _context.Clusters
-                    .Where(cl => clusterIds.Contains(cl.Id))
-                    .CountAsync() == clusterIds.Count;
-
-                if (!allClustersExist)
-                    return BadRequest("One or more clusters do not exist in the database");
-
-                // Concat all the clusters from the retrieved study route into a var clusters
-                var clusters = retrievedStudyRoute.StudyYears
-                    .SelectMany(sy => sy.FirstSemester.Concat(sy.LastSemester))
-                    .ToList();
-
-                var studyRoute = new List<StudyYearDTO>();
-
-                // create a minimum study route of 4 years
-                for (var i = 0; i < 4; i++)
-                {
-                    studyRoute.Add(StudyRouteService.CreateNewStudyYear(cohort, i + 1));
-                }
-
-                // Rules and retake adjustments
-                foreach (var studyYear in studyRoute)
-                {
-                    if (studyYear.FirstSemester.Count == 0 && studyYear.LastSemester.Count == 0)
-                    {
-                        if (studyRoute.IndexOf(studyYear) == 0)
-                        {
-                            if (studyYear.FirstSemester.Count == 0)
-                            {
-                                studyYear.FirstSemester = clusters.Take(clusters.Count / 2).ToList();
-                                clusters.RemoveRange(0, clusters.Count / 2);
-                            }
-                        }
-                    }
-                }
-
-                // Process levels 1 to 3 clusters with retake handling
-                for (var level = ClusterLevel.Level1; level <= ClusterLevel.Level3; level++)
-                {
-                    ProcessLevel(cohort, studyRoute, clusters, level);
-                }
-
-                // Process level 0 clusters (for retakes)
-                studyRoute = ProcessLevel0Clusters(studyRoute, clusters);
-
-                // Process level 4 clusters after level 0
-                ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4);
-                ProcessRetakenClusters(studyRoute, clusters);
-
-                return Ok(studyRoute);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
         private void ProcessRetakenClusters(List<StudyYearDTO> studyRoute, List<SmallClusterDTO> clusters)
         {
             var retakenClusters = clusters.Where(cl => cl.IsRetaken).ToList();
@@ -248,26 +172,54 @@ namespace Server.Controllers
                 currentYearForNonRetaken = studyRoute[(int)targetLevel - 1];
             }
 
-            foreach (var cluster in levelClusters.Where(c => !c.IsRetaken))
+            bool addedAnyCluster;
+            do
             {
-                if (cluster.FirstSemester && !cluster.LastSemester)
-                {
-                    currentYearForNonRetaken.FirstSemester.Add(cluster);
-                }
-                else if (!cluster.FirstSemester && cluster.LastSemester)
-                {
-                    currentYearForNonRetaken.LastSemester.Add(cluster);
-                }
-                else
-                {
-                    if (currentYearForNonRetaken.FirstSemester.Count <= currentYearForNonRetaken.LastSemester.Count)
-                        currentYearForNonRetaken.FirstSemester.Add(cluster);
-                    else
-                        currentYearForNonRetaken.LastSemester.Add(cluster);
-                }
-            }
+                addedAnyCluster = false;
 
-            clusters.RemoveAll(cl => levelClusters.Contains(cl));
+                foreach (var cluster in levelClusters.ToList())
+                {
+                    // Check if at least one prerequisite is met or no prerequisites exist
+                    var hasAtLeastOnePrerequisiteMet = cluster.Prerequisites.Any(pr => studyRoute
+                        .Any(sy => sy.FirstSemester.Concat(sy.LastSemester).Any(cl => cl.Id == pr.Id)));
+
+
+                    if (true) // hasAtLeastOnePrerequisiteMet || !cluster.Prerequisites.Any()
+                    {
+                        // Add cluster to the appropriate semester
+                        if (cluster.FirstSemester && !cluster.LastSemester)
+                        {
+                            currentYearForNonRetaken.FirstSemester.Add(cluster);
+                        }
+                        else if (!cluster.FirstSemester && cluster.LastSemester)
+                        {
+                            currentYearForNonRetaken.LastSemester.Add(cluster);
+                        }
+                        else
+                        {
+                            if (currentYearForNonRetaken.FirstSemester.Count <=
+                                currentYearForNonRetaken.LastSemester.Count)
+                                currentYearForNonRetaken.FirstSemester.Add(cluster);
+                            else
+                                currentYearForNonRetaken.LastSemester.Add(cluster);
+                        }
+
+                        levelClusters.Remove(cluster);
+                        addedAnyCluster = true;
+                    }
+                }
+
+                // Break if no clusters were added in this iteration
+                if (!addedAnyCluster)
+                {
+                    break;
+                }
+            } while (levelClusters.Any());
+
+            // Remove clusters that cannot be added
+            clusters.RemoveAll(cl => cl.Level == targetLevel && !studyRoute
+                .SelectMany(sy => sy.FirstSemester.Concat(sy.LastSemester))
+                .Any(sc => sc.Id == cl.Id));
         }
 
         private List<StudyYearDTO> ProcessLevel0Clusters(List<StudyYearDTO> studyYears, List<SmallClusterDTO> clusters)

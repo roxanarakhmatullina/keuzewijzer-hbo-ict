@@ -53,7 +53,7 @@ const Table = ({ data, handleDelete, handleEdit }) => {
                                 className="truncate text-ellipsis overflow-hidden font-bold flex text-start"
                                 style={{ width: `${columnWidths[key]}px` }}
                             >
-                                {key === "isAvailable" ? "Zichtbaar" : key === "name" ? "Naam" : key === "color" ? "Kleur" : key === "role" ? "Rol" : key === "email" ? "E-mailadres"
+                                {key === "isAvailable" ? "Zichtbaar" : key === "name" ? "Naam" : key === "color" ? "Kleur" : key === "colors" ? "Afstudeerrichtingen" : key === "role" ? "Rol" : key === "email" ? "E-mailadres"
                                 : key.substring(0, 1).toUpperCase() + key.substring(1)}
                             </div>
                         )
@@ -76,7 +76,7 @@ const Table = ({ data, handleDelete, handleEdit }) => {
                                         {item[key] ? "Ja" : "Nee"}
                                     </div>
                                 )}
-                                {!key.toLowerCase().includes("id") && key !== "color" && (
+                                {!key.toLowerCase().includes("id") && key !== "color" && key !== "colors" && (
                                     <div
                                         className="truncate overflow-ellipsis overflow-hidden h-full flex justify-start align-middle items-center text-start"
                                         style={{ width: `${columnWidths[key]}px` }}
@@ -84,15 +84,26 @@ const Table = ({ data, handleDelete, handleEdit }) => {
                                         {item[key]}
                                     </div>
                                 )}
-                                {key === "color" && (
+                                {(key === "color" || key === "colors") && (
                                     <div
                                         className="truncate overflow-ellipsis overflow-hidden h-full flex justify-start align-middle items-center text-start"
                                         style={{ width: `${columnWidths[key]}px` }}
                                     >
-                                        <div
-                                            className="w-[20px] h-[20px] rounded-[50%]"
-                                            style={{ backgroundColor: item[key] }}
-                                        ></div>
+                                        {Array.isArray(item[key]) ? (
+                                            item[key]
+                                                .map((color, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="z-[1] w-[20px] border-[1px] border-[#fff] h-[20px] rounded-[50%] mr-[-5px]"
+                                                    style={{ backgroundColor: color }}
+                                                ></div>
+                                            ))
+                                        ) : (
+                                            <div
+                                                className="w-[20px] h-[20px] rounded-[50%]"
+                                                style={{ backgroundColor: item[key] }}
+                                            ></div>
+                                        )}
                                     </div>
                                 )}
                             </React.Fragment>
