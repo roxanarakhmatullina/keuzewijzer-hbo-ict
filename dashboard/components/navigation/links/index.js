@@ -8,16 +8,18 @@ import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import People from "@mui/icons-material/People";
 import {useAuth} from "@/Providers/AuthProvider";
 
-const Links = () => {
+const Links = ({open, setOpen}) => {
 
     const {user} = useAuth();
 
     return (
         <div
-            className={"mb-auto w-full h-auto max-h-[75vh] overflow-y-auto overflow-x-hidden hidden md:flex flex-auto flex-col gap-[10px] justify-start items-center"}>
+            onClick={() => setOpen(false)}
+            className={`${open ? "md:flex flex md:relative absolute top-[75px] md:top-0 left-0" : "md:flex hidden top-0 left-0 relative"} border-t-[1px] border-[#c5c5c5] md:border-t-0 shadow-lg md:shadow-none bg-[#fff] p-[20px] md:p-0 mb-auto w-full h-auto max-h-[75vh] overflow-y-auto overflow-x-hidden flex-auto flex-col gap-[10px] justify-start items-center`}>
 
             {/*  Dashboard   */}
-            <NavLink title={"Dashboard"}>
+            <NavLink
+                title={"Dashboard"}>
                 <DashboardIcon/>
             </NavLink>
 

@@ -14,7 +14,7 @@ const Pages = () => {
     const {loading} = useAuth();
     return (
         <div
-            className={`w-4/5 pt-[75px] pb-[150px] p-[25px] box-border flex flex-col justify-start items-center align-middle gap-[10px]`}>
+            className={`w-full md:w-4/5 pt-[100px] md:pt-[75px] pb-[150px] p-[25px] box-border flex flex-col justify-start items-center align-middle gap-[10px]`}>
             <h1 className={"w-full max-w-[1366px] text-2xl font-bold text-black"}>{currentPage}</h1>
             <div
                 className={`${loading && "pointer-events-none"} max-w-[1366px] w-full bg-[#fff] rounded-[12px] p-[20px] box-border flex flex-col gap-[25px] justify-start items-center align-middle`}>

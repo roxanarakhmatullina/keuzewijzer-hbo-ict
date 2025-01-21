@@ -155,7 +155,7 @@ const GraduateProfilePage = () => {
     return (
         <>
             <div className={"w-full flex flex-col gap-[10px]"}>
-                <div className={"w-full flex flex-row justify-center align-middle items-center gap-[10px] box-border"}>
+                <div className={"w-full flex flex-col-reverse md:flex-row justify-end align-middle md:items-center items-end gap-[10px] box-border"}>
                     <Input
                         type={"search"}
                         onChange={handleFilter}
