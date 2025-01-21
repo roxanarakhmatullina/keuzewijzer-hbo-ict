@@ -55,7 +55,7 @@ const Popup = ({
     return (
         isOpen && (
             <div
-                className="fixed z-[1000] top-0 left-0 w-[100vw] h-[100vh] p-[20px] box-border bg-black bg-opacity-30 flex justify-center items-center"
+                className="fixed z-[1000] top-0 left-0 w-[100vw] h-full p-[20px] box-border bg-black bg-opacity-30 flex justify-center items-center"
                 onClick={(e) => !loading && onCancel(e)}
             >
                 <div
