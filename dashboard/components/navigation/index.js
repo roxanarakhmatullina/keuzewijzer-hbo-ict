@@ -16,7 +16,7 @@ const Navigation = () => {
         <>
             <div className={"hidden md:flex top-0 left-0 min-w-[250px] w-1/5"}/>
             <nav
-                className={"fixed top-0 left-0 w-full md:w-1/5 md:min-w-[250px] h-[75px] md:max-h-[100vh] md:h-[100vh] bg-[#fff] shadow-lg p-[20px] box-border flex flex-row md:flex-col justify-center md:justify-start align-middle items-center gap-[25px] z-[3]"}>
+                className={"fixed top-0 left-0 w-full md:w-1/5 md:min-w-[250px] h-[75px] md:min-h-dvh md:max-h-screen md:h-full bg-[#fff] shadow-lg p-[20px] box-border flex flex-row md:flex-col justify-center md:justify-start align-middle items-center gap-[25px] z-[3]"}>
                 <div className={"w-full flex flex-row gap-[10px] justify-start items-center"}>
                     <Image
                         src={"/dashboard/logo.png"}

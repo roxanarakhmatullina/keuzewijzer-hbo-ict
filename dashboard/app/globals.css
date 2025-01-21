@@ -85,13 +85,11 @@ body {
 @keyframes loaded {
   from {
     border-radius: 25px;
-    overflow: hidden;
     transform: scale(0.9);
     opacity: 0;
   }
   to {
     border-radius: 25px;
-    overflow: hidden;
     transform: scale(1);
     opacity: 1;
   }
