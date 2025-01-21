@@ -237,7 +237,6 @@ namespace Server.Controllers
 
             StudyYearDTO currentYearForNonRetaken;
 
-            // Ensure we have a study year for the current level
             if (studyRoute.Count <= (int)targetLevel - 1)
             {
                 currentYearForNonRetaken = StudyRouteService.CreateNewStudyYear(cohort, studyRoute.Count + 1);
@@ -248,10 +247,8 @@ namespace Server.Controllers
                 currentYearForNonRetaken = studyRoute[(int)targetLevel - 1];
             }
 
-            // Add Level 4 clusters to the last possible semester
             foreach (var cluster in levelClusters.Where(c => !c.IsRetaken))
             {
-                // If the cluster is a Level 4 and it doesn't have a semester yet, prioritize adding it to the last semester
                 if (cluster.FirstSemester && !cluster.LastSemester)
                 {
                     currentYearForNonRetaken.FirstSemester.Add(cluster);
@@ -262,11 +259,10 @@ namespace Server.Controllers
                 }
                 else
                 {
-                    // For Level 4 clusters, check if last semester has space, else add to the first semester
-                    if (currentYearForNonRetaken.LastSemester.Count <= currentYearForNonRetaken.FirstSemester.Count)
-                        currentYearForNonRetaken.LastSemester.Add(cluster);
-                    else
+                    if (currentYearForNonRetaken.FirstSemester.Count <= currentYearForNonRetaken.LastSemester.Count)
                         currentYearForNonRetaken.FirstSemester.Add(cluster);
+                    else
+                        currentYearForNonRetaken.LastSemester.Add(cluster);
                 }
             }
 

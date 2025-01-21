@@ -40,7 +40,7 @@ const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndO
     }
 
     return (
-        <div className={"relative last:mb-[50px] lg:m-0 lg:last:mb-0 first:mt-0 mt-[-5px] lg:mt-0 w-full lg:max-w-[calc(50%)] flex justify-between gap-[75px] lg:gap-[0px] h-auto align-middle items-center flex-col lg:flex-row z-[2]"}>
+        <div className={"relative  last:mb-[50px] lg:m-0 lg:last:mb-0 first:mt-0 mt-[-5px] lg:mt-0 w-full lg:max-w-[calc(50%)] flex justify-between gap-[75px] lg:gap-[0px] h-auto align-middle items-center flex-col lg:flex-row z-[2]"}>
             {children}
 
             {/* Horizontal line and the year*/}
