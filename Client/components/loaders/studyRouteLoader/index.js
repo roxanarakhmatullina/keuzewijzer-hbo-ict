@@ -18,10 +18,6 @@ const StudyRouteLoader = () => {
                     id: 2,
                     name: "",
                 },
-                {
-                    id: 3,
-                    name: "",
-                },
            ],
         },
 
@@ -58,10 +54,6 @@ const StudyRouteLoader = () => {
                     id: 2,
                     name: "",
                 },
-                {
-                    id: 3,
-                    name: "",
-                },
             ],
         },
 
@@ -76,10 +68,6 @@ const StudyRouteLoader = () => {
             lastSemester: [
                 {
                     id: 2,
-                    name: "",
-                },
-                {
-                    id: 3,
                     name: "",
                 },
             ],

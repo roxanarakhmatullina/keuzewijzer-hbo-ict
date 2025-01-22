@@ -69,7 +69,7 @@ namespace Server.Controllers
                 // Process clusters by level
                 for (var level = ClusterLevel.Level1; level <= ClusterLevel.Level3; level++)
                 {
-                    ProcessLevel(cohort, studyRoute, clusters, level);
+                    ProcessLevel(cohort, studyRoute, clusters, level, true);
                 }
                 
 
@@ -80,7 +80,7 @@ namespace Server.Controllers
                 studyRoute = ProcessLevel0Clusters(studyRoute, clusters);
 
                 // Process Level 4 clusters after Level 0
-                ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4);
+                ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4, true);
                 
 
                 return Ok(studyRoute);
@@ -245,8 +245,6 @@ namespace Server.Controllers
             // Only proceed if there are no retaken clusters and there are fewer than 2 level 3 clusters
             if (!hasRetakenClusters && level3ClusterCount < 2)
             {
-                Console.WriteLine("Adding Level 0 clusters...");
-
                 // Iterate through all study years and fill empty semesters with level 0 clusters
                 foreach (var year in studyYears)
                 {
@@ -257,7 +255,6 @@ namespace Server.Controllers
                     {
                         year.FirstSemester.Add(level0Clusters.First());
                         level0Clusters.RemoveAt(0);
-                        Console.WriteLine($"Added Level 0 cluster {year.FirstSemester.Last().Name} to First Semester.");
                     }
 
                     // Add Level 0 clusters to last semester if there's space
@@ -265,7 +262,6 @@ namespace Server.Controllers
                     {
                         year.LastSemester.Add(level0Clusters.First());
                         level0Clusters.RemoveAt(0);
-                        Console.WriteLine($"Added Level 0 cluster {year.LastSemester.Last().Name} to Last Semester.");
                     }
 
                     // If all Level 0 clusters have been added, break the loop
@@ -274,18 +270,24 @@ namespace Server.Controllers
             }
             else
             {
-                // add level 0 cluster on empty space
-                foreach (var year in studyYears)
+                // Count the amount of firstSemester and lastSemester in the study route that are empty.
+                var emptySlots = studyYears
+                    .SelectMany(sy => new[] { (sy.FirstSemester, sy.LastSemester) })
+                    .Where(sem => sem.FirstSemester.Count == 0 || sem.LastSemester.Count == 0)
+                    .ToList();
+
+                foreach (var (firstSemester, lastSemester) in emptySlots)
                 {
-                    if (year.FirstSemester.Count == 0 && level0Clusters.Count > 0)
+                    if (level0Clusters.Count == 0) break;
+
+                    if (firstSemester.Count == 0)
                     {
-                        year.FirstSemester.Add(level0Clusters.First());
+                        firstSemester.Add(level0Clusters.First());
                         level0Clusters.RemoveAt(0);
                     }
-
-                    if (year.LastSemester.Count == 0 && level0Clusters.Count > 0)
+                    else if (lastSemester.Count == 0)
                     {
-                        year.LastSemester.Add(level0Clusters.First());
+                        lastSemester.Add(level0Clusters.First());
                         level0Clusters.RemoveAt(0);
                     }
                 }
