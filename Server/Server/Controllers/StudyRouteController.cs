@@ -69,7 +69,7 @@ namespace Server.Controllers
                 // Process clusters by level
                 for (var level = ClusterLevel.Level1; level <= ClusterLevel.Level3; level++)
                 {
-                    ProcessLevel(cohort, studyRoute, clusters, level, true);
+                    ProcessLevel(cohort, studyRoute, clusters, level, false);
                 }
                 
 
@@ -80,7 +80,7 @@ namespace Server.Controllers
                 studyRoute = ProcessLevel0Clusters(studyRoute, clusters);
 
                 // Process Level 4 clusters after Level 0
-                ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4, true);
+                ProcessLevel(cohort, studyRoute, clusters, ClusterLevel.Level4, false);
                 
 
                 return Ok(studyRoute);
