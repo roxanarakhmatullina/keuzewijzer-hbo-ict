@@ -1,20 +1,19 @@
-# Use an official Node.js runtime as a parent image for the build stage
+# Use an official Node.js runtime as a parent image
 FROM node:22-slim AS build
 
-# Build-time variables
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
-# Set working directory in the build container
+# Set working directory in the container
 WORKDIR /app
 
-# Copy package.json and lockfile
+# Copy package.json and package-lock.json (or yarn.lock) files
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies)
+# Install dependencies
 RUN npm install --frozen-lockfile
 
-# Copy the source code
+# Copy all source files into the working directory
 COPY . .
 
 # Build the Next.js app
@@ -26,17 +25,18 @@ FROM node:22-slim AS production
 # Set working directory in the production container
 WORKDIR /app
 
-# Copy only necessary files from the build stage
-COPY --from=build /app/package*.json ./
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
+# Copy only the built assets from the build stage
+COPY --from=build /app /app
+
+# Install only production dependencies
+RUN npm install --production --frozen-lockfile
 
 # Expose the port the Next.js app runs on
 EXPOSE 3001
 
-# Set environment to production
+# Set the environment to production
 ENV NODE_ENV=production
 
-# Run the Next.js app
+
+# Run Next.js app
 CMD ["npm", "start"]
