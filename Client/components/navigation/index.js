@@ -48,7 +48,6 @@ const Navigation = () => {
                             </div>
                         </button>
                     )}
-
                     {/* Graduate profiles */}
                     {startedStudyYear && graduateProfiles && (
                         <GraduateProfiles setNavbarOpen={setNavbarOpen}/>
@@ -57,7 +56,6 @@ const Navigation = () => {
 
                 <StartStudy navbarOpen={navbarOpen}/>
             </div>
-
             <NavigationFooter/>
         </div>
     )
