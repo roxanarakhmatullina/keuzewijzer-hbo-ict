@@ -1,0 +1,56 @@
+'use client'
+import React, {useState} from 'react';
+import {useAuth} from "@/Providers/AuthProvider";
+import Menu from '@mui/icons-material/Menu';
+import Image from 'next/image';
+import {usePage} from "@/Providers/PageProvider";
+import Links from "@/components/navigation/links";
+
+const Navigation = () => {
+    const {user} = useAuth();
+    const {setCurrentPage} = usePage();
+
+    const [open, setOpen] = useState(false);
+
+    return (
+        <>
+            <div className={"hidden md:flex top-0 left-0 min-w-[250px] w-1/5"}/>
+            <nav
+                className={"fixed top-0 left-0 w-full md:w-1/5 md:min-w-[250px] h-[75px] md:min-h-dvh md:max-h-screen md:h-full bg-[#fff] shadow-lg p-[20px] box-border flex flex-row md:flex-col justify-center md:justify-start align-middle items-center gap-[25px] z-[3]"}>
+                <div className={"w-full flex flex-row gap-[10px] justify-start items-center"}>
+                    <Image
+                        src={"/dashboard/logo.png"}
+                        width={50}
+                        height={50}
+                        alt={"Logo"}
+                        className={"w-[40px] h-[40px] md:w-[50px] md:h-[50px]"}>
+                    </Image>
+                    <h1 className={"text-lg md:text-xl font-bold"}>Keuzewijzer</h1>
+                </div>
+
+                <Links open={open} setOpen={setOpen}/>
+
+                {/*mobile menu*/}
+                <div
+                    onClick={() => setOpen(!open)}
+                    className={"bg-[#fff] rounded-md hover:brightness-95 p-[5px] mr-[-5px] box-border cursor-pointer md:hidden flex justify-center align-middle items-center"}>
+                    <Menu fontSize={"large"}/>
+                </div>
+
+                <div
+                    onClick={() => setCurrentPage("Profiel")}
+                    className={"relative bg-[#fff] w-full pt-[20px] pb-[20px] box-border border-[#e5e5e5] border-t-[1px] h-auto hidden md:flex flex-row gap-[10px] justify-start items-center"}>
+                    <div className={"w-full cursor-pointer bg-[#fff] p-[10px] box-border hover:brightness-95 rounded-lg h-auto flex flex-row gap-[10px] justify-start align-middle items-center"}>
+                        <div
+                            className={"min-w-[30px] min-h-[30px] max-w-[30px] max-h-[30px] flex justify-center align-middle items-center p-[7px] bg-blue-600 text-white rounded-full"}>
+                            {user?.email.substring(0, 1).toUpperCase()}
+                        </div>
+                        <p className={"w-full text-[16px] text-ellipsis overflow-hidden"}>{user?.email}</p>
+                    </div>
+                </div>
+            </nav>
+        </>
+    )
+}
+
+export default Navigation;

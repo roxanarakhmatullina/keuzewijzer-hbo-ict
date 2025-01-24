@@ -1,0 +1,188 @@
+{
+  "studyYears": [{
+    "year": "24/25",
+    "firstSemester": [{
+      "id": "fed799b3-7a2f-4782-9295-eb729ad2bb5b",
+      "name": "Propedeuse 1",
+      "link": "website.com",
+      "firstSemester": true,
+      "lastSemester": true,
+      "level": 1,
+      "isFreeChoice": false,
+      "isLocked": true,
+      "isRetaken": true,
+      "retakenCount": 1,
+      "prerequisites": []
+    }],
+    "lastSemester": [{
+      "id": "fed799b3-7a2f-4782-9295-eb729ad2bb5b",
+      "name": "Propedeuse 1",
+      "link": "website.com",
+      "firstSemester": true,
+      "lastSemester": true,
+      "level": 1,
+      "isFreeChoice": false,
+      "isLocked": true,
+      "isRetaken": false,
+      "retakenCount": 1,
+      "prerequisites": []
+    }]
+  }, {
+    "year": "25/26",
+    "firstSemester": [{
+        "id": "ccc102a5-1f08-41ce-9f5f-539ca210b35d",
+        "name": "Propedeuse 2",
+        "link": "website.com",
+        "firstSemester": true,
+        "lastSemester": true,
+        "level": 1,
+        "isFreeChoice": false,
+        "isLocked": true,
+        "isRetaken": false,
+        "retakenCount": 0,
+        "prerequisites": [{
+          "id": "fed799b3-7a2f-4782-9295-eb729ad2bb5b",
+          "name": "Propedeuse 1"
+        }]
+      }],
+    "lastSemester": [{
+      "id": "94deecb0-724b-4313-b909-81ccec11a941",
+      "name": "Vrije ruimte 1",
+      "link": "website.com",
+      "firstSemester": true,
+      "lastSemester": true,
+      "level": 0,
+      "isFreeChoice": true,
+      "isLocked": false,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": []
+    }]
+    }, {
+    "year": "26/27",
+    "firstSemester": [{
+      "id": "e4fd8284-4502-4bdf-9ad4-bbe5d31ab12a",
+      "name": "Object-Oriënted Software Design & Development",
+      "link": "website.com",
+      "firstSemester": true,
+      "lastSemester": false,
+      "level": 2,
+      "isFreeChoice": false,
+      "isLocked": false,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": [{
+        "id": "ccc102a5-1f08-41ce-9f5f-539ca210b35d",
+        "name": "Propedeuse 2"
+      }]
+    }],
+    "lastSemester": [{
+      "id": "47f7bc94-4902-4ace-89db-de19a4ac56c1",
+      "name": "Data Science",
+      "link": "website.com",
+      "firstSemester": false,
+      "lastSemester": true,
+      "level": 2,
+      "isFreeChoice": false,
+      "isLocked": false,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": [{
+        "id": "6fa81a8d-ac17-4e69-8fab-8e5011b2c8c3",
+        "name": "Cyber Security"
+      }, {
+        "id": "833e1463-ee8a-47ff-a752-6545934392b6",
+        "name": "Business Process Management"
+      }, {
+        "id": "e4fd8284-4502-4bdf-9ad4-bbe5d31ab12a",
+        "name": "Object-Oriënted Software Design & Development"
+      }]
+    }, {
+      "id": "4f929156-8696-4ce1-9a29-0b4d5bb647fe",
+      "name": "User Interface",
+      "link": "website.com",
+      "firstSemester": false,
+      "lastSemester": true,
+      "level": 2,
+      "isFreeChoice": false,
+      "isLocked": false,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": [{
+        "id": "833e1463-ee8a-47ff-a752-6545934392b6",
+        "name": "Business Process Management"
+      }, {
+        "id": "e4fd8284-4502-4bdf-9ad4-bbe5d31ab12a",
+        "name": "Object-Oriënted Software Design & Development"
+      }]
+    }, {
+      "id": "64d381b5-79ec-440a-a11c-c1711fcd9fbd",
+      "name": "Web Development",
+      "link": "website.com",
+      "firstSemester": false,
+      "lastSemester": true,
+      "level": 2,
+      "isFreeChoice": false,
+      "isLocked": false,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": [{
+        "id": "e4fd8284-4502-4bdf-9ad4-bbe5d31ab12a",
+        "name": "Object-Oriënted Software Design & Development"
+      }]
+    }]
+  }, {
+    "year": "27/28",
+    "firstSemester": [{
+      "id": "b6554260-373f-4672-8b66-547ff57f1125",
+      "name": "Quality in Software Development",
+      "link": "website.com",
+      "firstSemester": true,
+      "lastSemester": false,
+      "level": 3,
+      "isFreeChoice": false,
+      "isLocked": false,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": [{
+        "id": "2db88351-2564-4f08-8a85-e45c26dbb28d",
+        "name": "Internet of Things"
+      }, {
+        "id": "47f7bc94-4902-4ace-89db-de19a4ac56c1",
+        "name": "Data Science"
+      }, {
+        "id": "64d381b5-79ec-440a-a11c-c1711fcd9fbd",
+        "name": "Web Development"
+      }]
+    }],
+    "lastSemester": [{
+      "id": "899e7862-87d9-4d5b-9862-1bf1f589bc0f",
+      "name": "Vrije ruimte 2",
+      "link": "website.com",
+      "firstSemester": true,
+      "lastSemester": true,
+      "level": 0,
+      "isFreeChoice": true,
+      "isLocked": false,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": []
+    }]
+  }, {
+    "year": "27/28",
+    "firstSemester": [{
+      "id": "7200ef1f-d43c-4b7e-8564-69df6fef3439",
+      "name": "Afstuderen",
+      "link": "website.com",
+      "firstSemester": true,
+      "lastSemester": true,
+      "level": 4,
+      "isFreeChoice": false,
+      "isLocked": true,
+      "isRetaken": false,
+      "retakenCount": 0,
+      "prerequisites": []
+    }],
+    "lastSemester": []
+  }]
+}

@@ -5,7 +5,7 @@ import {useGraduateProfile} from "@/hooks";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, children}) => {
+const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, children}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -18,19 +18,16 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
 
     useEffect(() => {
         if(firstClusters && secondClusters && firstClusters.length > 0 && secondClusters.length > 0) {
-            const first = firstClusters.every(cluster => cluster.locked);
-            const second = secondClusters.every(cluster => cluster.locked);
+            const first = firstClusters.every(cluster => cluster.isLocked);
+            const second = secondClusters.every(cluster => cluster.isLocked);
             setIsLocked(first && second);
         }
     }, [firstClusters, secondClusters]);
 
-    const formatYear = (year) => {
-        return "'" + year.toString().substring(2);
-    }
 
     const handleColor = () => {
         if(selectedGraduateProfile) {
-            // check if color neeeds to be white or black based on the background color
+            // check if color needs to be white or black based on the background color
             const newColor = selectedGraduateProfile.color.replace("#", "");
             const r = parseInt(newColor.substring(0, 2), 16);
             const g = parseInt(newColor.substring(2, 4), 16);
@@ -43,7 +40,7 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
     }
 
     return (
-        <div className={"relative last:mb-[50px] lg:m-0 lg:last:mb-0 first:mt-0 mt-[-5px] lg:mt-0 w-full lg:max-w-[calc(50%)] flex justify-between gap-[75px] lg:gap-[0px] h-auto align-middle items-center flex-col lg:flex-row z-[2]"}>
+        <div className={"relative  last:mb-[50px] lg:m-0 lg:last:mb-0 first:mt-0 mt-[-5px] lg:mt-0 w-full lg:max-w-[calc(50%)] flex justify-between gap-[75px] lg:gap-[0px] h-auto align-middle items-center flex-col lg:flex-row z-[2]"}>
             {children}
 
             {/* Horizontal line and the year*/}
@@ -55,7 +52,7 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
                 className={"relative transition ease-in-out duration-300 top-0 left-0 min-w-[75px] min-h-[75px] rounded-full flex justify-center align-middle items-center"}>
                 <h1
                     style={{color: handleColor()}}
-                    className={"text-l transition ease-in-out duration-300 font-bold"}>{formatYear(fromYear)}/{formatYear(toYear)}</h1>
+                    className={"text-l transition ease-in-out duration-300 font-bold"}>{year}</h1>
             </div>
 
             {/* Clusters */}
@@ -69,10 +66,15 @@ const StudyYear = ({fromYear, toYear, firstClusters, secondClusters, isLastStudy
                 )}
 
                 {/* First Cluster */}
-                <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor} />
+                {firstClusters && firstClusters.length > 0 && (
+                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor} />
+                )}
 
                 {/* Last Cluster */}
-                <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor} />
+                {secondClusters && secondClusters.length > 0 && (
+                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor} />
+                )}
+
             </div>
 
             {/* Show graduate icon */}

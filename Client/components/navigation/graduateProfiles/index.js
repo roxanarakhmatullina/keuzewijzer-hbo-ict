@@ -3,52 +3,36 @@ import React, {useEffect} from 'react'
 import {useGraduateProfile, useError, useStudyYear} from "@/hooks";
 import GraduateProfile from "@/components/navigation/graduateProfiles/graduateProfile";
 import SkeletonLoader from "@/components/loaders/skeletonLoader";
-import {fetchApi} from "@/hooks/api";
+import {api} from "@/hooks/api";
 
 const GraduateProfiles = ({setNavbarOpen}) => {
     const {selectedGraduateProfile, graduateProfiles, setGraduateProfiles} = useGraduateProfile();
-    const {setStudyYears} = useStudyYear();
-    const {errors, setErrors} = useError();
+    const {startedStudyYear} = useStudyYear();
+    const {errors} = useError();
 
     useEffect(() => {
-        // fetch graduate profiles
-        fetchApi("/graduate-profiles/").then(data => {
-            setGraduateProfiles(data);
-        }).catch(error => {
-            console.log("hewyghreyfh");
-            setErrors([...errors, {
-                id: new Date().getTime(),
-                type: "profiles",
-                message: 'Er is iets misgegaan bij het ophalen van de afstudeerprofielen. Probeer het later opnieuw.',
-                error: error,
-            }]);
-        })
-
-        // fetch study years
-        fetchApi("/clusters/").then(data => {
-            setStudyYears(data)
-        }).catch(error => {
-                setErrors([...errors, {
-                    id: new Date().getTime(),
-                    type: "clusters",
-                    message: 'Er is iets misgegaan bij het ophalen van de clusters. Probeer het later opnieuw.',
-                    error: error,
-                }]);
+        if (startedStudyYear && startedStudyYear.id) {
+            api.get(`/Cohort/${startedStudyYear?.id}/graduateProfiles`, {
+                id: startedStudyYear.id
             })
-    }, []);
+                .then(res => {
+                    setGraduateProfiles(res.data);
+                })
+        }
+    }, [startedStudyYear]);
 
     return (
         <div
             className={`flex w-full md:max-w-[300px] h-auto flex-col gap-[15px] justify-center align-middle items-center`}>
             <p className={`w-full text-center ${selectedGraduateProfile ? "md:text-left md:text-[13px]" : ""} font-bold`}>
-                Afstudeerprofielen:
+                Afstudeerrichtingen:
             </p>
 
             {/* Profiles */}
             <div
                 className={"w-full h-auto flex flex-col gap-[10px] box-border justify-center align-middle items-center"}>
-                {graduateProfiles && graduateProfiles.length > 0 ? graduateProfiles.map((graduateProfile) => (
-                    <GraduateProfile key={"graduate-profile-"+ graduateProfile.id} {...graduateProfile} />
+                {graduateProfiles && graduateProfiles?.length > 0 ? graduateProfiles?.map((graduateProfile) => (
+                    <GraduateProfile key={"graduate-profile-"+ graduateProfile?.id} {...graduateProfile} />
                 )) : <SkeletonLoader/>}
 
                 {errors && errors.length > 0 && (

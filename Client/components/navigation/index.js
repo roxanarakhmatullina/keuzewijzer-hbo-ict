@@ -1,18 +1,17 @@
 'use client'
 import React, {useState} from 'react'
-import {useGoogleAnalytics, useGraduateProfile, useStudyYear} from "@/hooks";
+import {useGraduateProfile, useStudyYear} from "@/hooks";
 import Logo from "@/icons/logo";
 import StartStudy from "@/components/navigation/startStudy";
-import Link from "next/link";
 import Retry from "@/icons/retry";
 import MenuIcon from "@/icons/menu";
 import GraduateProfiles from "@/components/navigation/graduateProfiles";
+import NavigationFooter from "@/components/navigation/footer";
 
 const Navigation = () => {
     const [navbarOpen, setNavbarOpen] = useState(true);
     const {graduateProfiles, selectedGraduateProfile, setSelectedGraduateProfile} = useGraduateProfile();
     const {startedStudyYear, setStartedStudyYear} = useStudyYear();
-    const {setShowModal} = useGoogleAnalytics();
 
     return (
         <div
@@ -41,7 +40,7 @@ const Navigation = () => {
                             className={`w-full md:max-w-[300px] hover:brightness-95 cursor-pointer flex flex-row gap-[10px] justify-between bg-[#EFEFEFFF] p-[10px] box-border rounded-[8px] align-middle items-center border-0`}>
                             <p
                                 className={"w-full text-[13px] text-left md:text-center font-bold box-border flex justify-between items-center align-middle"}>
-                                Gestart in {startedStudyYear}
+                                Gestart in {startedStudyYear?.name}
                             </p>
                             <div
                                 className={"w-[30px] h-[30px] flex justify-center align-middle items-center p-[7px] bg-transparent rounded-full"}>
@@ -49,7 +48,6 @@ const Navigation = () => {
                             </div>
                         </button>
                     )}
-
                     {/* Graduate profiles */}
                     {startedStudyYear && graduateProfiles && (
                         <GraduateProfiles setNavbarOpen={setNavbarOpen}/>
@@ -58,16 +56,7 @@ const Navigation = () => {
 
                 <StartStudy navbarOpen={navbarOpen}/>
             </div>
-            <div className={`${navbarOpen ? "flex" : "hidden md:flex"} flex-col text-[14px] text-[#424242] text-center gap-[0.5ch] justify-center items-center`}>
-                <p>&copy; {new Date().getFullYear()} keuzewijzerhboict.nl. Aan deze website kunnen geen rechten worden ontleend.</p>
-                <div className={"flex flex-row gap-[10px] justify-center align-middle items-center"}>
-                    <Link className="text-[#124477] underline hover:text-[#092A3B] focus:text-[#092A3B] gap-[0.5ch]"
-                          href="https://www.windesheim.nl/over-windesheim/disclaimer">Disclaimer</Link>
-                    <div className={"h-[15px] w-[1px] bg-[#424242]"}/>
-                    <Link className={"text-[#124477] underline hover:text-[#092A3B] focus:text-[#092A3B] gap-[0.5ch]"}
-                          href={"/privacy-policy"}>Privacyverklaring</Link>
-                </div>
-            </div>
+            <NavigationFooter/>
         </div>
     )
 }
