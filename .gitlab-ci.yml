@@ -4,7 +4,7 @@ stages:
   - deploy
 
 variables:
-  IMAGE_NAME: matzleeflang/keuzewijzer
+  IMAGE_NAME: tlucassen/keuzewijzer
   CLIENT_TAG: "$CI_COMMIT_SHA-client"
   DASHBOARD_TAG: "$CI_COMMIT_SHA-dashboard"
   SERVER_TAG: "$CI_COMMIT_SHA-server"
