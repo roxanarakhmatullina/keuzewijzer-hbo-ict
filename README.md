@@ -39,3 +39,5 @@ For the server, you need to install its dependencies:
 4. Change the "NEXT_PUBLIC_API_URL" to the server API URL (e.g., `http://localhost:5125/api/`).
 5. Save the file.
 
+
+
