@@ -19,14 +19,16 @@ variables:
   UAT_CLIENT_NAME: uat-client
   UAT_DASHBOARD_NAME: uat-dashboard
   UAT_SERVER_NAME: uat-server
+  UAT_DOCKER_NETWORK: uat_network
 
   # TO BE MOVED
   UAT_API_URL: http://85.214.238.103:5126
   UAT_DB_PORT: 5433
   UAT_DB_USER: uat_root
+  UAT_DB_HOST: postgres-uat
   UAT_DB_NAME: KeuzewijzerUAT
-  UAT_JWT_AUDIENCE: http://85.214.238.103:5126
-  UAT_JWT_ISSUER: http://85.214.238.103:3002
+  UAT_JWT_AUDIENCE: http://85.214.238.103:3003 # dashboard (public)
+  UAT_JWT_ISSUER: http://85.214.238.103:8080   #api (docker network)
   UAT_JWT_SECRET: fsuhfdshfudshfhdsuhfuds
 
 build-client:
@@ -200,8 +202,7 @@ deploy-server-uat:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network uat_network $IMAGE_NAME:$UAT_SERVER_TAG &&
-      docker image prune -a -f"
+      docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_SERVER_TAG &&
   only:
     - ik/test/uat-env
 
