@@ -22,13 +22,13 @@ variables:
   UAT_DOCKER_NETWORK: uat_network
 
   # TO BE MOVED
-  UAT_API_URL: http://85.214.238.103:5126/api
+  UAT_API_URL: http://uat-server:8080/api
   UAT_DB_PORT: 5433
   UAT_DB_USER: uat_root
   UAT_DB_HOST: postgres-uat
   UAT_DB_NAME: KeuzewijzerUAT
   UAT_JWT_AUDIENCE: http://85.214.238.103:3003 # dashboard (public)
-  UAT_JWT_ISSUER: http://85.214.238.103:8080   #api (docker network)
+  UAT_JWT_ISSUER: http://uat-server:8080/api   #api (docker network)
   UAT_JWT_SECRET: fsuhfdshfudshfhdsuhfuds
 
 build-client:
