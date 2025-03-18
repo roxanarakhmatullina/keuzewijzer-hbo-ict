@@ -202,7 +202,7 @@ deploy-server-uat:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network $UAT_ $IMAGE_NAME:$UAT_SERVER_TAG &&
+      docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_SERVER_TAG &&
       docker image prune -a -f"
   only:
     - ik/test/uat-env
