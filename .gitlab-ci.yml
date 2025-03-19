@@ -23,11 +23,11 @@ variables:
 
   # TO BE MOVED
   UAT_API_URL: http://uat-server:8080/api
-  UAT_DB_PORT: 5433
+  UAT_DB_PORT: 5432
   UAT_DB_USER: uat_root
   UAT_DB_HOST: postgres-uat
   UAT_DB_NAME: KeuzewijzerUAT
-  UAT_JWT_AUDIENCE: http://85.214.238.103:3003 # dashboard (public)
+  UAT_JWT_AUDIENCE: http://uat-dashboard:3000 # dashboard (public)
   UAT_JWT_ISSUER: http://uat-server:8080/api   #api (docker network)
   UAT_JWT_SECRET: fsuhfdshfudshfhdsuhfuds
 
@@ -174,7 +174,7 @@ deploy-client-uat:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3002:3000 --name $UAT_CLIENT_NAME $IMAGE_NAME:$UAT_CLIENT_TAG"
+      docker run -d -p 3002:3000 --name $UAT_CLIENT_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_CLIENT_TAG"
   only:
     - ik/test/uat-env
 
@@ -188,7 +188,7 @@ deploy-dashboard-uat:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3003:3000 --name $UAT_DASHBOARD_NAME $IMAGE_NAME:$UAT_DASHBOARD_TAG"
+      docker run -d -p 3003:3000 --name $UAT_DASHBOARD_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_DASHBOARD_TAG"
   only:
     - ik/test/uat-env
 
