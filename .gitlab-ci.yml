@@ -27,8 +27,8 @@ variables:
   UAT_DB_USER: uat_root
   UAT_DB_HOST: postgres-uat
   UAT_DB_NAME: KeuzewijzerUAT
-  UAT_JWT_AUDIENCE: http://uat-dashboard:3000 # dashboard (public)
-  UAT_JWT_ISSUER: http://uat-server:8080/api   #api (docker network)
+  UAT_JWT_AUDIENCE: http://uat-dashboard:3000 # dashboard
+  UAT_JWT_ISSUER: http://uat-server:8080/api   #api
   UAT_JWT_SECRET: fsuhfdshfudshfhdsuhfuds
 
 build-client:
