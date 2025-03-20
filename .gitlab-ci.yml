@@ -22,7 +22,7 @@ variables:
   UAT_DOCKER_NETWORK: uat_network
 
   # TO BE MOVED
-  UAT_API_URL: http://85.214.238.103:5126/api # api (cannot be the one on docker network because accessed by browser)
+  UAT_API_URL: https://uat.keuzewijzerhboict.nl/api
   UAT_DB_PORT: 5432
   UAT_DB_USER: uat_root
   UAT_DB_HOST: postgres-uat
