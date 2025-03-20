@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder
-                .WithOrigins("http://localhost:3000",
+                .WithOrigins("http://localhost:3000",   // TODO: Revise allowed origins
                     "http://localhost:3001",
                     "https://keuzewijzerhboict.nl",
                     "http://keuzewijzerhboict.nl",
@@ -33,8 +33,6 @@ builder.Services.AddCors(options =>
                     "https://keuzewijzerhboict.nl:3001",
                     "https://keuzewijzerhboict.nl:3000",
                     "http://keuzewijzerhboict.nl:3000",
-                    "http://85.214.238.103:3002",
-                    "http://85.214.238.103:3003",
                     "https://uat.keuzewijzerhboict.nl")
                 .WithMethods("GET", "POST", "DELETE")
                 .AllowAnyHeader()
