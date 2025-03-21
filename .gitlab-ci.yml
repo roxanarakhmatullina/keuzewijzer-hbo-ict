@@ -18,7 +18,6 @@ variables:
   UAT_CLIENT_NAME: uat-client
   UAT_DASHBOARD_NAME: uat-dashboard
   UAT_SERVER_NAME: uat-server
-  UAT_DOCKER_NETWORK: uat_network
 
 build-client:
   stage: build
@@ -119,7 +118,7 @@ deploy-server:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5125:8080 --name $SERVER_NAME --network DB_connect $IMAGE_NAME:$SERVER_TAG &&
+      docker run -d -p 5125:8080 --name $SERVER_NAME --network $DOCKER_NETWORK $IMAGE_NAME:$SERVER_TAG &&
       docker image prune -a -f"
   only:
     - main
