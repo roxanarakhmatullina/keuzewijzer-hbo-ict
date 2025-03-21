@@ -6,6 +6,7 @@ import CohortsPage from "@/components/pages/cohorts";
 import GraduateProfiles from "@/components/pages/graduateProfiles";
 import ClustersPage from "@/components/pages/clusters/page";
 import UsersPage from "@/components/pages/users";
+import FreeSpacePage from "@/components/pages/freeSpaceMenu"
 import ProfilePage from "@/components/pages/profile";
 import {useAuth} from "@/Providers/AuthProvider";
 
@@ -28,6 +29,8 @@ const Pages = () => {
                     <ClustersPage/>
                 ) : currentPage === "Gebruikers" ? (
                     <UsersPage/>
+                ) : currentPage === "Vrije ruimte" ? (
+                    <FreeSpacePage/>
                 ) : currentPage === "Profiel" ? (
                     <ProfilePage/>
                 ) : <p>404 not found</p>}
