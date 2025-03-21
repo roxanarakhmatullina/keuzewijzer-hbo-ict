@@ -33,8 +33,9 @@ build-client:
     - docker push $IMAGE_NAME:$CLIENT_TAG
   only:
     - main
-  changes:
-    - Client/**
+  rules:
+    - changes:
+      - Client/**
 
 build-dashboard:
   stage: build
@@ -50,8 +51,9 @@ build-dashboard:
     - docker push $IMAGE_NAME:$DASHBOARD_TAG
   only:
     - main
-  changes:
-    - dashboard/**
+  rules:
+    - changes:
+      - dashboard/**
   
 
 build-server:
@@ -68,8 +70,9 @@ build-server:
     - docker push $IMAGE_NAME:$SERVER_TAG
   only:
     - main
-  changes:
-    - Server/**
+  rules:
+    - changes:
+      - Server/**
 
 deploy-client:
   stage: deploy
@@ -86,8 +89,9 @@ deploy-client:
     - main
   dependencies:
     - build-client
-  changes:
-    - Client/**
+  rules:    
+    - changes:
+      - Client/**
 
 deploy-dashboard:
   stage: deploy
@@ -104,8 +108,9 @@ deploy-dashboard:
     - main
   dependencies:
     - build-dashboard
-  changes:
-    - dashboard/**
+  rues:
+    - changes:
+      - dashboard/**
   
 
 deploy-server:
@@ -124,8 +129,9 @@ deploy-server:
     - main
   dependencies:
     - build-server
-  changes:
-    - Server/**
+  rules:
+    - changes:
+      - Server/**
 
 build-client-uat:
   stage: build
@@ -141,8 +147,9 @@ build-client-uat:
     - docker push $IMAGE_NAME:$UAT_CLIENT_TAG
   only:
     - uat
-  changes:
-    - Client/**
+  rules:
+    - changes:
+      - Client/**
 
 build-dashboard-uat:
   stage: build
@@ -158,8 +165,9 @@ build-dashboard-uat:
     - docker push $IMAGE_NAME:$UAT_DASHBOARD_TAG
   only:
     - uat
-  changes:
-    - dashboard/**
+  rules:
+    - changes:
+      - dashboard/**
 
 build-server-uat:
   stage: build
@@ -175,8 +183,9 @@ build-server-uat:
     - docker push $IMAGE_NAME:$UAT_SERVER_TAG
   only:
     - uat
-  changes:
-    - Server/**
+  rules:
+    - changes:
+      - Server/**
 
 deploy-client-uat:
   stage: deploy
@@ -193,8 +202,9 @@ deploy-client-uat:
     - uat
   dependencies:
     - build-client-uat
-  changes:
-    - Client/**
+  rules:
+    - changes:
+      - Client/**
 
 deploy-dashboard-uat:
   stage: deploy
@@ -211,8 +221,9 @@ deploy-dashboard-uat:
     - uat
   dependencies:
     - build-dashboard-uat
-  changes:
-    - dashboard/**
+  rules:  
+    -changes:
+      - dashboard/**
 
 deploy-server-uat:
   stage: deploy
@@ -230,6 +241,7 @@ deploy-server-uat:
     - uat
   dependencies:
     - build-server-uat
-  changes:
-    - Server/**
+  rules:
+    - changes:
+      - Server/**
 
