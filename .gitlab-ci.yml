@@ -149,6 +149,9 @@ build-client-uat:
 
 build-dashboard-uat:
   stage: build
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
   tags:
     - build-dashboard-uat
   variables:
@@ -166,6 +169,9 @@ build-dashboard-uat:
 
 build-server-uat:
   stage: build
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
   tags:
     - build-server-uat
   variables:
@@ -204,6 +210,9 @@ deploy-client-uat:
 
 deploy-dashboard-uat:
   stage: deploy
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
   tags:
     - docker-deploy-uat
   before_script:
@@ -222,6 +231,9 @@ deploy-dashboard-uat:
 
 deploy-server-uat:
   stage: deploy
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
   tags:
     - docker-deploy-uat
   before_script:
