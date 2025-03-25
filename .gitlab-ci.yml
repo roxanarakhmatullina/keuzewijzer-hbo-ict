@@ -139,6 +139,10 @@ build-client-uat:
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    - echo $REGISTRY_USER
+    - echo $REGISTRY_PASS
+    - echo $UAT_CLIENT_TAG
+    - echo $CI_COMMIT_BRANCH
   script:
     - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$UAT_API_URL -t $IMAGE_NAME:$UAT_CLIENT_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$UAT_CLIENT_TAG
