@@ -139,18 +139,24 @@ build-client-uat:
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    # debug
     - echo $REGISTRY_USER
     - echo $REGISTRY_PASS
     - echo $UAT_CLIENT_TAG
     - echo $CI_COMMIT_BRANCH
+    - echo $IMAGE_NAME
   script:
     - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$UAT_API_URL -t $IMAGE_NAME:$UAT_CLIENT_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$UAT_CLIENT_TAG
-  rules:
-    - if: $CI_COMMIT_BRANCH == "uat"
-      changes:
-        - Client/**/*
-        - Client/*
+    # debug
+    - docker images
+  only:
+    - uat
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == "uat"
+  #     changes:
+  #       - Client/**/*
+  #       - Client/*
 
 build-dashboard-uat:
   stage: build
@@ -164,14 +170,24 @@ build-dashboard-uat:
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    # debug
+    - echo $REGISTRY_USER
+    - echo $REGISTRY_PASS
+    - echo $UAT_CLIENT_TAG
+    - echo $CI_COMMIT_BRANCH
+    - echo $IMAGE_NAME
   script:
     - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$UAT_API_URL -t $IMAGE_NAME:$UAT_DASHBOARD_TAG -f dashboard/dockerfile ./dashboard
     - docker push $IMAGE_NAME:$UAT_DASHBOARD_TAG
-  rules:
-    - if: $CI_COMMIT_BRANCH == "uat"
-      changes:
-        - dashboard/**/*
-        - dashboard/*
+    # debug
+    - docker images
+  only:
+    - uat
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == "uat"
+  #     changes:
+  #       - dashboard/**/*
+  #       - dashboard/*
 
 build-server-uat:
   stage: build
@@ -185,14 +201,24 @@ build-server-uat:
   before_script:
     - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    # debug
+    - echo $REGISTRY_USER
+    - echo $REGISTRY_PASS
+    - echo $UAT_CLIENT_TAG
+    - echo $CI_COMMIT_BRANCH
+    - echo $IMAGE_NAME
   script:
     - docker build --build-arg DB_HOST=$UAT_DB_HOST --build-arg DB_PORT=$UAT_DB_PORT --build-arg DB_USER=$UAT_DB_USER --build-arg DB_PASSWORD=$UAT_DB_PASS --build-arg DB_NAME=$UAT_DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$UAT_JWT_AUDIENCE --build-arg JWT_ISSUER=$UAT_JWT_ISSUER --build-arg JWT_SECRET=$UAT_JWT_SECRET -t $IMAGE_NAME:$UAT_SERVER_TAG -f Server/Dockerfile ./Server
     - docker push $IMAGE_NAME:$UAT_SERVER_TAG
-  rules:
-    - if: $CI_COMMIT_BRANCH == "uat"
-      changes:
-        - Server/**/*
-        - Server/*
+    # debug
+    - docker images
+  only:
+    - uat
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == "uat"
+  #     changes:
+  #       - Server/**/*
+  #       - Server/*
 
 deploy-client-uat:
   stage: deploy
@@ -203,18 +229,27 @@ deploy-client-uat:
     - docker-deploy-uat
   before_script:
     - chmod 400 $SSH_KEY
-  script:
+    # debug
+    - echo $REGISTRY_USER
+    - echo $REGISTRY_PASS
+    - echo $UAT_CLIENT_TAG
+    - echo $CI_COMMIT_BRANCH
+  script: # docker images - debug x2
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker images &&
       docker ps -a --filter "name=$UAT_CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker images &&
       docker run -d -p 3002:3000 --name $UAT_CLIENT_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_CLIENT_TAG"
   dependencies:
     - build-client-uat
-  rules:
-    - if: $CI_COMMIT_BRANCH == "uat"
-      changes:
-        - Client/**/*
-        - Client/*
+  only:
+    - uat
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == "uat"
+  #     changes:
+  #       - Client/**/*
+  #       - Client/*
 
 deploy-dashboard-uat:
   stage: deploy
@@ -225,18 +260,27 @@ deploy-dashboard-uat:
     - docker-deploy-uat
   before_script:
     - chmod 400 $SSH_KEY
-  script:
+    # debug
+    - echo $REGISTRY_USER
+    - echo $REGISTRY_PASS
+    - echo $UAT_CLIENT_TAG
+    - echo $CI_COMMIT_BRANCH
+  script: # docker images - debug x2
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker images &&
       docker ps -a --filter "name=$UAT_DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker images &&
       docker run -d -p 3003:3000 --name $UAT_DASHBOARD_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_DASHBOARD_TAG"
   dependencies:
     - build-dashboard-uat
-  rules:
-    - if: $CI_COMMIT_BRANCH == "uat"
-      changes:
-        - dashboard/**/*
-        - dahsboard/*
+  only:
+  - uat
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == "uat"
+  #     changes:
+  #       - dashboard/**/*
+  #       - dahsboard/*
 
 deploy-server-uat:
   stage: deploy
@@ -247,17 +291,26 @@ deploy-server-uat:
     - docker-deploy-uat
   before_script:
     - chmod 400 $SSH_KEY
-  script:
+    # debug
+    - echo $REGISTRY_USER
+    - echo $REGISTRY_PASS
+    - echo $UAT_CLIENT_TAG
+    - echo $CI_COMMIT_BRANCH
+  script: # docker images - debug x2
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker images &&
       docker ps -a --filter "name=$UAT_SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker images &&
       docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_SERVER_TAG &&
       docker image prune -a -f"
   dependencies:
     - build-server-uat
-  rules:
-    - if: $CI_COMMIT_BRANCH == "uat"
-      changes:
-        - Server/**/*
-        - Server/*
+  only:
+    - uat
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == "uat"
+  #     changes:
+  #       - Server/**/*
+  #       - Server/*
 
