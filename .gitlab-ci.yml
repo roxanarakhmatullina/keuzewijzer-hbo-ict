@@ -129,6 +129,9 @@ deploy-server:
 
 build-client-uat:
   stage: build
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
   tags:
     - build-client-uat
   variables:
@@ -180,6 +183,9 @@ build-server-uat:
 
 deploy-client-uat:
   stage: deploy
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
   tags:
     - docker-deploy-uat
   before_script:
