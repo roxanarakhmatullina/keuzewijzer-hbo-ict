@@ -145,7 +145,8 @@ build-client-uat:
   rules:
     - if: $CI_COMMIT_BRANCH == "uat"
       changes:
-        - Client/**
+        - Client/**/*
+        - Client/*
 
 build-dashboard-uat:
   stage: build
@@ -165,7 +166,8 @@ build-dashboard-uat:
   rules:
     - if: $CI_COMMIT_BRANCH == "uat"
       changes:
-        - dashboard/**
+        - dashboard/**/*
+        - dashboard/*
 
 build-server-uat:
   stage: build
@@ -185,7 +187,8 @@ build-server-uat:
   rules:
     - if: $CI_COMMIT_BRANCH == "uat"
       changes:
-        - Server/**
+        - Server/**/*
+        - Server/*
 
 deploy-client-uat:
   stage: deploy
@@ -206,7 +209,8 @@ deploy-client-uat:
   rules:
     - if: $CI_COMMIT_BRANCH == "uat"
       changes:
-        - Client/**
+        - Client/**/*
+        - Client/*
 
 deploy-dashboard-uat:
   stage: deploy
@@ -227,7 +231,8 @@ deploy-dashboard-uat:
   rules:
     - if: $CI_COMMIT_BRANCH == "uat"
       changes:
-        - dashboard/**
+        - dashboard/**/*
+        - dahsboard/*
 
 deploy-server-uat:
   stage: deploy
@@ -249,5 +254,6 @@ deploy-server-uat:
   rules:
     - if: $CI_COMMIT_BRANCH == "uat"
       changes:
-        - Server/**
+        - Server/**/*
+        - Server/*
 
