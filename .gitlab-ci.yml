@@ -296,6 +296,7 @@ deploy-server-uat:
     - echo $REGISTRY_PASS
     - echo $UAT_CLIENT_TAG
     - echo $CI_COMMIT_BRANCH
+    - echo Deploying image':' $IMAGE_NAME:$UAT_SERVER_TAG
   script: # docker images - debug x2
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
