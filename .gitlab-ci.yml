@@ -223,7 +223,7 @@ deploy-client-uat:
     - docker-deploy-uat
   before_script:
     - chmod 400 $SSH_KEY
-  script: # docker images - debug x2
+  script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
