@@ -7,6 +7,8 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
     const [hoverLink, setHoverLink] = useState(false);
     const [hoverCluster, setHoverCluster] = useState(false);
     const [openClusters, setOpenClusters] = useState(false);
+    const [openRetakeMenu, setOpenRetakeMenu] = useState(false);
+    const [clusterStatus, setClusterStatus] = useState(null);
 
     const handleHoverLink = () => {
         setHoverLink(!hoverLink);
@@ -34,6 +36,18 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
         }
     };
 
+    const handleOpenRetakeMenu = () => {
+        setOpenRetakeMenu(!openRetakeMenu);
+    };
+
+    const handleFail = () => {
+        setClusterStatus("failed");
+    };
+
+    const handlePassed = () => {
+        setClusterStatus("passed");
+    };
+
     return (
         <div
             onMouseEnter={handleHoverCluster}
@@ -45,8 +59,13 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
             tabIndex={0} // Makes the div focusable
             role="button" // Indicates interactivity for accessibility
             aria-pressed={openClusters} // ARIA state for toggleable behavior
-            style={{zIndex: hoverCluster ? 2 : 0}}
-            className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+            //style={{zIndex: hoverCluster ? 2 : 0}}
+            className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] h-[75px] cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]
+            ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95"}
+            ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` :
+                clusterStatus === "passed" ? "bg-green-200" : 
+                clusterStatus === "failed" ? "bg-red-200" : "bg-[#FFF]"}
+            `}>
             <h1
                 style={{lineHeight: "1.25"}}
                 className={"text-left flex-auto text-[14px] font-bold"}>{name}</h1>
@@ -105,7 +124,93 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                     </div>
                 </div>
 
+                {/* Retake button */}
+                <div
+                    onClick={handleOpenRetakeMenu}
+                    className="w-[40px] h-[40px] bg-[#e0e0e0] rounded-full flex justify-center items-center cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleOpenRetakeMenu();
+                        }
+                    }}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-5 h-5 text-black"
+                    >
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                    </svg>
+                </div>
+
             </div>
+
+            {openRetakeMenu && (
+                <div
+                    className="absolute bg-white rounded-[8px] p-[10px] flex flex-col gap-[10px] z-10"
+                    style={{
+                        minWidth: "150px",
+                        left: "calc(100% + 20px)"
+                    }}
+                >
+                    <button
+                        className="flex items-center gap-[10px] p-[10px] rounded-[8px] hover:bg-green-100"
+                        onClick={() => {
+                            handlePassed();
+                            setOpenRetakeMenu(false);
+                        }}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="2"
+                            stroke="currentColor"
+                            className="w-5 h-5 text-green-500"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                            />
+                        </svg>
+                        <span className="text-sm font-medium text-gray-700">Passed</span>
+                    </button>
+                    <button
+                        className="flex items-center gap-[10px] p-[10px] rounded-[8px] hover:bg-red-100"
+                        onClick={() => {
+                            handleFail();
+                            setOpenRetakeMenu(false);
+                        }}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="2"
+                            stroke="currentColor"
+                            className="w-5 h-5 text-red-500"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                        <span className="text-sm font-medium text-gray-700">Fail</span>
+                    </button>
+                </div>
+            )}
+
         </div>
 
     )
