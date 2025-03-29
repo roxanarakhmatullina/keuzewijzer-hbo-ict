@@ -3,12 +3,12 @@ import React, {useState} from 'react'
 import ClusterInfo from "@/components/studyYear/clusters/cluster/info";
 import Retry from "@/icons/retry";
 
-const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeChoice, isRetaken}) => {
+const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeChoice, isRetaken, updateClusterStatus, initialStatus}) => {
     const [hoverLink, setHoverLink] = useState(false);
     const [hoverCluster, setHoverCluster] = useState(false);
     const [openClusters, setOpenClusters] = useState(false);
     const [openRetakeMenu, setOpenRetakeMenu] = useState(false);
-    const [clusterStatus, setClusterStatus] = useState(null);
+    const [clusterStatus, setClusterStatus] = useState(initialStatus);
 
     const handleHoverLink = () => {
         setHoverLink(!hoverLink);
@@ -40,12 +40,11 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
         setOpenRetakeMenu(!openRetakeMenu);
     };
 
-    const handleFail = () => {
-        setClusterStatus("failed");
-    };
-
-    const handlePassed = () => {
-        setClusterStatus("passed");
+    const handleStatusChange = (newStatus) => {
+        setClusterStatus(newStatus);
+        if (updateClusterStatus) {
+            updateClusterStatus(newStatus);
+        }
     };
 
     return (
@@ -165,7 +164,7 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                     <button
                         className="flex items-center gap-[10px] p-[10px] rounded-[8px] hover:bg-green-100"
                         onClick={() => {
-                            handlePassed();
+                            handleStatusChange("passed");
                             setOpenRetakeMenu(false);
                         }}
                     >
@@ -188,7 +187,7 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                     <button
                         className="flex items-center gap-[10px] p-[10px] rounded-[8px] hover:bg-red-100"
                         onClick={() => {
-                            handleFail();
+                            handleStatusChange("failed");
                             setOpenRetakeMenu(false);
                         }}
                     >

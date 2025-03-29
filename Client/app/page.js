@@ -17,6 +17,11 @@ const Home = () => {
     // list of clusters
     const [clusterslist, setClusterslist] = useState([]);
 
+    // list of displayed clusters
+    const [displayedClusterslist, setDisplayedClusterslist] = useState([]);
+
+    const [hasFailedCluster, setHasFailedCluster] = useState(false);
+
     useEffect(() => {
         if (selectedGraduateProfile && selectedGraduateProfile?.id) {
             // fetch study years
@@ -37,7 +42,23 @@ const Home = () => {
     // Update displayedStudyYears whenever studyYears changes
     useEffect(() => {
         if (studyYears && studyYears.length > 0) {
-            const updatedDisplayedStudyYears = studyYears.map(studyYear => studyYear);
+            const updatedDisplayedStudyYears = studyYears.map(studyYear => {
+                const updatedFirstSemester = studyYear.firstSemester?.map(cluster => ({
+                    ...cluster,
+                    status: null, // Add status to each cluster in the first semester
+                }));
+
+                const updatedLastSemester = studyYear.lastSemester?.map(cluster => ({
+                    ...cluster,
+                    status: null, // Add status to each cluster in the last semester
+                }));
+
+                return {
+                    ...studyYear,
+                    firstSemester: updatedFirstSemester,
+                    lastSemester: updatedLastSemester,
+                };
+            });
             setDisplayedStudyYears(updatedDisplayedStudyYears);
         }
     }, [studyYears]);
@@ -58,6 +79,87 @@ const Home = () => {
         }
     }, [studyYears]);
 
+    // Update displayedClusterslist whenever displayedStudyYears changes
+    useEffect(() => {
+        if (displayedStudyYears && displayedStudyYears.length > 0) {
+            const updatedClustersList = [];
+            displayedStudyYears.forEach(studyYear => {
+                if (studyYear.firstSemester) {
+                    updatedClustersList.push(...studyYear.firstSemester);
+                }
+                if (studyYear.lastSemester) {
+                    updatedClustersList.push(...studyYear.lastSemester);
+                }
+            });
+            setDisplayedClusterslist(updatedClustersList);
+        }
+    }, [displayedStudyYears]);
+
+    // Update cluster status
+    const updateClusterStatus = (studyYearIndex, semester, clusterId, newStatus) => {
+        setDisplayedStudyYears(prevDisplayedStudyYears => {
+            const updatedStudyYears = [...prevDisplayedStudyYears];
+            const semesterKey = semester === "firstSemester" ? "firstSemester" : "lastSemester";
+
+            // Update the specific cluster's status
+            updatedStudyYears[studyYearIndex][semesterKey] = updatedStudyYears[studyYearIndex][semesterKey].map(cluster => {
+                if (cluster.id === clusterId) {
+                    if (newStatus === "failed") {
+                        setHasFailedCluster(true); // Update the custom state
+                    }
+                    return { ...cluster, status: newStatus };
+                }
+                return cluster;
+            });
+
+            return updatedStudyYears;
+        });
+    };
+
+    useEffect(() => {
+        if (hasFailedCluster) {
+            console.log("A cluster has been failed!");
+            // Add your logic here, e.g., showing a notification
+            setDisplayedStudyYears(prevDisplayedStudyYears => {
+                let foundFailedCluster = false;
+
+                return prevDisplayedStudyYears.map(studyYear => {
+                    if (foundFailedCluster) {
+                        // If a failed cluster has already been found, clear all clusters in this study year
+                        return {
+                            ...studyYear,
+                            firstSemester: [],
+                            lastSemester: [],
+                        };
+                    }
+
+                    const updatedFirstSemester = studyYear.firstSemester?.filter(cluster => {
+                        if (foundFailedCluster) return false;
+                        if (cluster.status === "failed") {
+                            foundFailedCluster = true;
+                        }
+                        return true;
+                    }) || [];
+
+                    const updatedLastSemester = studyYear.lastSemester?.filter(cluster => {
+                        if (foundFailedCluster) return false;
+                        if (cluster.status === "failed") {
+                            foundFailedCluster = true;
+                        }
+                        return true;
+                    }) || [];
+
+                    return {
+                        ...studyYear,
+                        firstSemester: updatedFirstSemester,
+                        lastSemester: updatedLastSemester,
+                    };
+                });
+            });
+            // Reset the state after handling the logic
+            setHasFailedCluster(false);
+        }
+    }, [hasFailedCluster]);
 
     return (
         <div className={"w-screen flex flex-row gap-0"}>
@@ -67,6 +169,15 @@ const Home = () => {
             {/* Main Content */}
             <div
                 className={`${selectedGraduateProfile ? "flex" : "hidden"} pt-[100px] max-w-[1366px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}>
+                
+                {/* Display all objects in the displayedStudyYears array */}
+                {/*<div className="w-full flex flex-col gap-4">
+                    {displayedStudyYears.map((studyYear, index) => (
+                        <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
+                            {JSON.stringify(studyYear, null, 2)}
+                        </pre>
+                    ))}
+                </div>*/}
 
                 {/* Scrollable content for StudyYears */}
                 {selectedGraduateProfile && studyYears && studyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
@@ -80,6 +191,9 @@ const Home = () => {
                                 studyYears={studyYears}
                                 isLastStudyYear={index === studyYears.length - 1}
                                 isEndOfRow={index % 2 === 1 && index !== studyYears.length - 1}
+                                updateClusterStatus={(semester, clusterId, newStatus) =>
+                                    updateClusterStatus(index, semester, clusterId, newStatus)
+                                }
                             >
                                 {/* Line from right side to bottom */}
                                 {index % 2 === 1 && index !== studyYears.length - 1 && (

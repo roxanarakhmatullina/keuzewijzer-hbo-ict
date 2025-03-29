@@ -5,7 +5,7 @@ import {useGraduateProfile} from "@/hooks";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, children}) => {
+const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, children}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -67,12 +67,20 @@ const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndO
 
                 {/* First Cluster */}
                 {firstClusters && firstClusters.length > 0 && (
-                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor} />
+                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor}
+                    updateClusterStatus={(clusterId, newStatus) =>
+                        updateClusterStatus("firstSemester", clusterId, newStatus)
+                    }
+                    />
                 )}
 
                 {/* Last Cluster */}
                 {secondClusters && secondClusters.length > 0 && (
-                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor} />
+                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor}
+                    updateClusterStatus={(clusterId, newStatus) =>
+                        updateClusterStatus("lastSemester", clusterId, newStatus)
+                    }
+                    />
                 )}
 
             </div>

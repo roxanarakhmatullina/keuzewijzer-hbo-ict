@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
 import {useGraduateProfile} from "@/hooks";
 
-const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) => {
+const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus }) => {
     const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
     const [isAnimating, setIsAnimating] = useState(true);
     const {selectedGraduateProfile} = useGraduateProfile();
@@ -105,6 +105,8 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                                                 clustersSize={clusters.length}
                                                 clusterSelected={currentCluster}
                                                 {...cluster}
+                                                initialStatus={cluster.status}
+                                                updateClusterStatus={newStatus => updateClusterStatus(cluster.id, newStatus)}
                                             />
                                         </div>
                                     );
@@ -118,6 +120,8 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor }) 
                         clusterSelected={clusters[0]} // Selecteer het eerste cluster
                         key={0}
                         {...clusters[0]}
+                        initialStatus={clusters[0].status}
+                        updateClusterStatus={newStatus => updateClusterStatus(clusters[0].id, newStatus)}
                     />
                 )
             )}
