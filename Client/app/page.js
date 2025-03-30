@@ -151,6 +151,14 @@ const Home = () => {
                         return cluster;
                     }).filter(Boolean) || [];
 
+                    if(foundFailedCluster) {
+                        return {
+                            ...studyYear,
+                            firstSemester: updatedFirstSemester,
+                            lastSemester: null,
+                        };
+                    }
+
                     // Process the last semester
                     const updatedLastSemester = studyYear.lastSemester?.map(cluster => {
                         if (cluster.status === "failed") {
@@ -218,13 +226,13 @@ const Home = () => {
                 </div>*/}
 
                 {/* Display all objects in the clustersList array */}
-                <div className="w-full flex flex-col gap-4">
+                {/*<div className="w-full flex flex-col gap-4">
                     {clustersList.map((cluster, index) => (
                         <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
                             {JSON.stringify(cluster, null, 2)}
                         </pre>
                     ))}
-                </div>
+                </div>*/}
 
                 {/* Scrollable content for StudyYears */}
                 {selectedGraduateProfile && studyYears && studyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
