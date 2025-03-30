@@ -15,11 +15,12 @@ const Home = () => {
     const [displayedStudyYears, setDisplayedStudyYears] = useState([]);
 
     // list of clusters
-    const [clusterslist, setClusterslist] = useState([]);
+    const [clustersList, setClustersList] = useState([]);
 
     // list of displayed clusters
-    const [displayedClusterslist, setDisplayedClusterslist] = useState([]);
+    const [displayedClustersList, setDisplayedClustersList] = useState([]);
 
+    // cluster failed
     const [hasFailedCluster, setHasFailedCluster] = useState(false);
 
     useEffect(() => {
@@ -63,7 +64,7 @@ const Home = () => {
         }
     }, [studyYears]);
 
-    // Update clusterslist whenever studyYears changes
+    // Update clustersList whenever studyYears changes
     useEffect(() => {
         if (studyYears && studyYears.length > 0) {
             const updatedClustersList = [];
@@ -75,11 +76,11 @@ const Home = () => {
                     updatedClustersList.push(...studyYear.lastSemester);
                 }
             });
-            setClusterslist(updatedClustersList);
+            setClustersList(updatedClustersList);
         }
     }, [studyYears]);
 
-    // Update displayedClusterslist whenever displayedStudyYears changes
+    // Update displayedClustersList whenever displayedStudyYears changes
     useEffect(() => {
         if (displayedStudyYears && displayedStudyYears.length > 0) {
             const updatedClustersList = [];
@@ -91,7 +92,7 @@ const Home = () => {
                     updatedClustersList.push(...studyYear.lastSemester);
                 }
             });
-            setDisplayedClusterslist(updatedClustersList);
+            setDisplayedClustersList(updatedClustersList);
         }
     }, [displayedStudyYears]);
 
@@ -116,10 +117,11 @@ const Home = () => {
         });
     };
 
+    // Handle the logic when a cluster is failed
     useEffect(() => {
         if (hasFailedCluster) {
             console.log("A cluster has been failed!");
-            // Add your logic here, e.g., showing a notification
+
             setDisplayedStudyYears(prevDisplayedStudyYears => {
                 let foundFailedCluster = false;
 
@@ -133,21 +135,37 @@ const Home = () => {
                         };
                     }
 
-                    const updatedFirstSemester = studyYear.firstSemester?.filter(cluster => {
-                        if (foundFailedCluster) return false;
+                    // Process the first semester
+                    const updatedFirstSemester = studyYear.firstSemester?.map(cluster => {
                         if (cluster.status === "failed") {
-                            foundFailedCluster = true;
+                            foundFailedCluster = true; // Mark that a failed cluster has been found
+                            return cluster; // Keep the failed cluster
                         }
-                        return true;
-                    }) || [];
+                        if (studyYear.firstSemester.length > 1) {
+                            // Remove the cluster from clustersList before setting it to blank
+                            setClustersList(prevClustersList =>
+                                prevClustersList.filter(c => c.id !== cluster.id)
+                            );
+                            return { id: "blank", status: null }; // Replace the cluster with a blank placeholder
+                        }
+                        return cluster;
+                    }).filter(Boolean) || [];
 
-                    const updatedLastSemester = studyYear.lastSemester?.filter(cluster => {
-                        if (foundFailedCluster) return false;
+                    // Process the last semester
+                    const updatedLastSemester = studyYear.lastSemester?.map(cluster => {
                         if (cluster.status === "failed") {
-                            foundFailedCluster = true;
+                            foundFailedCluster = true; // Mark that a failed cluster has been found
+                            return cluster; // Keep the failed cluster
                         }
-                        return true;
-                    }) || [];
+                        if (studyYear.lastSemester.length > 1) {
+                            // Remove the cluster from clustersList before setting it to blank
+                            setClustersList(prevClustersList =>
+                                prevClustersList.filter(c => c.id !== cluster.id)
+                            );
+                            return { id: "blank", status: null }; // Replace the cluster with a blank placeholder
+                        }
+                        return cluster;
+                    }).filter(Boolean) || [];
 
                     return {
                         ...studyYear,
@@ -156,10 +174,30 @@ const Home = () => {
                     };
                 });
             });
+
             // Reset the state after handling the logic
             setHasFailedCluster(false);
         }
     }, [hasFailedCluster]);
+
+
+    // Handle the reset button click
+    const handleReset = () => {
+        //delete everything from studyYears and fetches again
+        if (selectedGraduateProfile && selectedGraduateProfile?.id) {
+            // fetch study years
+            api.get(`/StudyRoute/cohort/${startedStudyYear?.id}/graduateProfile/${selectedGraduateProfile?.id}/`).then(res => {
+                setStudyYears(res.data);
+            }).catch(error => {
+                setErrors([...errors, {
+                    id: new Date().getTime(),
+                    type: "clusters",
+                    message: 'Er is iets misgegaan bij het ophalen van de clusters. Probeer het later opnieuw.',
+                    error: error,
+                }]);
+            });
+        }
+    };
 
     return (
         <div className={"w-screen flex flex-row gap-0"}>
@@ -178,6 +216,15 @@ const Home = () => {
                         </pre>
                     ))}
                 </div>*/}
+
+                {/* Display all objects in the clustersList array */}
+                <div className="w-full flex flex-col gap-4">
+                    {clustersList.map((cluster, index) => (
+                        <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
+                            {JSON.stringify(cluster, null, 2)}
+                        </pre>
+                    ))}
+                </div>
 
                 {/* Scrollable content for StudyYears */}
                 {selectedGraduateProfile && studyYears && studyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
@@ -234,6 +281,17 @@ const Home = () => {
                     <StudyRouteLoader />
                 )}
             </div>
+
+            {/*Reset button*/}
+            <div className="fixed top-[20px] right-[20px] z-10">
+                <button
+                    onClick={handleReset}
+                    className="bg-red-500 text-white px-[20px] py-[10px] rounded-[8px] hover:bg-red-600 transition duration-200"
+                >
+                    Reset
+                </button>
+            </div>
+
         </div>
     );
 };

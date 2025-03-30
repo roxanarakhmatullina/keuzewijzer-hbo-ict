@@ -1,5 +1,5 @@
 'use client'
-import React, {useState} from 'react'
+import React, {use, useState, useEffect} from 'react'
 import ClusterInfo from "@/components/studyYear/clusters/cluster/info";
 import Retry from "@/icons/retry";
 
@@ -41,11 +41,14 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
     };
 
     const handleStatusChange = (newStatus) => {
-        setClusterStatus(newStatus);
         if (updateClusterStatus) {
             updateClusterStatus(newStatus);
         }
     };
+
+    useEffect(() => {
+        setClusterStatus(initialStatus);
+    }, [initialStatus]);
 
     return (
         <div
@@ -125,7 +128,6 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
 
                 {/* Retake button */}
                 <div
-                    onClick={handleOpenRetakeMenu}
                     className="w-[40px] h-[40px] bg-[#e0e0e0] rounded-full flex justify-center items-center cursor-pointer"
                     role="button"
                     tabIndex={0}
@@ -134,8 +136,27 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                             handleOpenRetakeMenu();
                         }
                     }}
+                    onClick={(e) => {
+                        e.stopPropagation(); // Prevent click event from propagating to parent
+                        handleOpenRetakeMenu();
+                    }}
                 >
-                    <svg
+                    {openRetakeMenu ? (
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="w-5 h-5 text-black"
+                        >
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    ) : (
+                        <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
@@ -149,6 +170,7 @@ const Cluster = ({name, link, canChange, clusterSelected, clustersSize, isFreeCh
                         <circle cx="12" cy="12" r="1"></circle>
                         <circle cx="12" cy="19" r="1"></circle>
                     </svg>
+                    )}
                 </div>
 
             </div>
