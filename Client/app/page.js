@@ -231,59 +231,70 @@ const Home = () => {
                 console.log("studyYears: ", updatedStudyYears);
                 console.log("updatedStudyYears: ", updatedStudyYears);
                 console.log("clustersList: ", clustersList.length);
-                for(let i = 0; i < clustersList.length; i++) {
-                    for (let studyYear of updatedStudyYears) {
+                for (let studyYear of updatedStudyYears) {
 
-                        const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
-    
-                        if(isFirstSemesterEmpty) {
-                            console.log("the first semester is empty in study year: ", studyYear.year);
-                            for (let cluster of clustersList) {
-                                // Check if the cluster is already in the displayedClustersList
-                                let isAlreadyDisplayed = false;
-                        
-                                for (let displayedCluster of updatedDisplayedClustersList) {
-                                    if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
-                                        isAlreadyDisplayed = true;
-                                        break; // Exit the inner loop
-                                    }
-                                }
-                        
-                                if (!isAlreadyDisplayed && cluster.firstSemester) {
-                                    studyYear.firstSemester.push(cluster);
-                                    updatedDisplayedClustersList.push(cluster);
-                                    console.log("cluster pushed");
-                                    break; // Exit the clustersList loop
+                    const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
+
+                    if(isFirstSemesterEmpty) {
+                        console.log("the first semester is empty in study year: ", studyYear.year);
+                        for (let j = 0; j < clustersList.length; j++) {
+                            const cluster = clustersList[j];
+                            const nextCluster = clustersList[j + 1];
+                            // Check if the cluster is already in the displayedClustersList
+                            let isAlreadyDisplayed = false;
+                    
+                            for (let displayedCluster of updatedDisplayedClustersList) {
+                                if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
+                                    isAlreadyDisplayed = true;
+                                    break; // Exit the inner loop
                                 }
                             }
-                        }
-    
-                        const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
-    
-                        if(isLastSemesterEmpty) {
-                            console.log("the last semester is empty in study year: ", studyYear.year);
-                            for (let cluster of clustersList) {
-                                // Check if the cluster is already in the displayedClustersList
-                                let isAlreadyDisplayed = false;
-                        
-                                for (let displayedCluster of updatedDisplayedClustersList) {
-                                    if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
-                                        isAlreadyDisplayed = true;
-                                        break; // Exit the inner loop
-                                    }
+                    
+                            if (!isAlreadyDisplayed && cluster.firstSemester) {
+                                studyYear.firstSemester.push(cluster);
+                                updatedDisplayedClustersList.push(cluster);
+                                if ((j+1) < clustersList.length && nextCluster.level === cluster.level && nextCluster.firstSemester && !nextCluster.isLocked && !cluster.isLocked && !nextCluster.isFreeChoice && !cluster.isFreeChoice) {
+                                    studyYear.firstSemester.push(nextCluster);
+                                    updatedDisplayedClustersList.push(nextCluster);
+
                                 }
-                        
-                                if (!isAlreadyDisplayed && cluster.lastSemester) {
-                                    studyYear.lastSemester.push(cluster);
-                                    updatedDisplayedClustersList.push(cluster);
-                                    console.log("cluster pushed");
-                                    break; // Exit the clustersList loop
-                                }
+                                console.log("cluster pushed");
+                                break; // Exit the clustersList loop
                             }
                         }
-                    };
-                    console.log("iteration: ", i);
-                }
+                    }
+
+                    const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
+
+                    if(isLastSemesterEmpty) {
+                        console.log("the last semester is empty in study year: ", studyYear.year);
+                        for (let j = 0; j < clustersList.length; j++) {
+                            const cluster = clustersList[j];
+                            const nextCluster = clustersList[j + 1];
+                            // Check if the cluster is already in the displayedClustersList
+                            let isAlreadyDisplayed = false;
+                    
+                            for (let displayedCluster of updatedDisplayedClustersList) {
+                                if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
+                                    isAlreadyDisplayed = true;
+                                    break; // Exit the inner loop
+                                }
+                            }
+                    
+                            if (!isAlreadyDisplayed && cluster.lastSemester) {
+                                studyYear.lastSemester.push(cluster);
+                                updatedDisplayedClustersList.push(cluster);
+                                console.log("cluster pushed");
+                                if ((j+1) < clustersList.length && nextCluster.level === cluster.level && nextCluster.lastSemester && !nextCluster.isLocked && !cluster.isLocked && !nextCluster.isFreeChoice && !cluster.isFreeChoice) {
+                                    studyYear.lastSemester.push(nextCluster);
+                                    updatedDisplayedClustersList.push(nextCluster);
+
+                                }
+                                break; // Exit the clustersList loop
+                            }
+                        }
+                    }
+                };
                 return updatedStudyYears;
             });
 
