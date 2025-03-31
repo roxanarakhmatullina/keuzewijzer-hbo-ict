@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Navigation from '@/components/navigation';
 import StudyYear from "@/components/studyYear";
 import { useError, useGraduateProfile, useStudyYear } from "@/hooks";
@@ -22,6 +22,9 @@ const Home = () => {
 
     // cluster failed
     const [hasFailedCluster, setHasFailedCluster] = useState(false);
+
+    // put back clusters
+    const [putBack, setPutBack] = useState(false);
 
     useEffect(() => {
         if (selectedGraduateProfile && selectedGraduateProfile?.id) {
@@ -120,8 +123,10 @@ const Home = () => {
     // Handle the logic when a cluster is failed
     useEffect(() => {
         if (hasFailedCluster) {
-            console.log("A cluster has been failed!");
 
+            console.log("hasFailedCluster:", hasFailedCluster);
+
+            // removes all the semesters after the failed cluster
             setDisplayedStudyYears(prevDisplayedStudyYears => {
                 let foundFailedCluster = false;
 
@@ -185,9 +190,60 @@ const Home = () => {
 
             // Reset the state after handling the logic
             setHasFailedCluster(false);
+            setPutBack(true); // Set putBack to true to trigger the effect
         }
     }, [hasFailedCluster]);
 
+    // Handle the logic when a cluster is put back
+    useEffect(() => {
+        // put the clusters back
+        setDisplayedStudyYears(prevDisplayedStudyYears => {
+            const updatedStudyYears = [...prevDisplayedStudyYears];
+
+            console.log("displayedStudyYears after;", displayedStudyYears);
+            console.log("displayedClustersList;", displayedClustersList);
+            console.log("clustersList;", clustersList);
+
+            clustersList.forEach(cluster => {
+                let isAlreadyDisplayed = false; // Flag to check if the cluster is already displayed
+                displayedClustersList.forEach(displayedCluster => {
+                    if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
+                        isAlreadyDisplayed = true; // Mark that the cluster is already displayed
+                    }
+                })
+
+                console.log(cluster.name, "isAlreadyDisplayed;", isAlreadyDisplayed);
+
+
+                {/*if (!isAlreadyDisplayed) {
+                    for (let i = 0; i < updatedStudyYears.length; i++) {
+                        const studyYear = updatedStudyYears[i];
+
+                        // Check for the first available slot in the first semester
+                        if (studyYear.firstSemester) {
+                            const firstSemesterIndex = studyYear.firstSemester.findIndex(c => c.id === "blank");
+                            if (firstSemesterIndex !== -1) {
+                                studyYear.firstSemester[firstSemesterIndex] = cluster;
+                                return updatedStudyYears;
+                            }
+                        }
+
+                        // Check for the first available slot in the last semester
+                        if (studyYear.lastSemester) {
+                            const lastSemesterIndex = studyYear.lastSemester.findIndex(c => c.id === "blank");
+                            if (lastSemesterIndex !== -1) {
+                                studyYear.lastSemester[lastSemesterIndex] = cluster;
+                                return updatedStudyYears;
+                            }
+                        }
+                    }
+                }*/}
+            });
+
+            return updatedStudyYears;
+        });
+        setPutBack(false); // Reset putBack to false after handling the logic
+    }, [putBack]);
 
     // Handle the reset button click
     const handleReset = () => {
@@ -227,6 +283,7 @@ const Home = () => {
 
                 {/* Display all objects in the clustersList array */}
                 {/*<div className="w-full flex flex-col gap-4">
+                    clustersList array
                     {clustersList.map((cluster, index) => (
                         <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
                             {JSON.stringify(cluster, null, 2)}
@@ -234,8 +291,18 @@ const Home = () => {
                     ))}
                 </div>*/}
 
+                {/* Display all objects in the displayedClustersList array */}
+                {/*<div className="w-full flex flex-col gap-4">
+                    displayedClustersList array
+                    {displayedClustersList.map((cluster, index) => (
+                        <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
+                            {JSON.stringify(cluster, null, 2)}
+                        </pre>
+                    ))}
+                </div>*/}
+
                 {/* Scrollable content for StudyYears */}
-                {selectedGraduateProfile && studyYears && studyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
+                {selectedGraduateProfile && displayedStudyYears && displayedStudyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
                     return (
                         <React.Fragment key={"study-year-" + index}>
                             <StudyYear
