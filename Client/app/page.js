@@ -17,9 +17,6 @@ const Home = () => {
     // list of clusters
     const [clustersList, setClustersList] = useState([]);
 
-    // list of displayed clusters
-    const [displayedClustersList, setDisplayedClustersList] = useState([]);
-
     // cluster failed
     const [hasFailedCluster, setHasFailedCluster] = useState(false);
 
@@ -87,7 +84,7 @@ const Home = () => {
     }, [studyYears]);
 
     // Update displayedClustersList whenever displayedStudyYears changes
-    useEffect(() => {
+    const displayedClustersList = React.useMemo(() => {
         if (displayedStudyYears && displayedStudyYears.length > 0) {
             const updatedClustersList = [];
             displayedStudyYears.forEach(studyYear => {
@@ -98,9 +95,9 @@ const Home = () => {
                     updatedClustersList.push(...studyYear.lastSemester);
                 }
             });
-            setDisplayedClustersList(updatedClustersList);
+            return updatedClustersList;
         }
-        console.log("displayedStudyYears:", displayedStudyYears);
+        return [];
     }, [displayedStudyYears]);
 
     // Update cluster status
@@ -227,23 +224,67 @@ const Home = () => {
     // Handle put back logic
     useEffect(() => {
         if (putBack) {
+            console.log("putBack:", putBack);
             setDisplayedStudyYears(prevDisplayedStudyYears => {
-                return prevDisplayedStudyYears.map(studyYear => {
+                let updatedStudyYears = [...prevDisplayedStudyYears];
+                let updatedDisplayedClustersList = [...displayedClustersList];
+                console.log("studyYears: ", updatedStudyYears);
+                console.log("updatedStudyYears: ", updatedStudyYears);
+                console.log("clustersList: ", clustersList.length);
+                for(let i = 0; i < clustersList.length; i++) {
+                    for (let studyYear of updatedStudyYears) {
 
-                    const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
-
-                    if(isFirstSemesterEmpty) {
-                        //console.log("the first semester is empty in study year: ", studyYear.year);
-                    }
-
-                    const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
-
-                    if(isLastSemesterEmpty) {
-                        //console.log("the last semester is empty in study year: ", studyYear.year);
-                    }
-
-                    return studyYear;
-                });
+                        const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
+    
+                        if(isFirstSemesterEmpty) {
+                            console.log("the first semester is empty in study year: ", studyYear.year);
+                            for (let cluster of clustersList) {
+                                // Check if the cluster is already in the displayedClustersList
+                                let isAlreadyDisplayed = false;
+                        
+                                for (let displayedCluster of updatedDisplayedClustersList) {
+                                    if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
+                                        isAlreadyDisplayed = true;
+                                        break; // Exit the inner loop
+                                    }
+                                }
+                        
+                                if (!isAlreadyDisplayed && cluster.firstSemester) {
+                                    studyYear.firstSemester.push(cluster);
+                                    updatedDisplayedClustersList.push(cluster);
+                                    console.log("cluster pushed");
+                                    break; // Exit the clustersList loop
+                                }
+                            }
+                        }
+    
+                        const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
+    
+                        if(isLastSemesterEmpty) {
+                            console.log("the last semester is empty in study year: ", studyYear.year);
+                            for (let cluster of clustersList) {
+                                // Check if the cluster is already in the displayedClustersList
+                                let isAlreadyDisplayed = false;
+                        
+                                for (let displayedCluster of updatedDisplayedClustersList) {
+                                    if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
+                                        isAlreadyDisplayed = true;
+                                        break; // Exit the inner loop
+                                    }
+                                }
+                        
+                                if (!isAlreadyDisplayed && cluster.lastSemester) {
+                                    studyYear.lastSemester.push(cluster);
+                                    updatedDisplayedClustersList.push(cluster);
+                                    console.log("cluster pushed");
+                                    break; // Exit the clustersList loop
+                                }
+                            }
+                        }
+                    };
+                    console.log("iteration: ", i);
+                }
+                return updatedStudyYears;
             });
 
             // Reset the putBack state after processing
