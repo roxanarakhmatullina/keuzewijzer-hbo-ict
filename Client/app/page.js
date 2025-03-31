@@ -23,6 +23,9 @@ const Home = () => {
     // cluster failed
     const [hasFailedCluster, setHasFailedCluster] = useState(false);
 
+    // add semester
+    const [addSemester, setAddSemester] = useState(false);
+
     // put back clusters
     const [putBack, setPutBack] = useState(false);
 
@@ -97,6 +100,7 @@ const Home = () => {
             });
             setDisplayedClustersList(updatedClustersList);
         }
+        console.log("displayedStudyYears:", displayedStudyYears);
     }, [displayedStudyYears]);
 
     // Update cluster status
@@ -123,9 +127,7 @@ const Home = () => {
     // Handle the logic when a cluster is failed
     useEffect(() => {
         if (hasFailedCluster) {
-
             console.log("hasFailedCluster:", hasFailedCluster);
-
             // removes all the semesters after the failed cluster
             setDisplayedStudyYears(prevDisplayedStudyYears => {
                 let foundFailedCluster = false;
@@ -190,59 +192,63 @@ const Home = () => {
 
             // Reset the state after handling the logic
             setHasFailedCluster(false);
+            setAddSemester(true); // Set addSemester to true to trigger the effect
             setPutBack(true); // Set putBack to true to trigger the effect
         }
     }, [hasFailedCluster]);
 
-    // Handle the logic when a cluster is put back
+    // Handle the logic to add a semester
     useEffect(() => {
-        // put the clusters back
+        // Add an empty semester at the end of the displayedStudyYears array
         setDisplayedStudyYears(prevDisplayedStudyYears => {
-            const updatedStudyYears = [...prevDisplayedStudyYears];
+            const lastStudyYear = prevDisplayedStudyYears[prevDisplayedStudyYears.length - 1];
 
-            console.log("displayedStudyYears after;", displayedStudyYears);
-            console.log("displayedClustersList;", displayedClustersList);
-            console.log("clustersList;", clustersList);
+            // Check if the last study year already has a last semester
+            if (lastStudyYear && !lastStudyYear.lastSemester) {
+                // Add an empty last semester to the last study year
+                return prevDisplayedStudyYears.map((studyYear, index) =>
+                    index === prevDisplayedStudyYears.length - 1
+                        ? { ...studyYear, lastSemester: [] }
+                        : studyYear
+                );
+            } else {
+                // Add a new study year with an empty first semester
+                return [
+                    ...prevDisplayedStudyYears,
+                    {
+                        year: prevDisplayedStudyYears.length + 1, // Increment the year
+                        firstSemester: [],
+                    },
+                ];
+            }
+        });
+    }, [addSemester]);
 
-            clustersList.forEach(cluster => {
-                let isAlreadyDisplayed = false; // Flag to check if the cluster is already displayed
-                displayedClustersList.forEach(displayedCluster => {
-                    if (displayedCluster.id === cluster.id && displayedCluster.status !== "failed") {
-                        isAlreadyDisplayed = true; // Mark that the cluster is already displayed
+    // Handle put back logic
+    useEffect(() => {
+        if (putBack) {
+            setDisplayedStudyYears(prevDisplayedStudyYears => {
+                return prevDisplayedStudyYears.map(studyYear => {
+
+                    const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
+
+                    if(isFirstSemesterEmpty) {
+                        //console.log("the first semester is empty in study year: ", studyYear.year);
                     }
-                })
 
-                console.log(cluster.name, "isAlreadyDisplayed;", isAlreadyDisplayed);
+                    const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
 
-
-                {/*if (!isAlreadyDisplayed) {
-                    for (let i = 0; i < updatedStudyYears.length; i++) {
-                        const studyYear = updatedStudyYears[i];
-
-                        // Check for the first available slot in the first semester
-                        if (studyYear.firstSemester) {
-                            const firstSemesterIndex = studyYear.firstSemester.findIndex(c => c.id === "blank");
-                            if (firstSemesterIndex !== -1) {
-                                studyYear.firstSemester[firstSemesterIndex] = cluster;
-                                return updatedStudyYears;
-                            }
-                        }
-
-                        // Check for the first available slot in the last semester
-                        if (studyYear.lastSemester) {
-                            const lastSemesterIndex = studyYear.lastSemester.findIndex(c => c.id === "blank");
-                            if (lastSemesterIndex !== -1) {
-                                studyYear.lastSemester[lastSemesterIndex] = cluster;
-                                return updatedStudyYears;
-                            }
-                        }
+                    if(isLastSemesterEmpty) {
+                        //console.log("the last semester is empty in study year: ", studyYear.year);
                     }
-                }*/}
+
+                    return studyYear;
+                });
             });
 
-            return updatedStudyYears;
-        });
-        setPutBack(false); // Reset putBack to false after handling the logic
+            // Reset the putBack state after processing
+            setPutBack(false);
+        }
     }, [putBack]);
 
     // Handle the reset button click
@@ -310,15 +316,15 @@ const Home = () => {
                                 firstClusters={studyYear?.firstSemester}
                                 secondClusters={studyYear?.lastSemester}
                                 selectedGraduateProfile={selectedGraduateProfile}
-                                studyYears={studyYears}
-                                isLastStudyYear={index === studyYears.length - 1}
+                                studyYears={displayedStudyYears}
+                                isLastStudyYear={index === displayedStudyYears.length - 1}
                                 isEndOfRow={index % 2 === 1 && index !== studyYears.length - 1}
                                 updateClusterStatus={(semester, clusterId, newStatus) =>
                                     updateClusterStatus(index, semester, clusterId, newStatus)
                                 }
                             >
                                 {/* Line from right side to bottom */}
-                                {index % 2 === 1 && index !== studyYears.length - 1 && (
+                                {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (
                                     <div
                                         style={{ backgroundColor: selectedGraduateProfile?.color }}
                                         className={`ease-in-out duration-200 hidden lg:flex absolute top-[calc(50%-5px)] right-0 w-[10px] h-[calc(50%+5px)] bg-${selectedGraduateProfile?.color} box-border`}>
@@ -326,7 +332,7 @@ const Home = () => {
                                 )}
 
                                 {/* Line from left side to bottom */}
-                                {index % 2 === 0 && index !== studyYears.length - 1 && index !== 0 && (
+                                {index % 2 === 0 && index !== displayedStudyYears.length - 1 && index !== 0 && (
                                     <div
                                         style={{ backgroundColor: selectedGraduateProfile?.color }}
                                         className={`ease-in-out duration-200 hidden lg:flex absolute bottom-[calc(50%-5px)] left-[32.5px] w-[10px] h-[calc(50%+5px)] bg-${selectedGraduateProfile?.color} box-border`}>
@@ -335,7 +341,7 @@ const Home = () => {
                             </StudyYear>
 
                             {/* Horizontal line */}
-                            {index % 2 === 1 && index !== studyYears.length - 1 && (
+                            {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (
                                 <div className={"hidden pt-[50px] m-0 pb-[50px] lg:flex w-full justify-center align-middle items-center z-[1]"}>
                                     <div
                                         style={{ backgroundColor: selectedGraduateProfile?.color, transition: "ease-in-out duration-200 background-color" }}
