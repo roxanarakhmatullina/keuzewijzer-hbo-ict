@@ -219,6 +219,7 @@ const Home = () => {
                 ];
             }
         });
+        setAddSemester(false);
     }, [addSemester]);
 
     // Handle put back logic
@@ -250,11 +251,19 @@ const Home = () => {
                             }
                     
                             if (!isAlreadyDisplayed && cluster.firstSemester) {
-                                studyYear.firstSemester.push(cluster);
-                                updatedDisplayedClustersList.push(cluster);
+                                //check prerequisites
+                                const prerequisites = cluster.prerequisites;
+                                const checkPrerequisites = (prerequisites, updatedDisplayedClustersList) =>
+                                    prerequisites.every(prerequisite =>
+                                        updatedDisplayedClustersList.some(cluster => cluster.id === prerequisite.id)
+                                    );
+                                const prerequisitesMet = checkPrerequisites(prerequisites, updatedDisplayedClustersList);
+                                console.log("checkPrerequisites:", prerequisitesMet);
+                                studyYear.firstSemester.push({...nextCluster, status: null});
+                                updatedDisplayedClustersList.push({...nextCluster, status: null});
                                 if ((j+1) < clustersList.length && nextCluster.level === cluster.level && nextCluster.firstSemester && !nextCluster.isLocked && !cluster.isLocked && !nextCluster.isFreeChoice && !cluster.isFreeChoice) {
-                                    studyYear.firstSemester.push(nextCluster);
-                                    updatedDisplayedClustersList.push(nextCluster);
+                                    studyYear.firstSemester.push({...nextCluster, status: null});
+                                    updatedDisplayedClustersList.push({...nextCluster, status: null});
 
                                 }
                                 console.log("cluster pushed");
@@ -282,12 +291,12 @@ const Home = () => {
                             }
                     
                             if (!isAlreadyDisplayed && cluster.lastSemester) {
-                                studyYear.lastSemester.push(cluster);
-                                updatedDisplayedClustersList.push(cluster);
+                                studyYear.lastSemester.push({...nextCluster, status: null});
+                                updatedDisplayedClustersList.push({...nextCluster, status: null});
                                 console.log("cluster pushed");
                                 if ((j+1) < clustersList.length && nextCluster.level === cluster.level && nextCluster.lastSemester && !nextCluster.isLocked && !cluster.isLocked && !nextCluster.isFreeChoice && !cluster.isFreeChoice) {
-                                    studyYear.lastSemester.push(nextCluster);
-                                    updatedDisplayedClustersList.push(nextCluster);
+                                    studyYear.lastSemester.push({...nextCluster, status: null});
+                                    updatedDisplayedClustersList.push({...nextCluster, status: null});
 
                                 }
                                 break; // Exit the clustersList loop
@@ -331,13 +340,13 @@ const Home = () => {
                 className={`${selectedGraduateProfile ? "flex" : "hidden"} pt-[100px] max-w-[1366px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}>
                 
                 {/* Display all objects in the displayedStudyYears array */}
-                {/*<div className="w-full flex flex-col gap-4">
+                <div className="w-full flex flex-col gap-4">
                     {displayedStudyYears.map((studyYear, index) => (
                         <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
                             {JSON.stringify(studyYear, null, 2)}
                         </pre>
                     ))}
-                </div>*/}
+                </div>
 
                 {/* Display all objects in the clustersList array */}
                 {/*<div className="w-full flex flex-col gap-4">
