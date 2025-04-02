@@ -201,34 +201,54 @@ const Home = () => {
       setDisplayedStudyYears(prevDisplayedStudyYears => {
         let foundFailedCluster = false;
 
+        if (foundFailedCluster) {
+          return prevDisplayedStudyYears;
+        }
+
         // Start scanning from the bottom of the array
         for (let i = prevDisplayedStudyYears.length - 1; i >= 0; i--) {
           const studyYear = prevDisplayedStudyYears[i];
 
           // Check the last semester first
           if (studyYear.lastSemester) {
-            for (let j = studyYear.lastSemester.length - 1; j >= 0; j--) {
+            for (let j = 0; j < studyYear.lastSemester.length; j++) {
               const cluster = studyYear.lastSemester[j];
               if (cluster.status === "failed") {
                 foundFailedCluster = true;
                 break;
               } else {
-                studyYear.lastSemester.splice(j, 1); // Remove the cluster from the array
+                if (studyYear.lastSemester.length > 1) {
+
+                } else {
+                  studyYear.lastSemester = []; // Remove the cluster from the array
+                }
               }
             }
           }
 
+          if (foundFailedCluster) {
+            break;
+          }
+
           // If not found in the last semester, check the first semester
           if (!foundFailedCluster && studyYear.firstSemester) {
-            for (let j = studyYear.firstSemester.length - 1; j >= 0; j--) {
+            for (let j = 0; j < studyYear.firstSemester.length; j++) {
               const cluster = studyYear.firstSemester[j];
               if (cluster.status === "failed") {
                 foundFailedCluster = true;
                 break;
               } else {
-                studyYear.firstSemester.splice(j, 1); // Remove the cluster from the array
+                if (studyYear.firstSemester.length > 1) {
+
+                } else {
+                  studyYear.firstSemester = []; // Remove the cluster from the array
+                }
               }
             }
+          }
+
+          if (foundFailedCluster) {
+            break;
           }
         }
 
@@ -244,14 +264,12 @@ const Home = () => {
   // Handle the logic to add a semester
   useEffect(() => {
     if (addSemester) {
-      console.log("studyYears:", displayedStudyYears);
       // Add an empty semester at the end of the displayedStudyYears array
       setDisplayedStudyYears(prevDisplayedStudyYears => {
         const lastStudyYear = prevDisplayedStudyYears[prevDisplayedStudyYears.length - 1];
 
         // Check if the last study year already has a last semester
         if (lastStudyYear && !lastStudyYear.lastSemester) {
-          console.log("triggered");
           // Add an empty last semester to the last study year
           return prevDisplayedStudyYears.map((studyYear, index) =>
             index === prevDisplayedStudyYears.length - 1
@@ -259,7 +277,6 @@ const Home = () => {
               : studyYear
           );
         } else {
-          console.log("triggered2");
           // Add a new study year with an empty first semester
           return [
             ...prevDisplayedStudyYears,
@@ -271,14 +288,9 @@ const Home = () => {
         }
       });
       setAddSemester(false);
-      setPutBack(true); // Set putBack to true to trigger the effect
+      //setPutBack(true); // Set putBack to true to trigger the effect
     }
   }, [addSemester]);
-
-  useEffect(() => {
-    console.log("displayedStudyYears:", displayedStudyYears);
-  }
-    , [displayedStudyYears]);
 
   // Fix the logic behind updatedDisplayedClustersList
   useEffect(() => {
@@ -287,11 +299,11 @@ const Home = () => {
       setDisplayedStudyYears(prevDisplayedStudyYears => {
         let updatedStudyYears = [...prevDisplayedStudyYears];
         let updatedDisplayedClustersList = [...displayedClustersList];
-        console.log("updatedStudyYears:", displayedStudyYears);
-        console.log("updatedDisplayedClustersList:", updatedDisplayedClustersList);
 
         for (let studyYear of updatedStudyYears) {
+          console.log("checking study year: ", studyYear.year);
           const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
+          console.log("isFirstSemesterEmpty", isFirstSemesterEmpty);
 
           if (isFirstSemesterEmpty) {
             console.log("the first semester is empty in study year: ", studyYear.year);
