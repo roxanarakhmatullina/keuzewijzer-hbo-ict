@@ -32,5 +32,20 @@ public class DataContext : IdentityDbContext<IdentityUser>
       .HasOne(cp => cp.Prerequisite)
       .WithMany()
       .HasForeignKey(cp => cp.PrerequisiteId);
+
+    modelBuilder.Entity<CategoryCohortCluster>()
+      .HasOne(ccc => ccc.Category)
+      .WithMany(c => c.CategoryCohortClusters)
+      .HasForeignKey(ccc => ccc.CategoryId);
+    
+    modelBuilder.Entity<CategoryCohortCluster>()
+      .HasOne(ccc => ccc.Cohort)
+      .WithMany()
+      .HasForeignKey(ccc => ccc.CohortId);
+    
+    modelBuilder.Entity<CategoryCohortCluster>()
+      .HasOne(ccc => ccc.Cluster)
+      .WithMany()
+      .HasForeignKey(ccc => ccc.ClusterId);
   }
 }
