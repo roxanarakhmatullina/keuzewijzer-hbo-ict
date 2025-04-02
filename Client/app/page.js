@@ -211,19 +211,32 @@ const Home = () => {
 
           // Check the last semester first
           if (studyYear.lastSemester) {
-            for (let j = 0; j < studyYear.lastSemester.length; j++) {
-              const cluster = studyYear.lastSemester[j];
-              if (cluster.status === "failed") {
-                foundFailedCluster = true;
-                break;
-              } else {
-                if (studyYear.lastSemester.length > 1) {
-
-                } else {
-                  studyYear.lastSemester = []; // Remove the cluster from the array
+            if(studyYear.lastSemester.length > 1) {
+              for (let j = 0; j < studyYear.lastSemester.length; j++) {
+                const cluster = studyYear.lastSemester[j];
+                console.log("checking cluster: ", cluster.status);
+                if (cluster.status === "failed") {
+                  foundFailedCluster = true;
                 }
               }
+              if(foundFailedCluster) {
+                break;
+              } else {
+                studyYear.lastSemester = []; // Remove the cluster from the array
+              }
+            } else {
+              const updatedLastSemester = studyYear.lastSemester?.map(cluster => {
+                if (cluster.status === "failed") {
+                  foundFailedCluster = true; // Mark that a failed cluster has been found
+                }
+              });
+              if(foundFailedCluster) {
+                break;
+              } else {
+                studyYear.lastSemester = []; // Remove the cluster from the array
+              }
             }
+            
           }
 
           if (foundFailedCluster) {
@@ -232,17 +245,29 @@ const Home = () => {
 
           // If not found in the last semester, check the first semester
           if (!foundFailedCluster && studyYear.firstSemester) {
-            for (let j = 0; j < studyYear.firstSemester.length; j++) {
-              const cluster = studyYear.firstSemester[j];
-              if (cluster.status === "failed") {
-                foundFailedCluster = true;
+            if(studyYear.firstSemester.length > 1) {
+              for (let j = 0; j < studyYear.firstSemester.length; j++) {
+                const cluster = studyYear.firstSemester[j];
+                console.log("checking cluster: ", cluster.status);
+                if (cluster.status === "failed") {
+                  foundFailedCluster = true;
+                }
+              }
+              if(foundFailedCluster) {
                 break;
               } else {
-                if (studyYear.firstSemester.length > 1) {
-
-                } else {
-                  studyYear.firstSemester = []; // Remove the cluster from the array
+                studyYear.firstSemester = []; // Remove the cluster from the array
+              }
+            } else {
+              const updatedLastSemester = studyYear.firstSemester?.map(cluster => {
+                if (cluster.status === "failed") {
+                  foundFailedCluster = true; // Mark that a failed cluster has been found
                 }
+              });
+              if(foundFailedCluster) {
+                break;
+              } else {
+                studyYear.firstSemester = []; // Remove the cluster from the array
               }
             }
           }
@@ -288,7 +313,7 @@ const Home = () => {
         }
       });
       setAddSemester(false);
-      //setPutBack(true); // Set putBack to true to trigger the effect
+      setPutBack(true); // Set putBack to true to trigger the effect
     }
   }, [addSemester]);
 
