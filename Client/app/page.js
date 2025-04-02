@@ -2,47 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import Navigation from '@/components/navigation';
 import StudyYear from "@/components/studyYear";
-import { useError, useGraduateProfile, useStudyYear } from "@/hooks";
-import { api } from "@/hooks/api";
+import {useError, useGraduateProfile, useStudyYear, useLocation} from "@/hooks";
+import {api} from "@/hooks/api";
 import StudyRouteLoader from "@/components/loaders/studyRouteLoader";
 
 const Home = () => {
-  const { studyYears, startedStudyYear, setStudyYears } = useStudyYear();
-  const { selectedGraduateProfile } = useGraduateProfile();
-  const { setErrors, errors } = useError();
-
-  // Study years displayed
-  const [displayedStudyYears, setDisplayedStudyYears] = useState([]);
-
-  // List of clusters
-  const [clustersList, setClustersList] = useState([]);
-
-  // Cluster failed
-  const [hasFailedCluster, setHasFailedCluster] = useState(false);
-
-  // Add semester
-  const [addSemester, setAddSemester] = useState(false);
-
-  // Put back clusters
-  const [putBack, setPutBack] = useState(false);
-
-  // Call your coach
-  const [callYourCoach, setCallYourCoach] = useState(false);
-
-  // confirmation dialog
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-  // reset clusters menu
-  const [resetClustersMenu, setResetClustersMenu] = useState(false);
-
-  // Refresh
-  const [refresh, setRefresh] = useState(false);
-
-  // Multiple choice clusters open
-  const [multipleChoiceClustersOpen, setMultipleChoiceClustersOpen] = useState(true);
-
-  // Multiple choice pop up
-  const [multipleChoicePopUp, setMultipleChoicePopUp] = useState(false);
+    const {studyYears, startedStudyYear, setStudyYears} = useStudyYear();
+    const {selectedGraduateProfile} = useGraduateProfile();
+    const {setErrors, errors} = useError()
+    const {location, setLocation, availableLocations, setAvailableLocation} = useLocation;
 
   useEffect(() => {
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {

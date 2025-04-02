@@ -1,6 +1,7 @@
 import "./globals.css";
 import StudyYearProvider from "@/providers/StudyYearProvider";
 import GraduateProfileProvider from "@/providers/GraduateProfileProvider";
+import LocationProvider from "@/providers/LocationProvider"
 import ErrorProvider from "@/providers/ErrorProvider";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import GoogleAnalyticsProvider from "@/providers/GoogleAnalyticsProvider";
@@ -38,9 +39,11 @@ export default function RootLayout({ children }) {
       <GoogleAnalyticsProvider>
           <ErrorProvider>
               <StudyYearProvider>
-                  <GraduateProfileProvider>
-                      {children}
-                  </GraduateProfileProvider>
+                  <LocationProvider>
+                    <GraduateProfileProvider>
+                        {children}
+                    </GraduateProfileProvider>
+                  </LocationProvider>
               </StudyYearProvider>
           </ErrorProvider>
           <GoogleAnalytics id={"G-Y0CQ5ZCT5F"}/>
