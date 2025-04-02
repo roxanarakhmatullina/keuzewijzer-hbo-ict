@@ -317,7 +317,7 @@ const Home = () => {
     }
   }, [addSemester]);
 
-  // Fix the logic behind updatedDisplayedClustersList
+  // put back
   useEffect(() => {
     if (putBack) {
       console.log("putBack:", putBack);
@@ -343,9 +343,9 @@ const Home = () => {
 
               if (!isAlreadyDisplayed && cluster.firstSemester) {
                 // Check prerequisites
-                const prerequisites = cluster.prerequisites || [];
+                const prerequisites = cluster.prerequisites;
                 const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
-                  updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id)
+                  updatedDisplayedClustersList.some(displayedCluster => displayedCluster.name === prerequisite.name)
                 );
 
                 console.log("checkPrerequisites:", cluster.name, prerequisitesMet);
@@ -388,7 +388,7 @@ const Home = () => {
 
               if (!isAlreadyDisplayed && cluster.lastSemester) {
                 // Check prerequisites
-                const prerequisites = cluster.prerequisites || [];
+                const prerequisites = cluster.prerequisites;
                 const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id)
                 );
