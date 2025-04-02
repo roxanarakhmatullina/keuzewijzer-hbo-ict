@@ -122,7 +122,7 @@ const Home = () => {
   };
 
   // Handle the logic when a cluster is failed
-  useEffect(() => {
+  {/*useEffect(() => {
     if (hasFailedCluster) {
       console.log("hasFailedCluster:", hasFailedCluster);
       // removes all the semesters after the failed cluster
@@ -192,35 +192,93 @@ const Home = () => {
       setAddSemester(true); // Set addSemester to true to trigger the effect
       setPutBack(true); // Set putBack to true to trigger the effect
     }
+  }, [hasFailedCluster]);*/}
+
+  // handel logic when a cluster is failed 2
+  useEffect(() => {
+    if (hasFailedCluster) {
+      console.log("hasFailedCluster:", hasFailedCluster);
+      setDisplayedStudyYears(prevDisplayedStudyYears => {
+        let foundFailedCluster = false;
+
+        // Start scanning from the bottom of the array
+        for (let i = prevDisplayedStudyYears.length - 1; i >= 0; i--) {
+          const studyYear = prevDisplayedStudyYears[i];
+
+          // Check the last semester first
+          if (studyYear.lastSemester) {
+            for (let j = studyYear.lastSemester.length - 1; j >= 0; j--) {
+              const cluster = studyYear.lastSemester[j];
+              if (cluster.status === "failed") {
+                foundFailedCluster = true;
+                break;
+              } else {
+                studyYear.lastSemester.splice(j, 1); // Remove the cluster from the array
+              }
+            }
+          }
+
+          // If not found in the last semester, check the first semester
+          if (!foundFailedCluster && studyYear.firstSemester) {
+            for (let j = studyYear.firstSemester.length - 1; j >= 0; j--) {
+              const cluster = studyYear.firstSemester[j];
+              if (cluster.status === "failed") {
+                foundFailedCluster = true;
+                break;
+              } else {
+                studyYear.firstSemester.splice(j, 1); // Remove the cluster from the array
+              }
+            }
+          }
+        }
+
+        return prevDisplayedStudyYears;
+      });
+
+      // Reset the state after handling the logic
+      setHasFailedCluster(false);
+      setAddSemester(true); // Trigger the effect to add a semester
+    }
   }, [hasFailedCluster]);
 
   // Handle the logic to add a semester
   useEffect(() => {
-    // Add an empty semester at the end of the displayedStudyYears array
-    setDisplayedStudyYears(prevDisplayedStudyYears => {
-      const lastStudyYear = prevDisplayedStudyYears[prevDisplayedStudyYears.length - 1];
+    if (addSemester) {
+      console.log("studyYears:", displayedStudyYears);
+      // Add an empty semester at the end of the displayedStudyYears array
+      setDisplayedStudyYears(prevDisplayedStudyYears => {
+        const lastStudyYear = prevDisplayedStudyYears[prevDisplayedStudyYears.length - 1];
 
-      // Check if the last study year already has a last semester
-      if (lastStudyYear && !lastStudyYear.lastSemester) {
-        // Add an empty last semester to the last study year
-        return prevDisplayedStudyYears.map((studyYear, index) =>
-          index === prevDisplayedStudyYears.length - 1
-            ? { ...studyYear, lastSemester: [] }
-            : studyYear
-        );
-      } else {
-        // Add a new study year with an empty first semester
-        return [
-          ...prevDisplayedStudyYears,
-          {
-            year: prevDisplayedStudyYears.length + 1, // Increment the year
-            firstSemester: [],
-          },
-        ];
-      }
-    });
-    setAddSemester(false);
+        // Check if the last study year already has a last semester
+        if (lastStudyYear && !lastStudyYear.lastSemester) {
+          console.log("triggered");
+          // Add an empty last semester to the last study year
+          return prevDisplayedStudyYears.map((studyYear, index) =>
+            index === prevDisplayedStudyYears.length - 1
+              ? { ...studyYear, lastSemester: [] }
+              : studyYear
+          );
+        } else {
+          console.log("triggered2");
+          // Add a new study year with an empty first semester
+          return [
+            ...prevDisplayedStudyYears,
+            {
+              year: prevDisplayedStudyYears.length + 1, // Increment the year
+              firstSemester: [],
+            },
+          ];
+        }
+      });
+      setAddSemester(false);
+      setPutBack(true); // Set putBack to true to trigger the effect
+    }
   }, [addSemester]);
+
+  useEffect(() => {
+    console.log("displayedStudyYears:", displayedStudyYears);
+  }
+    , [displayedStudyYears]);
 
   // Fix the logic behind updatedDisplayedClustersList
   useEffect(() => {
@@ -229,13 +287,14 @@ const Home = () => {
       setDisplayedStudyYears(prevDisplayedStudyYears => {
         let updatedStudyYears = [...prevDisplayedStudyYears];
         let updatedDisplayedClustersList = [...displayedClustersList];
+        console.log("updatedStudyYears:", displayedStudyYears);
+        console.log("updatedDisplayedClustersList:", updatedDisplayedClustersList);
 
         for (let studyYear of updatedStudyYears) {
           const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
 
           if (isFirstSemesterEmpty) {
             console.log("the first semester is empty in study year: ", studyYear.year);
-            console.log("clustersList:", updatedDisplayedClustersList);
             for (let j = 0; j < clustersList.length; j++) {
               const cluster = clustersList[j];
               const nextCluster = clustersList[j + 1];
@@ -281,7 +340,6 @@ const Home = () => {
 
           if (isLastSemesterEmpty) {
             console.log("the last semester is empty in study year: ", studyYear.year);
-            console.log("clustersList:", updatedDisplayedClustersList);
             for (let j = 0; j < clustersList.length; j++) {
               const cluster = clustersList[j];
               const nextCluster = clustersList[j + 1];
