@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Server.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Server.Data;
-using Microsoft.EntityFrameworkCore;
 
 public class DataContext : IdentityDbContext<IdentityUser>
 {
@@ -12,8 +12,9 @@ public class DataContext : IdentityDbContext<IdentityUser>
   public DbSet<GraduateProfile> GraduateProfiles { get; set; }
   public DbSet<Cohort> Cohorts { get; set; }
   public DbSet<Cluster> Clusters { get; set; }
-  
   public DbSet<ClusterPrerequisite> ClusterPrerequisites { get; set; }
+  public DbSet<Category> Categories { get; set; }
+  public DbSet<CategoryCohortCluster> CategoryCohortClusters { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
