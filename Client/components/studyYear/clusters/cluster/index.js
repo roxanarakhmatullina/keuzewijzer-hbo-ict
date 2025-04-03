@@ -14,7 +14,7 @@ const Cluster = ({
   updateClusterStatus,
   initialStatus,
   handleMultipleClusters,
-  menuDisabled // nouvelle prop ajoutée pour la gestion du menu
+  menuDisabled
 }) => {
   const [hoverLink, setHoverLink] = useState(false);
   const [hoverCluster, setHoverCluster] = useState(false);
@@ -73,9 +73,9 @@ const Cluster = ({
       onTouchEnd={handleHoverCluster}
       onClick={() => handleClick()}
       onKeyDown={handleKeyDownCluster}
-      tabIndex={0} // Rend le div focusable
-      role="button" // Indique l'interactivité pour l'accessibilité
-      aria-pressed={openClusters} // État ARIA pour un comportement basculant
+      tabIndex={0} 
+      role="button" 
+      aria-pressed={openClusters} 
       className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] h-[75px] cursor-auto rounded-[12px] p-[20px] box-border flex justify-between items-center gap-[10px]
             ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95"}
             ${isFreeChoice 
@@ -122,8 +122,8 @@ const Cluster = ({
               }
             }}
             onKeyDown={handleKeyDownLink}
-            tabIndex={link ? 0 : -1} // Focusable si `link` est présent
-            role={link ? "button" : undefined} // Interactif si `link` existe
+            tabIndex={link ? 0 : -1} 
+            role={link ? "button" : undefined} 
             style={{
               backgroundColor: (link && link !== "-") ? "#b4c7db" : "#e5e5e5",
               color: (link && link !== "-") ? "#000" : "#c5c5c5",
@@ -134,7 +134,7 @@ const Cluster = ({
           </div>
         </div>
 
-        {/* Bouton Retake avec intégration de menuDisabled et vérification de l'état 'failed' */}
+        {/* button Retake ' */}
         { !menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus !== "failed" && !handleMultipleClusters && (
           <div
             className="w-[40px] h-[40px] bg-[#e0e0e0] rounded-full flex justify-center items-center cursor-pointer"
@@ -146,7 +146,7 @@ const Cluster = ({
               }
             }}
             onClick={(e) => {
-              e.stopPropagation(); // Empêche la propagation du clic au parent
+              e.stopPropagation(); //  disable event bubbling to parent div
               handleOpenRetakeMenu();
             }}
           >

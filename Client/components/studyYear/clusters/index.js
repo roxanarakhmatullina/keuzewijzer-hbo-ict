@@ -67,7 +67,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
               if (e.target.closest('.cluster-info')) return null;
               handleKeyDown(e);
             }}
-            tabIndex={0} // Rend le div focusable
+            tabIndex={0} // make the div focusable
             style={{
               background: selectedGraduateProfile ? selectedGraduateProfile.color : "#d9d9d9",
             }}
@@ -122,7 +122,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
                         initialStatus={cluster.status}
                         updateClusterStatus={newStatus => updateClusterStatus(cluster.id, newStatus)}
                         handleMultipleClusters={handleMultipleClustersDelayed}
-                        menuDisabled={cluster.menuDisabled} // transmission de la prop menuDisabled
+                        menuDisabled={cluster.menuDisabled} // transmiting the prop menuDisabled
                       />
                     </div>
                   );
@@ -133,13 +133,13 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
           <Cluster
             clustersSize={clusters.length}
             setSelectedCluster={setCurrentCluster}
-            clusterSelected={clusters[0]} // Sélectionne le premier cluster
+            clusterSelected={clusters[0]} // first cluster selected by default
             key={0}
             {...clusters[0]}
             initialStatus={clusters[0].status}
             updateClusterStatus={newStatus => updateClusterStatus(clusters[0].id, newStatus)}
             handleMultipleClusters={false}
-            menuDisabled={clusters[0].menuDisabled} // transmission de la prop menuDisabled
+            menuDisabled={clusters[0].menuDisabled} // transmiting the prop menuDisabled
           />
         )
       )}
