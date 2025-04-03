@@ -136,7 +136,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
                         {...clusters[0]}
                         initialStatus={clusters[0].status}
                         updateClusterStatus={newStatus => updateClusterStatus(clusters[0].id, newStatus)}
-                        handleMultipleClusters={handleMultipleClustersDelayed}
+                        handleMultipleClusters={false}
                     />
                 )
             )}
