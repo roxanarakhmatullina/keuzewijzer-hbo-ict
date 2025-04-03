@@ -26,6 +26,9 @@ const Home = () => {
   // put back clusters
   const [putBack, setPutBack] = useState(false);
 
+  // call your coach
+  const [callYourCoach, setCallYourCoach] = useState(false);
+
   useEffect(() => {
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
       // fetch study years
@@ -264,16 +267,17 @@ const Home = () => {
           //console.log("isFirstSemesterEmpty", isFirstSemesterEmpty);
 
           if (isFirstSemesterEmpty) {
-            //console.log("the first semester is empty in study year: ", studyYear.year);
+            console.log("the first semester is empty in study year: ", studyYear.year);
             for (let j = 0; j < clustersList.length; j++) {
               const cluster = clustersList[j];
               const nextCluster = clustersList[j + 1];
               const nextNextCluster = clustersList[j + 2];
-
+              
               // Check if the cluster is already in the updatedDisplayedClustersList
               const isAlreadyDisplayed = updatedDisplayedClustersList.some(
                 displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
               );
+              console.log("isAlreadyDisplayed:", isAlreadyDisplayed);
 
               if (!isAlreadyDisplayed && cluster.firstSemester) {
                 // Check prerequisites
@@ -313,7 +317,7 @@ const Home = () => {
                       updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
                     }
                   }
-                  //console.log("cluster pushed");
+                  console.log("cluster pushed");
                   break; // Exit the clustersList loop
                 }
               }
@@ -324,16 +328,17 @@ const Home = () => {
           //console.log("isLastSemesterEmpty", isLastSemesterEmpty);
 
           if (isLastSemesterEmpty) {
-            //console.log("the last semester is empty in study year: ", studyYear.year);
+            console.log("the last semester is empty in study year: ", studyYear.year);
             for (let j = 0; j < clustersList.length; j++) {
               const cluster = clustersList[j];
               const nextCluster = clustersList[j + 1];
               const nextNextCluster = clustersList[j + 2];
-
+              
               // Check if the cluster is already in the updatedDisplayedClustersList
               const isAlreadyDisplayed = updatedDisplayedClustersList.some(
                 displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
               );
+              console.log("isAlreadyDisplayed:", isAlreadyDisplayed);
 
               if (!isAlreadyDisplayed && cluster.lastSemester) {
                 // Check prerequisites
@@ -373,12 +378,20 @@ const Home = () => {
                       updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
                     }
                   }
-                  //console.log("cluster pushed");
+                  console.log("cluster pushed");
                   break; // Exit the clustersList loop
                 }
               }
             }
           }
+
+          if (studyYear.firstSemester?.length === 0 || studyYear.lastSemester?.length === 0) {
+            console.log("cluster not pushed");
+            setCallYourCoach(true);
+            handleReset();
+            break;
+          }
+
         }
 
         return updatedStudyYears;
@@ -510,6 +523,13 @@ const Home = () => {
           Reset
         </button>
       </div>
+
+      {/* Call your coach */}
+      {callYourCoach && (
+        <div className="absolute items-center z-10">
+          <p className="text-red-500 font-bold">Neem contact op met je coach!</p>
+        </div>
+      )}
 
     </div>
   );
