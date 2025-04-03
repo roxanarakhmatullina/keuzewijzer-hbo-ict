@@ -7,6 +7,19 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
     const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
     const [isAnimating, setIsAnimating] = useState(true);
     const {selectedGraduateProfile} = useGraduateProfile();
+    const [handleMultipleClustersDelayed, setHandleMultipleClustersDelayed] = useState(true);
+
+    useEffect(() => {
+      if (!handleMultipleClusters) {
+      const timeout = setTimeout(() => {
+        setHandleMultipleClustersDelayed(false);
+      }, 350);
+
+      return () => clearTimeout(timeout);
+      } else {
+      setHandleMultipleClustersDelayed(true);
+      }
+    }, [handleMultipleClusters]);
 
     const handleMenuClick = (e) => {
         if (!e.target.closest('.cluster'))
@@ -107,6 +120,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
                                                 {...cluster}
                                                 initialStatus={cluster.status}
                                                 updateClusterStatus={newStatus => updateClusterStatus(cluster.id, newStatus)}
+                                                handleMultipleClusters={handleMultipleClustersDelayed}
                                             />
                                         </div>
                                     );
@@ -122,6 +136,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
                         {...clusters[0]}
                         initialStatus={clusters[0].status}
                         updateClusterStatus={newStatus => updateClusterStatus(clusters[0].id, newStatus)}
+                        handleMultipleClusters={handleMultipleClustersDelayed}
                     />
                 )
             )}
