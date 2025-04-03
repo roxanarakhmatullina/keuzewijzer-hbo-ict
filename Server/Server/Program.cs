@@ -8,6 +8,7 @@ using Server.Data;
 using Server.Services;
 using Swashbuckle.AspNetCore.Filters;
 using DotNetEnv;
+using Server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,6 +74,9 @@ builder.Services.AddAuthentication(options =>
 // Add services to the container
 builder.Services.AddScoped<UserSeeder>();
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<CategoryCohortClusterService>();
+builder.Services.AddScoped<CategoryCohortClusterRepository>();
 
 // Configure database connection string
 builder.Services.AddDbContext<DataContext>(options =>
