@@ -124,7 +124,7 @@ const Home = () => {
     });
   };
 
-  // handel logic when a cluster is failed 2
+  // Handel the logic when a cluster is failed
   useEffect(() => {
     if (hasFailedCluster) {
       console.log("hasFailedCluster:", hasFailedCluster);
@@ -238,11 +238,16 @@ const Home = () => {
               : studyYear
           );
         } else {
+          // Calculate the new study year name in the format "25/'26"
+          const lastYearName = lastStudyYear?.year || "0/'0";
+          const [startYear, endYear] = lastYearName.split("/'").map(Number);
+          const newYearName = `'${endYear}/'${endYear + 1}`;
+
           // Add a new study year with an empty first semester
           return [
             ...prevDisplayedStudyYears,
             {
-              year: prevDisplayedStudyYears.length + 1, // Increment the year
+              year: newYearName, // Use the calculated year name
               firstSemester: [],
             },
           ];
@@ -460,6 +465,7 @@ const Home = () => {
 
         {/* Scrollable content for StudyYears */}
         {selectedGraduateProfile && displayedStudyYears && displayedStudyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
+          const isLastOddStudyYear = displayedStudyYears.length % 2 === 1 && index === displayedStudyYears.length - 1;
           return (
             <React.Fragment key={"study-year-" + index}>
               <StudyYear
@@ -473,20 +479,21 @@ const Home = () => {
                 updateClusterStatus={(semester, clusterId, newStatus) =>
                   updateClusterStatus(index, semester, clusterId, newStatus)
                 }
+                isLastOddStudyYear={isLastOddStudyYear}
               >
                 {/* Line from right side to bottom */}
                 {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (
                   <div
                     style={{ backgroundColor: selectedGraduateProfile?.color }}
-                    className={`ease-in-out duration-200 hidden lg:flex absolute top-[calc(50%-5px)] right-0 w-[10px] h-[calc(50%+5px)] bg-${selectedGraduateProfile?.color} box-border`}>
+                    className={`ease-in-out duration-200 hidden lg:flex absolute top-[calc(50%-5px)] right-0 w-[10px] h-[calc(50%+50px)] bg-${selectedGraduateProfile?.color} box-border`}>
                   </div>
                 )}
 
                 {/* Line from left side to bottom */}
-                {index % 2 === 0 && index !== displayedStudyYears.length - 1 && index !== 0 && (
+                {index % 2 === 0 && (index !== displayedStudyYears.length - 1 || isLastOddStudyYear) && index !== 0 && (
                   <div
                     style={{ backgroundColor: selectedGraduateProfile?.color }}
-                    className={`ease-in-out duration-200 hidden lg:flex absolute bottom-[calc(50%-5px)] left-[32.5px] w-[10px] h-[calc(50%+5px)] bg-${selectedGraduateProfile?.color} box-border`}>
+                    className={`ease-in-out duration-200 hidden lg:flex absolute bottom-[calc(50%-5px)] left-[32.5px] w-[10px] h-[calc(50%+50px)] bg-${selectedGraduateProfile?.color} box-border`}>
                   </div>
                 )}
               </StudyYear>
@@ -503,7 +510,7 @@ const Home = () => {
 
                     <div
                       style={{ backgroundColor: selectedGraduateProfile?.color, transition: "ease-in-out duration-200 background-color" }}
-                      className={"w-[10px] h-[55px] absolute right-[0px] bottom-1/2"} />
+                      className={"w-[10px] h-[100px] absolute right-[0px] bottom-1/2"} />
                   </div>
                 </div>
               )}
