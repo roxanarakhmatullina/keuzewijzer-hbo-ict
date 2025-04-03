@@ -434,6 +434,20 @@ const Home = () => {
     }
   };
 
+  // disable scrolling when the confirmation dialog is open
+  useEffect(() => {
+    if (showConfirmDialog) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [showConfirmDialog]);
+
   return (
     <div className={"w-screen flex flex-row gap-0"}>
       {/* Sidebar */}
