@@ -3,7 +3,19 @@ import React, { useState, useEffect } from 'react';
 import ClusterInfo from "@/components/studyYear/clusters/cluster/info";
 import Retry from "@/icons/retry";
 
-const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeChoice, isRetaken, updateClusterStatus, initialStatus, handleMultipleClusters }) => {
+const Cluster = ({
+  name,
+  link,
+  canChange,
+  clusterSelected,
+  clustersSize,
+  isFreeChoice,
+  isRetaken,
+  updateClusterStatus,
+  initialStatus,
+  handleMultipleClusters,
+  menuDisabled // nouvelle prop ajoutée pour la gestion du menu
+}) => {
   const [hoverLink, setHoverLink] = useState(false);
   const [hoverCluster, setHoverCluster] = useState(false);
   const [openClusters, setOpenClusters] = useState(false);
@@ -61,31 +73,30 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
       onTouchEnd={handleHoverCluster}
       onClick={() => handleClick()}
       onKeyDown={handleKeyDownCluster}
-      tabIndex={0} // Makes the div focusable
-      role="button" // Indicates interactivity for accessibility
-      aria-pressed={openClusters} // ARIA state for toggleable behavior
-      className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] h-[75px] cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]
+      tabIndex={0} // Rend le div focusable
+      role="button" // Indique l'interactivité pour l'accessibilité
+      aria-pressed={openClusters} // État ARIA pour un comportement basculant
+      className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] h-[75px] cursor-auto rounded-[12px] p-[20px] box-border flex justify-between items-center gap-[10px]
             ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95"}
-            ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` :
-          clusterStatus === "passed" ? "bg-green-200" :
-            clusterStatus === "failed" ? "bg-red-200" : "bg-[#FFF]"}
+            ${isFreeChoice 
+              ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed cursor-pointer` 
+              : clusterStatus === "passed" 
+                ? "bg-green-200" 
+                : clusterStatus === "failed" 
+                  ? "bg-red-200" 
+                  : "bg-[#FFF]"}
             `}
     >
-      <h1
-        style={{ lineHeight: "1.25" }}
-        className={"text-left flex-auto text-[14px] font-bold"}
-      >
+      <h1 style={{ lineHeight: "1.25" }} className="text-left flex-auto text-[14px] font-bold">
         {name}
       </h1>
-      <div
-        className={"w-auto flex flex-row gap-[10px] justify-between align-middle items-center"}
-      >
+      <div className="w-auto flex flex-row gap-[10px] justify-between items-center">
         {(clusterSelected || clustersSize === 1) && canChange && (
           <div
             style={{ backgroundColor: "rgba(18,68,119, 0.25)" }}
-            className={"w-[40px] h-[40px] p-[10px] box-border rounded-full flex justify-center align-middle items-center"}
+            className="w-[40px] h-[40px] p-[10px] box-border rounded-full flex justify-center items-center"
           >
-            <svg className={"w-full h-full"} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="w-full h-full" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -96,7 +107,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
           </div>
         )}
 
-        <div className={"flex flex-row gap-[10px] justify-center align-middle items-center"}>
+        <div className="flex flex-row gap-[10px] justify-center items-center">
           <div
             onMouseEnter={handleHoverLink}
             onMouseLeave={handleHoverLink}
@@ -111,21 +122,20 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
               }
             }}
             onKeyDown={handleKeyDownLink}
-            tabIndex={link ? 0 : -1} // Focusable if `link` is present
-            role={link ? "button" : undefined} // Interactive if `link` exists
+            tabIndex={link ? 0 : -1} // Focusable si `link` est présent
+            role={link ? "button" : undefined} // Interactif si `link` existe
             style={{
-              backgroundColor:
-                (link && link !== "-") ? "#b4c7db" : "#e5e5e5",
+              backgroundColor: (link && link !== "-") ? "#b4c7db" : "#e5e5e5",
               color: (link && link !== "-") ? "#000" : "#c5c5c5",
             }}
-            className="cluster-info relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"
+            className="cluster-info relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center items-center"
           >
-            <p className={`text-lg font-black`}>i</p>
+            <p className="text-lg font-black">i</p>
           </div>
         </div>
 
-        {/* Retake button */}
-        {!isFreeChoice && clusterSelected?.level !== 4 && !handleMultipleClusters && (
+        {/* Bouton Retake avec intégration de menuDisabled et vérification de l'état 'failed' */}
+        { !menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus !== "failed" && !handleMultipleClusters && (
           <div
             className="w-[40px] h-[40px] bg-[#e0e0e0] rounded-full flex justify-center items-center cursor-pointer"
             role="button"
@@ -136,35 +146,17 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
               }
             }}
             onClick={(e) => {
-              e.stopPropagation(); // Prevent click event from propagating to parent
+              e.stopPropagation(); // Empêche la propagation du clic au parent
               handleOpenRetakeMenu();
             }}
           >
             {openRetakeMenu ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-5 h-5 text-black"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-5 h-5 text-black"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black">
                 <circle cx="12" cy="5" r="1"></circle>
                 <circle cx="12" cy="12" r="1"></circle>
                 <circle cx="12" cy="19" r="1"></circle>
@@ -177,10 +169,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
       {openRetakeMenu && (
         <div
           className="absolute bg-white rounded-[8px] p-[10px] flex flex-col gap-[10px] z-10"
-          style={{
-            minWidth: "150px",
-            left: "calc(100% + 20px)"
-          }}
+          style={{ minWidth: "150px", left: "calc(100% + 20px)" }}
         >
           <button
             className="flex items-center gap-[10px] p-[10px] rounded-[8px] hover:bg-green-100"
@@ -189,19 +178,8 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
               setOpenRetakeMenu(false);
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              className="w-5 h-5 text-green-500"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5 text-green-500">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
             <span className="text-sm font-medium text-gray-700">Passed</span>
           </button>
@@ -212,19 +190,8 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
               setOpenRetakeMenu(false);
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              className="w-5 h-5 text-red-500"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5 text-red-500">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
             <span className="text-sm font-medium text-gray-700">Fail</span>
           </button>

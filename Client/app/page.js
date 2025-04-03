@@ -1,5 +1,5 @@
 'use client';
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navigation from '@/components/navigation';
 import StudyYear from "@/components/studyYear";
 import { useError, useGraduateProfile, useStudyYear } from "@/hooks";
@@ -9,33 +9,29 @@ import StudyRouteLoader from "@/components/loaders/studyRouteLoader";
 const Home = () => {
   const { studyYears, startedStudyYear, setStudyYears } = useStudyYear();
   const { selectedGraduateProfile } = useGraduateProfile();
-  const { setErrors, errors } = useError()
+  const { setErrors, errors } = useError();
 
-  // study years displayed
+  // Study years displayed
   const [displayedStudyYears, setDisplayedStudyYears] = useState([]);
 
-  // list of clusters
+  // List of clusters
   const [clustersList, setClustersList] = useState([]);
 
-  // cluster failed
+  // Cluster failed
   const [hasFailedCluster, setHasFailedCluster] = useState(false);
 
-  // add semester
+  // Add semester
   const [addSemester, setAddSemester] = useState(false);
 
-  // put back clusters
+  // Put back clusters
   const [putBack, setPutBack] = useState(false);
 
-  // call your coach
+  // Call your coach
   const [callYourCoach, setCallYourCoach] = useState(false);
-
-  // confirmation dialog
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
 
   useEffect(() => {
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
-      // fetch study years
+      // Fetch study years
       api.get(`/StudyRoute/cohort/${startedStudyYear?.id}/graduateProfile/${selectedGraduateProfile?.id}/`).then(res => {
         setStudyYears(res.data);
       }).catch(error => {
@@ -49,19 +45,20 @@ const Home = () => {
     }
   }, [selectedGraduateProfile]);
 
-
   // Update displayedStudyYears whenever studyYears changes
   useEffect(() => {
     if (studyYears && studyYears.length > 0) {
       const updatedDisplayedStudyYears = studyYears.map(studyYear => {
         const updatedFirstSemester = studyYear.firstSemester?.map(cluster => ({
           ...cluster,
-          status: null, // Add status to each cluster in the first semester
+          status: null,
+          menuDisabled: false, // Initialize menuDisabled as false
         }));
 
         const updatedLastSemester = studyYear.lastSemester?.map(cluster => ({
           ...cluster,
-          status: null, // Add status to each cluster in the last semester
+          status: null,
+          menuDisabled: false, // Initialize menuDisabled as false
         }));
 
         return {
@@ -110,25 +107,72 @@ const Home = () => {
   // Update cluster status
   const updateClusterStatus = (studyYearIndex, semester, clusterId, newStatus) => {
     setDisplayedStudyYears(prevDisplayedStudyYears => {
-      const updatedStudyYears = [...prevDisplayedStudyYears];
+      let updatedStudyYears = [...prevDisplayedStudyYears];
       const semesterKey = semester === "firstSemester" ? "firstSemester" : "lastSemester";
-
-      // Update the specific cluster's status
-      updatedStudyYears[studyYearIndex][semesterKey] = updatedStudyYears[studyYearIndex][semesterKey].map(cluster => {
-        if (cluster.id === clusterId) {
-          if (newStatus === "failed") {
-            setHasFailedCluster(true); // Update the custom state
+  
+      if (newStatus === "failed") {
+        // Update all clusters in previous study years
+        for (let i = 0; i < studyYearIndex; i++) {
+          if (updatedStudyYears[i].firstSemester) {
+            updatedStudyYears[i].firstSemester = updatedStudyYears[i].firstSemester.map(cluster => ({
+              ...cluster,
+              status: cluster.status === null ? "passed" : cluster.status, // Only update white clusters
+              menuDisabled: cluster.status === null ? true : cluster.menuDisabled, // Disable menu only for white clusters
+            }));
           }
-          return { ...cluster, status: newStatus };
+          if (updatedStudyYears[i].lastSemester) {
+            updatedStudyYears[i].lastSemester = updatedStudyYears[i].lastSemester.map(cluster => ({
+              ...cluster,
+              status: cluster.status === null ? "passed" : cluster.status, // Only update white clusters
+              menuDisabled: cluster.status === null ? true : cluster.menuDisabled, // Disable menu only for white clusters
+            }));
+          }
         }
-        return cluster;
-      });
-
+  
+        // If the failed cluster is in lastSemester, update all in firstSemester of the same year
+        if (semester === "lastSemester" && updatedStudyYears[studyYearIndex].firstSemester) {
+          updatedStudyYears[studyYearIndex].firstSemester = updatedStudyYears[studyYearIndex].firstSemester.map(cluster => ({
+            ...cluster,
+            status: cluster.status === null ? "passed" : cluster.status, // Only update white clusters
+            menuDisabled: cluster.status === null ? true : cluster.menuDisabled, // Disable menu only for white clusters
+          }));
+        }
+  
+        // Update clusters before the failed one in the same semester
+        const clusterIndex = updatedStudyYears[studyYearIndex][semesterKey].findIndex(cluster => cluster.id === clusterId);
+        if (clusterIndex !== -1) {
+          updatedStudyYears[studyYearIndex][semesterKey] = updatedStudyYears[studyYearIndex][semesterKey].map((cluster, idx) => {
+            if (idx < clusterIndex && cluster.status === null) {
+              return { ...cluster, status: "passed", menuDisabled: true }; // Only update white clusters
+            }
+            return cluster;
+          });
+        }
+  
+        // Update the specific cluster to "failed"
+        updatedStudyYears[studyYearIndex][semesterKey] = updatedStudyYears[studyYearIndex][semesterKey].map(cluster => {
+          if (cluster.id === clusterId) {
+            return { ...cluster, status: newStatus, menuDisabled: false }; // Keep menu enabled for the failed cluster
+          }
+          return cluster;
+        });
+  
+        setHasFailedCluster(true);
+      } else {
+        // For non-"failed" status updates, just update the specific cluster
+        updatedStudyYears[studyYearIndex][semesterKey] = updatedStudyYears[studyYearIndex][semesterKey].map(cluster => {
+          if (cluster.id === clusterId) {
+            return { ...cluster, status: newStatus };
+          }
+          return cluster;
+        });
+      }
+  
       return updatedStudyYears;
     });
   };
 
-  // Handel the logic when a cluster is failed
+  // Handle the logic when a cluster is failed
   useEffect(() => {
     if (hasFailedCluster) {
       console.log("hasFailedCluster:", hasFailedCluster);
@@ -145,10 +189,9 @@ const Home = () => {
 
           // Check the last semester first
           if (studyYear.lastSemester) {
-            if (studyYear.lastSemester.length > 1) {
+            if(studyYear.lastSemester.length > 1) {
               for (let j = 0; j < studyYear.lastSemester.length; j++) {
                 const cluster = studyYear.lastSemester[j];
-                //uster: ", cluster.status);
                 if (cluster.status === "failed") {
                   foundFailedCluster = true;
                 } else {
@@ -156,7 +199,7 @@ const Home = () => {
                   cluster.name = ""; // Replace the cluster with a blank placeholder
                 }
               }
-              if (foundFailedCluster) {
+              if(foundFailedCluster) {
                 break;
               } else {
                 studyYear.lastSemester = []; // Remove the cluster from the array
@@ -167,13 +210,12 @@ const Home = () => {
                   foundFailedCluster = true; // Mark that a failed cluster has been found
                 }
               });
-              if (foundFailedCluster) {
+              if(foundFailedCluster) {
                 break;
               } else {
                 studyYear.lastSemester = []; // Remove the cluster from the array
               }
             }
-
           }
 
           if (foundFailedCluster) {
@@ -182,10 +224,9 @@ const Home = () => {
 
           // If not found in the last semester, check the first semester
           if (!foundFailedCluster && studyYear.firstSemester) {
-            if (studyYear.firstSemester.length > 1) {
+            if(studyYear.firstSemester.length > 1) {
               for (let j = 0; j < studyYear.firstSemester.length; j++) {
                 const cluster = studyYear.firstSemester[j];
-                //console.log("checking cluster: ", cluster.status);
                 if (cluster.status === "failed") {
                   foundFailedCluster = true;
                 } else {
@@ -193,18 +234,18 @@ const Home = () => {
                   cluster.name = ""; // Replace the cluster with a blank placeholder
                 }
               }
-              if (foundFailedCluster) {
+              if(foundFailedCluster) {
                 break;
               } else {
                 studyYear.firstSemester = []; // Remove the cluster from the array
               }
             } else {
-              const updatedLastSemester = studyYear.firstSemester?.map(cluster => {
+              const updatedFirstSemester = studyYear.firstSemester?.map(cluster => {
                 if (cluster.status === "failed") {
                   foundFailedCluster = true; // Mark that a failed cluster has been found
                 }
               });
-              if (foundFailedCluster) {
+              if(foundFailedCluster) {
                 break;
               } else {
                 studyYear.firstSemester = []; // Remove the cluster from the array
@@ -262,7 +303,7 @@ const Home = () => {
     }
   }, [addSemester]);
 
-  // put back
+  // Put back clusters
   useEffect(() => {
     if (putBack) {
       console.log("putBack:", putBack);
@@ -271,9 +312,7 @@ const Home = () => {
         let updatedDisplayedClustersList = [...displayedClustersList];
 
         for (let studyYear of updatedStudyYears) {
-          //console.log("checking study year: ", studyYear.year);
           const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
-          //console.log("isFirstSemesterEmpty", isFirstSemesterEmpty);
 
           if (isFirstSemesterEmpty) {
             console.log("the first semester is empty in study year: ", studyYear.year);
@@ -286,18 +325,14 @@ const Home = () => {
               const isAlreadyDisplayed = updatedDisplayedClustersList.some(
                 displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
               );
-              console.log("isAlreadyDisplayed:", isAlreadyDisplayed);
 
               if (!isAlreadyDisplayed && cluster.firstSemester) {
                 // Check prerequisites
-                //console.log("cluster prerequisites: ", cluster.prerequisites);
-                //console.log("updatedDisplayedClustersList: ", updatedDisplayedClustersList);
                 const prerequisites = cluster.prerequisites;
                 const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
                 );
 
-                //console.log("checkPrerequisites:", cluster.name, prerequisitesMet);
                 if (prerequisitesMet) {
                   studyYear.firstSemester.push({ ...cluster, status: null });
                   updatedDisplayedClustersList.push({ ...cluster, status: null });
@@ -334,7 +369,6 @@ const Home = () => {
           }
 
           const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
-          //console.log("isLastSemesterEmpty", isLastSemesterEmpty);
 
           if (isLastSemesterEmpty) {
             console.log("the last semester is empty in study year: ", studyYear.year);
@@ -347,18 +381,14 @@ const Home = () => {
               const isAlreadyDisplayed = updatedDisplayedClustersList.some(
                 displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
               );
-              console.log("isAlreadyDisplayed:", isAlreadyDisplayed);
 
               if (!isAlreadyDisplayed && cluster.lastSemester) {
                 // Check prerequisites
-                //console.log("cluster prerequisites: ", cluster.prerequisites);
-                //console.log("updatedDisplayedClustersList: ", updatedDisplayedClustersList);
                 const prerequisites = cluster.prerequisites;
                 const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
                 );
 
-                //console.log("checkPrerequisites:", cluster.name, prerequisitesMet);
                 if (prerequisitesMet) {
                   studyYear.lastSemester.push({ ...cluster, status: null });
                   updatedDisplayedClustersList.push({ ...cluster, status: null });
@@ -400,7 +430,6 @@ const Home = () => {
             handleReset();
             break;
           }
-
         }
 
         return updatedStudyYears;
@@ -411,16 +440,10 @@ const Home = () => {
     }
   }, [putBack]);
 
-  // Handle the confirmation dialog
-  const handleConfirmationDialog = () => {
-    setShowConfirmDialog(true);
-  };
-
-  // Handle the reset
+  // Handle the reset button click
   const handleReset = () => {
-    //delete everything from studyYears and fetches again
+    // Delete everything from studyYears and fetch again
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
-      // fetch study years
       api.get(`/StudyRoute/cohort/${startedStudyYear?.id}/graduateProfile/${selectedGraduateProfile?.id}/`).then(res => {
         setStudyYears(res.data);
       }).catch(error => {
@@ -434,20 +457,6 @@ const Home = () => {
     }
   };
 
-  // disable scrolling when the confirmation dialog is open
-  useEffect(() => {
-    if (showConfirmDialog) {
-      document.body.classList.add('overflow-hidden');
-    } else {
-      document.body.classList.remove('overflow-hidden');
-    }
-
-    // Cleanup on unmount
-    return () => {
-      document.body.classList.remove('overflow-hidden');
-    };
-  }, [showConfirmDialog]);
-
   return (
     <div className={"w-screen flex flex-row gap-0"}>
       {/* Sidebar */}
@@ -455,37 +464,8 @@ const Home = () => {
 
       {/* Main Content */}
       <div
-        className={`${selectedGraduateProfile ? "flex" : "hidden"} pt-[100px] max-w-[1366px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}>
-
-        {/* Display all objects in the displayedStudyYears array */}
-        {/*<div className="w-full flex flex-col gap-4">
-          {displayedStudyYears.map((studyYear, index) => (
-            <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
-              {JSON.stringify(studyYear, null, 2)}
-            </pre>
-          ))}
-        </div>*/}
-
-        {/* Display all objects in the clustersList array */}
-        {/*<div className="w-full flex flex-col gap-4">
-                    clustersList array
-                    {clustersList.map((cluster, index) => (
-                        <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
-                            {JSON.stringify(cluster, null, 2)}
-                        </pre>
-                    ))}
-                </div>*/}
-
-        {/* Display all objects in the displayedClustersList array */}
-        {/*<div className="w-full flex flex-col gap-4">
-                    displayedClustersList array
-                    {displayedClustersList.map((cluster, index) => (
-                        <pre key={index} className="bg-gray-100 p-4 rounded shadow overflow-x-auto">
-                            {JSON.stringify(cluster, null, 2)}
-                        </pre>
-                    ))}
-                </div>*/}
-
+        className={`${selectedGraduateProfile ? "flex" : "hidden"} pt-[100px] max-w-[1366px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}
+      >
         {/* Scrollable content for StudyYears */}
         {selectedGraduateProfile && displayedStudyYears && displayedStudyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
           const isLastOddStudyYear = displayedStudyYears.length % 2 === 1 && index === displayedStudyYears.length - 1;
@@ -508,7 +488,8 @@ const Home = () => {
                 {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (
                   <div
                     style={{ backgroundColor: selectedGraduateProfile?.color }}
-                    className={`ease-in-out duration-200 hidden lg:flex absolute top-[calc(50%-5px)] right-0 w-[10px] h-[calc(50%+50px)] bg-${selectedGraduateProfile?.color} box-border`}>
+                    className={`ease-in-out duration-200 hidden lg:flex absolute top-[calc(50%-5px)] right-0 w-[10px] h-[calc(50%+50px)] bg-${selectedGraduateProfile?.color} box-border`}
+                  >
                   </div>
                 )}
 
@@ -516,7 +497,8 @@ const Home = () => {
                 {index % 2 === 0 && (index !== displayedStudyYears.length - 1 || isLastOddStudyYear) && index !== 0 && (
                   <div
                     style={{ backgroundColor: selectedGraduateProfile?.color }}
-                    className={`ease-in-out duration-200 hidden lg:flex absolute bottom-[calc(50%-5px)] left-[32.5px] w-[10px] h-[calc(50%+50px)] bg-${selectedGraduateProfile?.color} box-border`}>
+                    className={`ease-in-out duration-200 hidden lg:flex absolute bottom-[calc(50%-5px)] left-[32.5px] w-[10px] h-[calc(50%+50px)] bg-${selectedGraduateProfile?.color} box-border`}
+                  >
                   </div>
                 )}
               </StudyYear>
@@ -526,14 +508,17 @@ const Home = () => {
                 <div className={"hidden pt-[50px] m-0 pb-[50px] lg:flex w-full justify-center align-middle items-center z-[1]"}>
                   <div
                     style={{ backgroundColor: selectedGraduateProfile?.color, transition: "ease-in-out duration-200 background-color" }}
-                    className={`absolute left-[52.5px] xl:left-[82.5px] h-[10px] w-[calc(100%-72.5px)] xl:w-[calc(100%-132.5px)] bg-${selectedGraduateProfile?.color} box-border`}>
+                    className={`absolute left-[52.5px] xl:left-[82.5px] h-[10px] w-[calc(100%-72.5px)] xl:w-[calc(100%-132.5px)] bg-${selectedGraduateProfile?.color} box-border`}
+                  >
                     <div
                       style={{ backgroundColor: selectedGraduateProfile?.color, transition: "ease-in-out duration-200 background-color" }}
-                      className={"w-[10px] h-[55px] absolute left-0"} />
+                      className={"w-[10px] h-[55px] absolute left-0"}
+                    />
 
                     <div
                       style={{ backgroundColor: selectedGraduateProfile?.color, transition: "ease-in-out duration-200 background-color" }}
-                      className={"w-[10px] h-[100px] absolute right-[0px] bottom-1/2"} />
+                      className={"w-[10px] h-[100px] absolute right-[0px] bottom-1/2"}
+                    />
                   </div>
                 </div>
               )}
@@ -544,113 +529,22 @@ const Home = () => {
         )}
       </div>
 
-      {/*Reset button*/}
+      {/* Reset button */}
       <div className="fixed top-[20px] right-[20px] z-10">
         <button
-          onClick={handleConfirmationDialog}
+          onClick={handleReset}
           className="bg-red-500 text-white px-[20px] py-[10px] rounded-[8px] hover:bg-red-600 transition duration-200"
         >
           Reset
         </button>
       </div>
 
-      {/* Confirmation button */}
-      {showConfirmDialog && (
-        <div
-          className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50"
-          onClick={() => setShowConfirmDialog(false)}
-        >
-          <div className="flex relative flex-col justify-center items-center w-[400px] h-[250px] bg-[#FFF] rounded-[12px] p-[20px]"
-            onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setShowConfirmDialog(false)}
-              className="absolute top-0 right-0 w-[40px] h-[40px] bg-transparent text-black flex justify-center items-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={3}
-                stroke="#D9D9D9"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <p className="font-bold text-[40px] mb-[-10px]">Alles resetten!</p>
-            <p className="text-[#D9D9D9] text-[24px] mb-[40px]">Weet je het zeker?</p>
-            <div className="w-full h-full flex flex-col gap-[10px]">
-              <button
-                onClick={() => {
-                  handleReset();
-                  setShowConfirmDialog(false);
-                }}
-                className="w-full h-[40px] bg-red-500 hover:bg-red-700 rounded-[8px] text-white font-bold text-[16px]"
-              >
-                Ja
-              </button>
-              <button
-                onClick={() => setShowConfirmDialog(false)}
-                className="w-full h-[40px] bg-[#D9D9D9] hover:bg-[#C9C9C9] rounded-[8px] text-white font-bold text-[16px]"
-              >
-                Nee
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/*callYourCoach Pop Up*/}
+      {/* Call your coach */}
       {callYourCoach && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div
-            className="bg-white w-[320px] max-w-[90%] rounded-lg overflow-hidden shadow-lg relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setCallYourCoach(false)}
-              className="absolute top right-3 text-white text-2xl font-bold hover:text-gray-200"
-            >
-              &times;
-            </button>
-            <div className="bg-[#FF5A5F] flex flex-col items-center justify-center px-6 py-8 text-white text-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="size-6 h-14 w-14"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                />
-              </svg>
-              <h2 className="text-2xl font-bold mt-3">
-                Het is niet gelukt om een passende studieroute voor deze situatie te plannen.
-              </h2>
-              <p className="text-base mt-1">
-                Neem contact op met je studentbegeleider.
-              </p>
-            </div>
-            <div className="p-6 flex flex-col gap-3 text-center">
-              <button
-                onClick={() => setCallYourCoach(false)}
-                className="bg-[#FF5A5F] hover:bg-[#ff7f84] text-white font-bold py-2 rounded w-full"
-              >
-                Ja
-              </button>
-            </div>
-          </div>
+        <div className="absolute items-center z-10">
+          <p className="text-red-500 font-bold">Neem contact op met je coach!</p>
         </div>
       )}
-
     </div>
   );
 };
