@@ -59,6 +59,7 @@ const Cluster = ({
     if (updateClusterStatus) {
       updateClusterStatus(newStatus);
     }
+    setOpenRetakeMenu(false);
   };
 
   useEffect(() => {
@@ -94,14 +95,15 @@ const Cluster = ({
 
       <div className="flex items-center gap-2">
         {(clusterSelected || clustersSize === 1) && canChange && (
-          <div className="w-10 h-10 p-2 rounded-full flex justify-center items-center bg-blue-100">
+          <div className="w-10 h-10 p-2 rounded-full flex justify-center items-center bg-gray-200">
             <Retry className="w-full h-full" />
           </div>
         )}
 
+        {/* Info button disabled */}
         <button
-          onClick={() => link && window.open(link.startsWith("http") ? link : `https://${link}`, "_blank")}
-          className="w-10 h-10 flex justify-center items-center rounded-full text-lg font-black bg-blue-200 text-black"
+          disabled
+          className="w-10 h-10 flex justify-center items-center rounded-full text-lg font-black bg-gray-300 text-gray-500 cursor-not-allowed"
         >
           i
         </button>
@@ -114,39 +116,92 @@ const Cluster = ({
                   e.stopPropagation();
                   handleOpenRetakeMenu();
                 }}
-                className="w-9 h-9 rounded-full flex justify-center items-center bg-white shadow-md hover:bg-gray-100 z-[50]"
+                className="w-[40px] h-[40px] bg-[#e0e0e0] rounded-full flex justify-center items-center cursor-pointer"
+                role="button"
+                tabIndex={0}
               >
-                {openRetakeMenu ? "×" : "⋮"}
+                {openRetakeMenu ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-5 h-5 text-black"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-5 h-5 text-black"
+                  >
+                    <circle cx="12" cy="5" r="1"></circle>
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="12" cy="19" r="1"></circle>
+                  </svg>
+                )}
               </button>
 
               {openRetakeMenu && (
                 <div
-                  className="absolute left-0 top-[calc(100%+10px)] bg-white shadow-lg rounded-lg p-2 flex flex-col gap-1 min-w-[170px] border border-gray-200 z-[50]"
+                  className="absolute bg-white rounded-lg p-2 flex flex-col gap-1 z-10 shadow-md"
+                  style={{
+                    minWidth: "170px", // Updated menu width
+                    left: "-50px", // Adjusted for better alignment
+                    top: "calc(100% + 10px)", // Positioned below the button
+                  }}
                 >
                   <button
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-green-100"
                     onClick={() => {
                       handleStatusChange("passed");
                       setOpenRetakeMenu(false);
                     }}
-                    className="menu-item flex items-center px-3 hover:bg-green-100 text-[16px]"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" className="mr-[5px]">
-                      <path fill="#16a34a" d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 448 512"
+                      width="16"
+                      height="16"
+                      className="mr-[5px]"
+                    >
+                      <path
+                        fill="#16a34a"
+                        d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                      />
                     </svg>
-                    Passed
+                    <span className="text-sm font-medium text-gray-700">Passed</span>
                   </button>
-
                   <button
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-100"
                     onClick={() => {
                       handleStatusChange("failed");
                       setOpenRetakeMenu(false);
                     }}
-                    className="menu-item flex items-center px-3 hover:bg-red-100 text-[16px]"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" className="mr-[5px]">
-                      <path fill="#dc2626" d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm79 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 448 512"
+                      width="16"
+                      height="16"
+                      className="mr-[5px]"
+                    >
+                      <path
+                        fill="#dc2626"
+                        d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm79 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4-9.4-24.6-9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                      />
                     </svg>
-                    Failed
+                    <span className="text-sm font-medium text-gray-700">Failed</span>
                   </button>
                 </div>
               )}
