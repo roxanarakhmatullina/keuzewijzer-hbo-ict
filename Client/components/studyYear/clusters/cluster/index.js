@@ -105,7 +105,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
     }, [openFreeMenu]);
 
     return (
-        <div ref={outerDivRef} className=" relative w-[250px]">
+        <div ref={outerDivRef} className=" relative w-full">
             <div
                 ref={clusterRef}
                 onMouseEnter={handleHoverCluster}
