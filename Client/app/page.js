@@ -625,7 +625,7 @@ const Home = () => {
 
       {/* Call your coach */}
       {callYourCoach && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50">
           <div
             className="bg-white w-[320px] max-w-[90%] rounded-lg overflow-hidden shadow-lg relative"
             onClick={(e) => e.stopPropagation()}
