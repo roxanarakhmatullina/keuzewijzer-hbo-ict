@@ -497,7 +497,7 @@ const Home = () => {
 
       {/* Main Content */}
       <div
-        className={`${selectedGraduateProfile ? "flex" : "hidden"} pt-[100px] max-w-[1366px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap justify-center align-middle items-center content-center`}
+        className={`${selectedGraduateProfile ? 'flex' : 'hidden'} w-full pt-[100px] relative w-full xl:p-[50px] p-[20px] md:pt-[75px] pb-[75px] gap-0 box-border h-auto flex-col lg:flex-row lg:flex-wrap`}
       >
         {/* Scrollable content for StudyYears */}
         {selectedGraduateProfile && displayedStudyYears && displayedStudyYears.length > 0 ? displayedStudyYears.map((studyYear, index) => {
