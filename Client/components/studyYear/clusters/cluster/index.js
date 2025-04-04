@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ClusterInfo from "@/components/studyYear/clusters/cluster/info";
 import Retry from "@/icons/retry";
 
@@ -22,6 +22,7 @@ const Cluster = ({
   const [openClusters, setOpenClusters] = useState(false);
   const [openRetakeMenu, setOpenRetakeMenu] = useState(false);
   const [clusterStatus, setClusterStatus] = useState(initialStatus);
+  const retakeMenuRef = useRef(null);
 
   const handleHoverLink = () => {
     setHoverLink(!hoverLink);
@@ -67,6 +68,19 @@ const Cluster = ({
     setClusterStatus(initialStatus);
   }, [initialStatus]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (retakeMenuRef.current && !retakeMenuRef.current.contains(event.target)) {
+        setOpenRetakeMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
       onMouseEnter={handleHoverCluster}
@@ -109,7 +123,7 @@ const Cluster = ({
           i
         </button>
 
-        <div className="relative">
+        <div ref={retakeMenuRef} className="relative">
           {!menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus !== "failed" && !handleMultipleClusters && (
             <>
               <button
@@ -163,7 +177,7 @@ const Cluster = ({
                   }}
                 >
                   <button
-                    className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-green-100"
+                    className="flex items-center gap-2 px-3 lg:py-1 py-4 rounded-md hover:bg-green-100"
                     onClick={() => {
                       handleStatusChange("passed");
                       setOpenRetakeMenu(false);
@@ -184,7 +198,7 @@ const Cluster = ({
                     <span className="text-sm font-medium text-gray-700">Gehaald</span>
                   </button>
                   <button
-                    className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-red-100"
+                    className="flex items-center gap-2 px-3 lg:py-1 py-4 rounded-md hover:bg-red-100"
                     onClick={() => {
                       handleStatusChange("failed");
                       setOpenRetakeMenu(false);
