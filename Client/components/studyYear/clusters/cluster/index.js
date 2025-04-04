@@ -157,7 +157,7 @@ const Cluster = ({
                   className="absolute bg-white rounded-lg p-2 flex flex-col gap-1 z-10 shadow-md"
                   style={{
                     minWidth: "170px", // Updated menu width
-                    left: "-50px", // Adjusted for better alignment
+                    left: "-90px", // Adjusted for better alignment
                     top: "calc(100% + 10px)", // Positioned below the button
                   }}
                 >

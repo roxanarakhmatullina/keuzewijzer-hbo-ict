@@ -552,7 +552,7 @@ const Home = () => {
       </div>
 
       {/* Reset button */}
-      <div className="fixed top-[20px] right-[20px] z-10">
+      <div className="fixed top-[95px] right-[20px] z-10 md:top-[20px]">
         <button
           onClick={handleConfirmationDialog}
           className="bg-red-500 text-white px-[20px] py-[10px] rounded-[8px] hover:bg-red-600 transition duration-200"
