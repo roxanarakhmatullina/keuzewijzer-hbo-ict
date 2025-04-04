@@ -115,7 +115,7 @@ const Home = () => {
     setDisplayedStudyYears(prevDisplayedStudyYears => {
       let updatedStudyYears = [...prevDisplayedStudyYears];
       const semesterKey = semester === "firstSemester" ? "firstSemester" : "lastSemester";
-  
+
       if (newStatus === "failed") {
         // Update all clusters in previous study years
         for (let i = 0; i < studyYearIndex; i++) {
@@ -134,7 +134,7 @@ const Home = () => {
             }));
           }
         }
-  
+
         // If the failed cluster is in lastSemester, update all in firstSemester of the same year
         if (semester === "lastSemester" && updatedStudyYears[studyYearIndex].firstSemester) {
           updatedStudyYears[studyYearIndex].firstSemester = updatedStudyYears[studyYearIndex].firstSemester.map(cluster => ({
@@ -143,7 +143,7 @@ const Home = () => {
             menuDisabled: cluster.status === null ? true : cluster.menuDisabled, // Disable menu only for white clusters
           }));
         }
-  
+
         // Update clusters before the failed one in the same semester
         const clusterIndex = updatedStudyYears[studyYearIndex][semesterKey].findIndex(cluster => cluster.id === clusterId);
         if (clusterIndex !== -1) {
@@ -154,7 +154,7 @@ const Home = () => {
             return cluster;
           });
         }
-  
+
         // Update the specific cluster to "failed"
         updatedStudyYears[studyYearIndex][semesterKey] = updatedStudyYears[studyYearIndex][semesterKey].map(cluster => {
           if (cluster.id === clusterId) {
@@ -162,7 +162,7 @@ const Home = () => {
           }
           return cluster;
         });
-  
+
         setHasFailedCluster(true);
       } else {
         // For non-"failed" status updates, just update the specific cluster
@@ -173,7 +173,7 @@ const Home = () => {
           return cluster;
         });
       }
-  
+
       return updatedStudyYears;
     });
 
@@ -230,7 +230,7 @@ const Home = () => {
 
           // Check the last semester first
           if (studyYear.lastSemester) {
-            if(studyYear.lastSemester.length > 1) {
+            if (studyYear.lastSemester.length > 1) {
               for (let j = 0; j < studyYear.lastSemester.length; j++) {
                 const cluster = studyYear.lastSemester[j];
                 if (cluster.status === "failed") {
@@ -241,7 +241,7 @@ const Home = () => {
                   cluster.status = "failed"; // Set the status to false
                 }
               }
-              if(foundFailedCluster) {
+              if (foundFailedCluster) {
                 break;
               } else {
                 studyYear.lastSemester = []; // Remove the cluster from the array
@@ -252,7 +252,7 @@ const Home = () => {
                   foundFailedCluster = true; // Mark that a failed cluster has been found
                 }
               });
-              if(foundFailedCluster) {
+              if (foundFailedCluster) {
                 break;
               } else {
                 studyYear.lastSemester = []; // Remove the cluster from the array
@@ -266,7 +266,7 @@ const Home = () => {
 
           // If not found in the last semester, check the first semester
           if (!foundFailedCluster && studyYear.firstSemester) {
-            if(studyYear.firstSemester.length > 1) {
+            if (studyYear.firstSemester.length > 1) {
               for (let j = 0; j < studyYear.firstSemester.length; j++) {
                 const cluster = studyYear.firstSemester[j];
                 if (cluster.status === "failed") {
@@ -277,7 +277,7 @@ const Home = () => {
                   cluster.status = "failed"; // Set the status to false
                 }
               }
-              if(foundFailedCluster) {
+              if (foundFailedCluster) {
                 break;
               } else {
                 studyYear.firstSemester = []; // Remove the cluster from the array
@@ -288,7 +288,7 @@ const Home = () => {
                   foundFailedCluster = true; // Mark that a failed cluster has been found
                 }
               });
-              if(foundFailedCluster) {
+              if (foundFailedCluster) {
                 break;
               } else {
                 studyYear.firstSemester = []; // Remove the cluster from the array
@@ -507,7 +507,7 @@ const Home = () => {
 
   // disable scrolling when the confirmation dialog is open
   useEffect(() => {
-    if (showConfirmDialog) {
+    if (showConfirmDialog || callYourCoach) {
       document.body.classList.add('overflow-hidden');
     } else {
       document.body.classList.remove('overflow-hidden');
@@ -517,7 +517,7 @@ const Home = () => {
     return () => {
       document.body.classList.remove('overflow-hidden');
     };
-  }, [showConfirmDialog]);
+  }, [showConfirmDialog, callYourCoach]);
 
   // reset multiple clusters menu
   useEffect(() => {
@@ -660,47 +660,58 @@ const Home = () => {
 
       {/* Call your coach */}
       {callYourCoach && (
-        <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50">
+        <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50 flex flex-col">
           <div
-            className="bg-white w-[320px] max-w-[90%] rounded-lg overflow-hidden shadow-lg relative"
+            className="relative bg-red-500 max-w-[400px] w-full height-[250px] rounded-t-[12px] flex items-center justify-center p-[36px]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setCallYourCoach(false)}
-              className="absolute top right-3 text-white text-2xl font-bold hover:text-gray-200"
+              className="absolute top-0 right-0 w-[40px] h-[40px] bg-transparent text-black flex justify-center items-center"
             >
-              &times;
-            </button>
-            <div className="bg-[#FF5A5F] flex flex-col items-center justify-center px-6 py-8 text-white text-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="size-6 h-14 w-14"
+                strokeWidth={3}
+                stroke="white"
+                className="w-6 h-6"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-              <h2 className="text-2xl font-bold mt-3">
-                Het is niet gelukt om een passende studieroute voor deze situatie te plannen.
-              </h2>
-              <p className="text-base mt-1">
-                Neem contact op met je studentbegeleider.
-              </p>
-            </div>
-            <div className="p-6 flex flex-col gap-3 text-center">
-              <button
-                onClick={() => setCallYourCoach(false)}
-                className="bg-[#FF5A5F] hover:bg-[#ff7f84] text-white font-bold py-2 rounded w-full"
-              >
-                Ja
-              </button>
-            </div>
+          </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="h-[178px] w-[200px] text-white"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+              />
+            </svg>
+          </div>
+          <div className="bg-white max-w-[400px] w-full height-[250px] rounded-b-[12px] p-[20px] gap-[20px] flex flex-col items-center justify-center">
+            <p className="text-[30px] font-bold text-center text-red-500">
+              Neem contact op met je studentbegeleider.
+            </p>
+            <h2 className="text-[16px] text-[#D9D9D9] text-center">
+              Het is niet gelukt om een passende studieroute voor deze situatie te plannen.
+            </h2>
+            <button
+              onClick={() => setCallYourCoach(false)}
+              className="w-full h-[40px] bg-red-500 hover:bg-red-700 rounded-[8px] text-white font-bold text-[16px]"
+            >
+              Ja
+            </button>
           </div>
         </div>
       )}
