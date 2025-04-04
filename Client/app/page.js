@@ -176,6 +176,41 @@ const Home = () => {
   
       return updatedStudyYears;
     });
+
+    setDisplayedStudyYears(prevDisplayedStudyYears => {
+      const updatedStudyYears = [...prevDisplayedStudyYears];
+      let foundPassedCluster = false;
+      for (let i = updatedStudyYears.length - 1; i >= 0; i--) {
+        const studyYear = updatedStudyYears[i];
+
+        // Check lastSemester first
+        if (studyYear.lastSemester) {
+          studyYear.lastSemester = studyYear.lastSemester.map(cluster => {
+            if (foundPassedCluster && cluster.status === null) {
+              return { ...cluster, status: "passed" };
+            }
+            if (cluster.status === "passed") {
+              foundPassedCluster = true;
+            }
+            return cluster;
+          });
+        }
+
+        // Check firstSemester
+        if (studyYear.firstSemester) {
+          studyYear.firstSemester = studyYear.firstSemester.map(cluster => {
+            if (foundPassedCluster && cluster.status === null) {
+              return { ...cluster, status: "passed" };
+            }
+            if (cluster.status === "passed") {
+              foundPassedCluster = true;
+            }
+            return cluster;
+          });
+        }
+      }
+      return updatedStudyYears;
+    });
   };
 
   // Handle the logic when a cluster is failed
