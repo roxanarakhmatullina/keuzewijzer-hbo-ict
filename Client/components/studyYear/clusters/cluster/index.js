@@ -117,7 +117,7 @@ const Cluster = ({
                   e.stopPropagation();
                   handleOpenRetakeMenu();
                 }}
-                className="w-[40px] h-[40px] bg-[#e0e0e0] rounded-full flex justify-center items-center cursor-pointer"
+                className="w-[40px] h-[40px] bg-gray-300 rounded-full flex justify-center items-center cursor-pointer"
                 role="button"
                 tabIndex={0}
               >
@@ -155,15 +155,15 @@ const Cluster = ({
 
               {openRetakeMenu && (
                 <div
-                  className="absolute bg-white rounded-lg p-2 flex flex-col gap-1 z-10 shadow-md"
+                  className="absolute bg-white rounded-lg p-2 flex flex-col z-10 shadow"
                   style={{
                     minWidth: "170px", // Updated menu width
-                    left: "-90px", // Adjusted for better alignment
+                    right: "0px", // Adjusted for better alignment
                     top: "calc(100% + 10px)", // Positioned below the button
                   }}
                 >
                   <button
-                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-green-100"
+                    className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-green-100"
                     onClick={() => {
                       handleStatusChange("passed");
                       setOpenRetakeMenu(false);
@@ -181,10 +181,10 @@ const Cluster = ({
                         d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
                       />
                     </svg>
-                    <span className="text-sm font-medium text-gray-700">Passed</span>
+                    <span className="text-sm font-medium text-gray-700">Gehaald</span>
                   </button>
                   <button
-                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-100"
+                    className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-red-100"
                     onClick={() => {
                       handleStatusChange("failed");
                       setOpenRetakeMenu(false);
@@ -203,7 +203,7 @@ const Cluster = ({
                         d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm79 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4-9.4-24.6-9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
                       />
                     </svg>
-                    <span className="text-sm font-medium text-gray-700">Failed</span>
+                    <span className="text-sm font-medium text-gray-700">Niet gehaald</span>
                   </button>
                 </div>
               )}
