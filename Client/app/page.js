@@ -32,6 +32,9 @@ const Home = () => {
   // confirmation dialog
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+  // reset clusters menu
+  const [resetClustersMenu, setResetClustersMenu] = useState(false);
+
   useEffect(() => {
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
       // Fetch study years
@@ -448,7 +451,7 @@ const Home = () => {
     setShowConfirmDialog(true);
   };
 
-  // Handle the reset button click
+  // Handle the reset
   const handleReset = () => {
     // Delete everything from studyYears and fetch again
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
@@ -479,6 +482,12 @@ const Home = () => {
     };
   }, [showConfirmDialog]);
 
+  // reset multiple clusters menu
+  useEffect(() => {
+    setResetClustersMenu(true); // Set resetClustersMenu to true
+    setTimeout(() => setResetClustersMenu(false), 300); // Reset it to false immediately after
+  }, [studyYears]);
+
   return (
     <div className={"w-screen flex flex-row gap-0"}>
       {/* Sidebar */}
@@ -505,6 +514,7 @@ const Home = () => {
                   updateClusterStatus(index, semester, clusterId, newStatus)
                 }
                 isLastOddStudyYear={isLastOddStudyYear}
+                resetClustersMenu={resetClustersMenu}
               >
                 {/* Line from right side to bottom */}
                 {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (

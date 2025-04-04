@@ -14,7 +14,8 @@ const Cluster = ({
   updateClusterStatus,
   initialStatus,
   handleMultipleClusters,
-  menuDisabled
+  menuDisabled,
+  setShutDown,
 }) => {
   const [hoverLink, setHoverLink] = useState(false);
   const [hoverCluster, setHoverCluster] = useState(false);
@@ -187,6 +188,7 @@ const Cluster = ({
                     onClick={() => {
                       handleStatusChange("failed");
                       setOpenRetakeMenu(false);
+                      setShutDown(true);
                     }}
                   >
                     <svg

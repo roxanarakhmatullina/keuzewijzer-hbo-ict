@@ -3,11 +3,17 @@ import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
 import { useGraduateProfile } from "@/hooks";
 
-const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus }) => {
+const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus, resetClustersMenu}) => {
   const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
   const [isAnimating, setIsAnimating] = useState(true);
   const { selectedGraduateProfile } = useGraduateProfile();
   const [handleMultipleClustersDelayed, setHandleMultipleClustersDelayed] = useState(true);
+  const [shutDown, setShutDown] = useState(false);
+
+  useEffect(() => {
+    setHandleMultipleClusters(true);
+    setShutDown(false);
+  }, [resetClustersMenu]);
 
   useEffect(() => {
     if (!handleMultipleClusters) {
@@ -53,6 +59,12 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
     setHandleMultipleClusters(true);
   }, [selectedGraduateProfile, setCurrentCluster]);
 
+  useEffect(() => {
+    if (shutDown) {
+      setHandleMultipleClusters(false);
+    }
+  }, [shutDown]);
+
   return (
     <div className="w-full lg:w-auto flex flex-row gap-[25px] justify-center items-center">
       {clusters && clusters.length > 0 && (
@@ -60,10 +72,12 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
           <div
             key={"clusters-menu"}
             onClick={(e) => {
+              if (shutDown) return null;
               if (e.target.closest('.cluster-info')) return null;
               handleMenuClick(e);
             }}
             onKeyDown={(e) => {
+              if (shutDown) return null;
               if (e.target.closest('.cluster-info')) return null;
               handleKeyDown(e);
             }}
@@ -74,12 +88,42 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
             className={`w-full lg:max-w-[calc(100%-20px)] lg:w-auto rounded-[12px] flex flex-col justify-between items-center gap-[10px]
                             p-[0px] pt-[20px] pb-[20px] box-border transition-transform duration-500`}
           >
-            <p
-              style={{ color: handleColor() }}
-              className="w-full transition duration-300 text-center font-bold text-[14px] pt-0 pb-[5px] p-[5px] box-border"
-            >
-              Kies een van de clusters:
-            </p>
+            <div className="bg-[red] relative w-full mt-[10px] mb-[15px]">
+              <span
+                style={{
+                  opacity: handleMultipleClusters ? 1 : 0,
+                  transition: "opacity 300ms ease-in-out",
+                  display: "block", // Ensure the spans stack on top of each other
+                  position: "absolute", // Position the span absolutely
+                  top: "50%", // Center vertically
+                  left: "50%", // Center horizontally
+                  transform: "translate(-50%, -50%)", // Adjust for the element's size
+                  whiteSpace: "nowrap", // Prevent text wrapping
+                }}
+              >
+                <p
+                  style={{ color: handleColor() }}
+                  className="w-full text-center font-bold text-[14px] box-border"
+                >Kies een van de clusters:</p>
+              </span>
+              <span
+                style={{
+                  opacity: handleMultipleClusters ? 0 : 1,
+                  transition: "opacity 300ms ease-in-out",
+                  display: "block", // Ensure the spans stack on top of each other
+                  position: "absolute", // Position the span absolutely
+                  top: "50%", // Center vertically
+                  left: "50%", // Center horizontally
+                  transform: "translate(-50%, -50%)", // Adjust for the element's size
+                  whiteSpace: "nowrap", // Prevent text wrapping
+                }}
+              >
+                <p
+                  style={{ color: handleColor() }}
+                  className="w-full text-center font-bold text-[14px] box-border"
+                >Kies een cluster:</p>
+              </span>
+            </div>
             <div className={`relative h-full cursor-pointer w-full flex flex-col gap-[25px] justify-evenly items-center px-6 box-border ease-in-out duration-300`}>
               {clusters.sort((a, b) => (a.id === currentCluster?.id ? -1 : b.id === currentCluster?.id ? 1 : 0))
                 .map((cluster, index) => {
@@ -94,14 +138,14 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
                       key={"cluster-" + cluster?.id}
                       className={`w-full lg:w-auto cluster relative cursor-pointer rounded-[12px] ${!handleMultipleClusters && "shadow-lg"}`}
                       onClick={(e) => {
-                        if (handleMultipleClusters) {
+                        if (handleMultipleClusters && !shutDown) {
                           if (e.target.closest('.cluster-info')) return null;
                           handleClusterClick(cluster);
                         }
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          if (handleMultipleClusters) {
+                          if (handleMultipleClusters && !shutDown) {
                             if (e.target.closest('.cluster-info')) return null;
                             handleClusterClick(cluster);
                           }
@@ -123,6 +167,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
                         updateClusterStatus={newStatus => updateClusterStatus(cluster.id, newStatus)}
                         handleMultipleClusters={handleMultipleClustersDelayed}
                         menuDisabled={cluster.menuDisabled} // transmiting the prop menuDisabled
+                        setShutDown={setShutDown}
                       />
                     </div>
                   );
@@ -140,6 +185,7 @@ const Clusters = ({ clusters, currentCluster, setCurrentCluster, handleColor, up
             updateClusterStatus={newStatus => updateClusterStatus(clusters[0].id, newStatus)}
             handleMultipleClusters={false}
             menuDisabled={clusters[0].menuDisabled} // transmiting the prop menuDisabled
+            setShutDown={setShutDown}
           />
         )
       )}
