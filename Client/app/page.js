@@ -203,6 +203,7 @@ const Home = () => {
                 } else {
                   cluster.id = `blank${j}`; // Replace the cluster with a blank placeholder
                   cluster.name = ""; // Replace the cluster with a blank placeholder
+                  cluster.status = "failed"; // Set the status to false
                 }
               }
               if(foundFailedCluster) {
@@ -238,6 +239,7 @@ const Home = () => {
                 } else {
                   cluster.id = `blank${j}`; // Replace the cluster with a blank placeholder
                   cluster.name = ""; // Replace the cluster with a blank placeholder
+                  cluster.status = "failed"; // Set the status to false
                 }
               }
               if(foundFailedCluster) {
