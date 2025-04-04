@@ -124,7 +124,7 @@ const Cluster = ({
         </button>
 
         <div ref={retakeMenuRef} className="relative">
-          {!menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus !== "failed" && !handleMultipleClusters && (
+          {!menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus == null && !handleMultipleClusters && (
             <>
               <button
                 onClick={(e) => {
