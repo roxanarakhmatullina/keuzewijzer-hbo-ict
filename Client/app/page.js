@@ -37,6 +37,8 @@ const Home = () => {
 
   useEffect(() => {
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
+      setShowConfirmDialog(false);
+      setCallYourCoach(false);
       // Fetch study years
       api.get(`/StudyRoute/cohort/${startedStudyYear?.id}/graduateProfile/${selectedGraduateProfile?.id}/`).then(res => {
         setStudyYears(res.data);
