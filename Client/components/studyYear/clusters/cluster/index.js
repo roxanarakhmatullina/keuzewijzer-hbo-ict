@@ -181,6 +181,7 @@ const Cluster = ({
                     onClick={() => {
                       handleStatusChange("passed");
                       setOpenRetakeMenu(false);
+                      setShutDown(true);
                     }}
                   >
                     <svg
