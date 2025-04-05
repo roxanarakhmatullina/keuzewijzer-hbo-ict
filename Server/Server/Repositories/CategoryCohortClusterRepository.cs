@@ -23,7 +23,7 @@ public class CategoryCohortClusterRepository
             .ToListAsync();
     }
 
-    // Get associations by Category and Cohort
+    // Get Clusters for a specific Category and Cohort pair
     public async Task<List<CategoryCohortCluster>> GetByCategoryAndCohortAsync(Guid categoryId, Guid cohortId)
     {
         return await _context.CategoryCohortClusters

@@ -78,6 +78,9 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<CategoryCohortClusterService>();
 builder.Services.AddScoped<CategoryCohortClusterRepository>();
 
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<CategoryRepository>();
+
 // Configure database connection string
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection")));
