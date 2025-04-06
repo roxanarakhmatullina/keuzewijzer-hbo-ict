@@ -97,32 +97,49 @@ const Cluster = ({
           clusterStatus === "passed"
             ? "#ccffcc"
             : clusterStatus === "failed"
-            ? "#ffcccc"
-            : isFreeChoice
-            ? "transparent"
-            : "#ffffff",
+              ? "#ffcccc"
+              : isFreeChoice
+                ? "transparent"
+                : "#ffffff",
       }}
-      className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] h-[75px] rounded-lg p-5 flex justify-between items-center relative cursor-pointer ${
-        isFreeChoice ? "border-2 border-dashed border-[#424242]" : ""
-      }`}
+      className={`w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice ? `border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : ""} cursor-auto rounded-[12px] p-[10px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}
     >
-      <h1 className="text-left flex-auto text-sm font-bold text-black">{name}</h1>
 
-      <div className="flex items-center gap-2">
-        {(clusterSelected || clustersSize === 1) && canChange && (
-          <div className="w-10 h-10 p-2 rounded-full flex justify-center items-center bg-gray-200">
-            <Retry className="w-full h-full" />
-          </div>
-        )}
+      {/*Name*/}
+      <h1
+        style={{ lineHeight: "1.25" }}
+        className={"text-left flex-auto text-[14px] font-bold"}>{name}</h1>
 
-        {/* Info button disabled */}
-        <button
-          disabled
-          className="w-10 h-10 flex justify-center items-center rounded-full text-lg font-black bg-gray-300 text-gray-500 cursor-not-allowed"
+      {/*Buttons*/}
+      <div className="w-auto flex flex-row gap-[10px] justify-between align-middle items-center">
+        {/*Info Button*/}
+        <div
+          onMouseEnter={handleHoverLink}
+          onMouseLeave={handleHoverLink}
+          onTouchStart={handleHoverLink}
+          onTouchEnd={handleHoverLink}
+          onClick={() => {
+            if (link && link !== "-") {
+              const formattedLink = link.startsWith("http://") || link.startsWith("https://")
+                ? link
+                : `https://${link}`;
+              window.open(formattedLink, "_blank");
+            }
+          }}
+          onKeyDown={handleKeyDownLink}
+          tabIndex={link ? 0 : -1} // Focusable if `link` is present
+          role={link ? "button" : undefined} // Interactive if `link` exists
+          style={{
+            backgroundColor:
+              (link && link !== "-") ? "#b4c7db" : "#e5e5e5",
+            color: (link && link !== "-") ? "#000" : "#c5c5c5",
+          }}
+          className="cluster-info relative cursor-pointer w-[40px] h-[40px] rounded-full flex justify-center align-middle items-center"
         >
-          i
-        </button>
-
+          <p className={`text-lg font-black`}>i</p>
+        </div>
+        
+        {/*Retake Button*/}
         <div ref={retakeMenuRef} className="relative">
           {!menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus == null && !handleMultipleClusters && (
             <>
@@ -131,7 +148,7 @@ const Cluster = ({
                   e.stopPropagation();
                   handleOpenRetakeMenu();
                 }}
-                className="w-[40px] h-[40px] bg-gray-300 rounded-full flex justify-center items-center cursor-pointer"
+                className="w-[40px] h-[40px] bg-[#D9D9D9] rounded-full flex justify-center items-center cursor-pointer"
                 role="button"
                 tabIndex={0}
               >
