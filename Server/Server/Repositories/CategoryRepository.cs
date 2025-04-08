@@ -26,17 +26,6 @@ public class CategoryRepository
         return await _context.Categories.ToListAsync();
     }
 
-
-    // Get categories by cohort ID
-    // public async Task<List<Category>> GetByCohortIdAsync(Guid cohortId)
-    // {
-    //     return await _context.Categories
-    //         .Where(c => c.CategoryCohortClusters.Any(ccc => ccc.CohortId == cohortId))
-    //         .Include(c => c.CategoryCohortClusters)
-    //         .Distinct()
-    //         .ToListAsync();
-    // }
-
     // Get category by ID
     public async Task<Category?> GetByIdAsync(Guid id)
     {

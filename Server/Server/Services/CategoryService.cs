@@ -43,72 +43,72 @@ public class CategoryService
     }
 
     // Find this method
-public async Task<CategoryDetailsDTO> GetCategoryDetailsAsync(Guid id)
-{
-    var category = await _repository.GetByIdAsync(id);
-    if (category == null) return null;
-
-    var result = new CategoryDetailsDTO
+    public async Task<CategoryDetailsDTO> GetCategoryDetailsAsync(Guid id)
     {
-        Id = category.Id,
-        Name = category.Name,
-        Cohorts = new List<CohortDetailsDTO>(),
-        Clusters = new List<ClusterDTO>()
-    };
+        var category = await _repository.GetByIdAsync(id);
+        if (category == null) return null;
 
-    // Get all CategoryCohortCluster records for this category
-    var associations = category.CategoryCohortClusters;
-    
-    // Get all cohorts for this category
-    var cohortIds = associations.Select(ccc => ccc.CohortId).Distinct().ToList();
-    
-    var cohorts = await _context.Cohorts
-        .Where(c => cohortIds.Contains(c.Id))
-        .ToListAsync();
-    
-    foreach (var cohort in cohorts)
-    {
-        result.Cohorts.Add(new CohortDetailsDTO
+        var result = new CategoryDetailsDTO
         {
-            Id = cohort.Id,
-            Name = cohort.Name,
-            IsAvailable = cohort.isAvailable
-        });
-    }
-    
-    // Get all clusters for this category (SINGLE QUERY)
-    var clusterIds = associations.Select(ccc => ccc.ClusterId).Distinct().ToList();
-    
-    var clusters = await _context.Clusters
-        .Where(c => clusterIds.Contains(c.Id))
-        .Include(c => c.ClusterPrerequisites)
-        .Include(c => c.Cohorts)
-        .Include(c => c.GraduateProfiles)
-        .ToListAsync();
+            Id = category.Id,
+            Name = category.Name,
+            Cohorts = new List<CohortDetailsDTO>(),
+            Clusters = new List<ClusterDTO>()
+        };
 
-    // Map clusters to DTOs
-    foreach (var cluster in clusters)
-    {
-        result.Clusters.Add(new ClusterDTO
+        // Get all CategoryCohortCluster records for this category
+        var associations = category.CategoryCohortClusters;
+        
+        // Get all cohorts for this category
+        var cohortIds = associations.Select(ccc => ccc.CohortId).Distinct().ToList();
+        
+        var cohorts = await _context.Cohorts
+            .Where(c => cohortIds.Contains(c.Id))
+            .ToListAsync();
+        
+        foreach (var cohort in cohorts)
         {
-            Id = cluster.Id,
-            Name = cluster.Name,
-            Link = cluster.Link,
-            FirstSemester = cluster.FirstSemester,
-            LastSemester = cluster.LastSemester,
-            IsFreeChoice = cluster.IsFreeChoice,
-            IsLocked = cluster.IsLocked,
-            Level = cluster.Level,
-            PrerequisiteIds = cluster.ClusterPrerequisites.Select(p => p.PrerequisiteId).ToList(),
-            CohortIds = cluster.Cohorts.Select(c => c.Id).ToList(),
-            GraduateProfileIds = cluster.GraduateProfiles.Select(gp => gp.Id).ToList()
-        });
-    }
-    
-    return result;
-}
+            result.Cohorts.Add(new CohortDetailsDTO
+            {
+                Id = cohort.Id,
+                Name = cohort.Name,
+                IsAvailable = cohort.isAvailable
+            });
+        }
+        
+        // Get all clusters for this category (SINGLE QUERY)
+        var clusterIds = associations.Select(ccc => ccc.ClusterId).Distinct().ToList();
+        
+        var clusters = await _context.Clusters
+            .Where(c => clusterIds.Contains(c.Id))
+            .Include(c => c.ClusterPrerequisites)
+            .Include(c => c.Cohorts)
+            .Include(c => c.GraduateProfiles)
+            .ToListAsync();
 
-    public async Task<CategoryDTO> CreateCategoryAsync(CategoryCreateDTO dto)
+        // Map clusters to DTOs
+        foreach (var cluster in clusters)
+        {
+            result.Clusters.Add(new ClusterDTO
+            {
+                Id = cluster.Id,
+                Name = cluster.Name,
+                Link = cluster.Link,
+                FirstSemester = cluster.FirstSemester,
+                LastSemester = cluster.LastSemester,
+                IsFreeChoice = cluster.IsFreeChoice,
+                IsLocked = cluster.IsLocked,
+                Level = cluster.Level,
+                PrerequisiteIds = cluster.ClusterPrerequisites.Select(p => p.PrerequisiteId).ToList(),
+                CohortIds = cluster.Cohorts.Select(c => c.Id).ToList(),
+                GraduateProfileIds = cluster.GraduateProfiles.Select(gp => gp.Id).ToList()
+            });
+        }
+        
+        return result;
+    }
+
+    public async Task<CategoryDTO> CreateCategoryAsync(CategoryNameDTO dto)
     {
         var category = new Category
         {
@@ -125,9 +125,7 @@ public async Task<CategoryDetailsDTO> GetCategoryDetailsAsync(Guid id)
         };
     }
 
-
-
-    public async Task<bool> UpdateCategoryAsync(Guid id, CategoryDTO dto)
+    public async Task<bool> UpdateCategoryAsync(Guid id, CategoryNameDTO dto)
     {
         var category = await _repository.GetByIdAsync(id);
         if (category == null) return false;

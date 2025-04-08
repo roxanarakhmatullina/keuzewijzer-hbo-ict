@@ -17,14 +17,6 @@ public class CategoryCohortClusterController : ControllerBase
         _categoryService = categoryService;
     }
 
-    // // GET: api/CategoryCohortCluster
-    // [HttpGet]
-    // public async Task<IActionResult> GetAll()
-    // {
-    //     var associations = await _service.GetAllAsync();
-    //     return Ok(associations);
-    // }
-
     // GET: /api/Categories/{categoryId}/cohorts/{cohortId}/clusters
     [HttpGet("{categoryId}/cohorts/{cohortId}/clusters")]
     public async Task<IActionResult> GetClustersByCategoryAndCohort(Guid categoryId, Guid cohortId)

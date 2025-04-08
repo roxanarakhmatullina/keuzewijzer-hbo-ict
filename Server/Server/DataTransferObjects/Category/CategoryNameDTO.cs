@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Server.DataTransferObjects;
 
-public class CategoryCreateDTO
+public class CategoryNameDTO
 {
     [Required]
     [MaxLength(128)]

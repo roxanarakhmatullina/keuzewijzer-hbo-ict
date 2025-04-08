@@ -34,7 +34,7 @@ public class CategoryController : ControllerBase
 
     // POST: api/Categories
     [HttpPost]
-    public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDTO dto)
+    public async Task<IActionResult> CreateCategory([FromBody] CategoryNameDTO dto)
     {
         var category = await _service.CreateCategoryAsync(dto);
         return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
@@ -42,11 +42,11 @@ public class CategoryController : ControllerBase
 
     // PUT: api/Categories/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryDTO dto)
+    public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryNameDTO dto)
     {
         var updated = await _service.UpdateCategoryAsync(id, dto);
         if (!updated) return NotFound();
-        return NoContent();
+        return NoContent(); // Return updated category?
     }
 
     // DELETE: api/Categories/{id}
