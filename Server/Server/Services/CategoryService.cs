@@ -10,7 +10,7 @@ public class CategoryService
 {
     private readonly CategoryRepository _repository;
 
-    // TODO: short term solution
+    // TODO: short term solution (before fully implementing Repository Design Pattern)
     // CohortRepository and ClusterRepository do not exist yet so DataContext is injected
     private readonly DataContext _context;
 
