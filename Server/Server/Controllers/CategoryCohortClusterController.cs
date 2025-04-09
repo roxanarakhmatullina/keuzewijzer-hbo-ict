@@ -23,7 +23,6 @@ public class CategoryCohortClusterController : ControllerBase
     {
         try
         {
-            // Validate that category exists
             var category = await _categoryService.GetCategoryByIdAsync(categoryId);
             if (category == null)
                 return NotFound(new { message = "Category not found" });
@@ -33,7 +32,6 @@ public class CategoryCohortClusterController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Log exception
             return StatusCode(500, new { message = "An error occurred processing your request" });
         }
     }
