@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Server.DataTransferObjects;
 
-public class CategoryNameDTO
+public class AddClustersDTO
 {
     [Required]
-    [MaxLength(128)]
-    public string Name { get; set; }
+    public List<Guid> ClusterIds { get; set; } = new();
 }
