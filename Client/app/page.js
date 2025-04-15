@@ -617,113 +617,108 @@ const Home = () => {
         </button>
       </div>
 
-      {/* Confirmation button */}
-      {showConfirmDialog && (
-        <div
-          className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50"
-          onClick={() => setShowConfirmDialog(false)}
+    {/* Confirmation button */}
+{showConfirmDialog && (
+  <div
+    className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50"
+    onClick={() => setShowConfirmDialog(false)}
+  >
+    <div
+      className="flex flex-col justify-center items-center w-[300px] bg-white rounded-[12px] p-[16px] shadow-lg relative"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Close button */}
+      <button
+        onClick={() => setShowConfirmDialog(false)}
+        className="absolute top-2 right-2 w-[30px] h-[30px] bg-transparent text-gray-500 hover:text-gray-700 flex justify-center items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-5 h-5"
         >
-          <div className="flex relative flex-col justify-center items-center w-[400px] h-[250px] bg-[#FFF] rounded-[12px] p-[20px]"
-            onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setShowConfirmDialog(false)}
-              className="absolute top-0 right-0 w-[40px] h-[40px] bg-transparent text-black flex justify-center items-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={3}
-                stroke="#D9D9D9"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <p className="font-bold text-[40px] mb-[-10px]">Alles resetten!</p>
-            <p className="text-[#D9D9D9] text-[24px] mb-[40px]">Weet je het zeker?</p>
-            <div className="w-full h-full flex flex-col gap-[10px]">
-              <button
-                onClick={() => {
-                  handleReset();
-                  setShowConfirmDialog(false);
-                }}
-                className="w-full h-[40px] bg-red-500 hover:bg-red-700 rounded-[8px] text-white font-bold text-[16px]"
-              >
-                Ja
-              </button>
-              <button
-                onClick={() => setShowConfirmDialog(false)}
-                className="w-full h-[40px] bg-[#D9D9D9] hover:bg-[#C9C9C9] rounded-[8px] text-white font-bold text-[16px]"
-              >
-                Nee
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Call your coach */}
-      {callYourCoach && (
-        <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50 flex flex-col">
-          <div
-            className="relative bg-red-500 max-w-[400px] w-full height-[250px] rounded-t-[12px] flex items-center justify-center p-[36px]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setCallYourCoach(false)}
-              className="absolute top-0 right-0 w-[40px] h-[40px] bg-transparent text-black flex justify-center items-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={3}
-                stroke="white"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-          </button>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-[178px] w-[200px] text-white"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-              />
-            </svg>
-          </div>
-          <div className="bg-white max-w-[400px] w-full height-[250px] rounded-b-[12px] p-[20px] gap-[20px] flex flex-col items-center justify-center">
-            <p className="text-[30px] font-bold text-center text-red-500">
-              Neem contact op met je studentbegeleider.
-            </p>
-            <h2 className="text-[16px] text-[#D9D9D9] text-center">
-              Het is niet gelukt om een passende studieroute voor deze situatie te plannen.
-            </h2>
-            <button
-              onClick={() => setCallYourCoach(false)}
-              className="w-full h-[40px] bg-red-500 hover:bg-red-700 rounded-[8px] text-white font-bold text-[16px]"
-            >
-              Ja
-            </button>
-          </div>
-        </div>
-      )}
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <p className="font-bold text-[20px] text-gray-800 mb-2">Alles resetten</p>
+      <p className="text-[14px] text-gray-600 text-center mb-4">
+        Weet je het zeker?
+      </p>
+      <div className="w-full flex gap-2">
+        <button
+          onClick={() => {
+            handleReset();
+            setShowConfirmDialog(false);
+          }}
+          className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
+        >
+          Ja
+        </button>
+        <button
+          onClick={() => setShowConfirmDialog(false)}
+          className="w-full h-[36px] bg-gray-300 hover:bg-gray-400 rounded-[8px] text-gray-700 font-bold text-[14px]"
+        >
+          Nee
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+  {/* Call your coach */}
+{callYourCoach && (
+  <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50">
+    <div
+      className="flex flex-col items-center w-[300px] bg-white rounded-[12px] p-[16px] shadow-lg relative"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Close button */}
+      <button
+        onClick={() => setCallYourCoach(false)}
+        className="absolute top-2 right-2 w-[30px] h-[30px] bg-transparent text-gray-500 hover:text-gray-700 flex justify-center items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-5 h-5"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="#124477" 
+        className="h-[60px] w-[60px] mb-3"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.5m-9.75-6.5l9.75 6.5"
+        />
+      </svg>
+      <p className="text-[16px] font-bold text-center text-gray-800 mb-2">
+        Neem contact op met je studentbegeleider.
+      </p>
+      <p className="text-[14px] text-gray-600 text-center mb-4">
+        Het is niet gelukt om een passende studieroute te plannen.
+      </p>
+      <button
+        onClick={() => setCallYourCoach(false)}
+        className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
+      >
+        Ja
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };
