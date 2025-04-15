@@ -99,7 +99,7 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
-    public async Task<List<CategoryCohortCluster>> GetCategoriesForCohort(Guid cohortId)
+    public async Task<List<CategoryCohortCluster>> GetCategoriesForCohortAsync(Guid cohortId)
     {
         return await _context.CategoryCohortClusters
             .Where(ccc => ccc.CohortId == cohortId)

@@ -17,8 +17,7 @@ public interface ICategoryRepository
     Task RemoveCategoryCohortClusterAsync(Guid categoryId, Guid cohortId, Guid clusterId);
     Task RemoveCohortFromCategoryAsync(Guid categoryId, Guid cohortId);
 
-    // Additional method for querying.
     // Show only the categories with clusters for selected cohort.
-    Task<List<CategoryCohortCluster>> GetCategoriesForCohort(Guid cohortId);
+    Task<List<CategoryCohortCluster>> GetCategoriesForCohortAsync(Guid cohortId);
 
 }
