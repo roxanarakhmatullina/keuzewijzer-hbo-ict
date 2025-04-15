@@ -6,7 +6,7 @@ using Server.Services.Interfaces;
 
 namespace Server.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]")] // TODO: Change to "Categories", not "Category"
 [ApiController]
 public class CategoryController : ControllerBase
 {
