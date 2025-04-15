@@ -378,7 +378,7 @@ const Home = () => {
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
                 );
                 const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
-                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name
+                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
                 );
 
                 if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
@@ -438,7 +438,7 @@ const Home = () => {
                 );
 
                 const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
-                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name
+                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
                 );
 
                 if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
