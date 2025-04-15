@@ -6,9 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Server.Data;
 using Server.Services;
+using Server.Services.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using DotNetEnv;
 using Server.Repositories;
+using Server.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,11 +77,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<UserSeeder>();
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<CategoryCohortClusterService>();
-builder.Services.AddScoped<CategoryCohortClusterRepository>();
-
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<CategoryRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Configure database connection string
 builder.Services.AddDbContext<DataContext>(options =>
