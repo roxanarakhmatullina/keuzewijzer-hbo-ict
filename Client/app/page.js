@@ -239,7 +239,7 @@ const Home = () => {
                   foundFailedCluster = true;
                 } else {
                   cluster.id = `blank${j}`; // Replace the cluster with a blank placeholder
-                  cluster.name = ""; // Replace the cluster with a blank placeholder
+                  //cluster.name = ""; // Replace the cluster with a blank placeholder
                   cluster.status = "failed"; // Set the status to false
                 }
               }
@@ -275,7 +275,7 @@ const Home = () => {
                   foundFailedCluster = true;
                 } else {
                   cluster.id = `blank${j}`; // Replace the cluster with a blank placeholder
-                  cluster.name = ""; // Replace the cluster with a blank placeholder
+                  //cluster.name = ""; // Replace the cluster with a blank placeholder
                   cluster.status = "failed"; // Set the status to false
                 }
               }
@@ -377,8 +377,11 @@ const Home = () => {
                 const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
                 );
+                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name
+                );
 
-                if (prerequisitesMet) {
+                if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
                   studyYear.firstSemester.push({ ...cluster, status: null });
                   updatedDisplayedClustersList.push({ ...cluster, status: null });
 
@@ -434,7 +437,11 @@ const Home = () => {
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
                 );
 
-                if (prerequisitesMet) {
+                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name
+                );
+
+                if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
                   studyYear.lastSemester.push({ ...cluster, status: null });
                   updatedDisplayedClustersList.push({ ...cluster, status: null });
 
