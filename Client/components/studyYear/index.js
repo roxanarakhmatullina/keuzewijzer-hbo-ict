@@ -5,7 +5,7 @@ import {useGraduateProfile} from "@/hooks";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, children}) => {
+const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, isLastOddStudyYear, resetClustersMenu, children}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -40,7 +40,8 @@ const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndO
     }
 
     return (
-        <div className={"relative  last:mb-[50px] lg:m-0 lg:last:mb-0 first:mt-0 mt-[-5px] lg:mt-0 w-full lg:max-w-[calc(50%)] flex justify-between gap-[75px] lg:gap-[0px] h-auto align-middle items-center flex-col lg:flex-row z-[2]"}>
+        <div className={`relative  last:mb-[50px] lg:m-0 lg:last:mb-0 first:mt-0 mt-[-5px] lg:mt-0 w-full flex justify-between gap-[75px] lg:gap-[0px] h-auto align-middle items-center flex-col lg:flex-row
+        ${isLastOddStudyYear ? "lg:w-[calc(100%)" : "lg:w-[calc(50%)]"}`}>
             {children}
 
             {/* Horizontal line and the year*/}
@@ -67,12 +68,22 @@ const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndO
 
                 {/* First Cluster */}
                 {firstClusters && firstClusters.length > 0 && (
-                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor} />
+                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor}
+                    updateClusterStatus={(clusterId, newStatus) =>
+                        updateClusterStatus("firstSemester", clusterId, newStatus)
+                    }
+                    resetClustersMenu={resetClustersMenu}
+                    />
                 )}
 
                 {/* Last Cluster */}
                 {secondClusters && secondClusters.length > 0 && (
-                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor} />
+                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor}
+                    updateClusterStatus={(clusterId, newStatus) =>
+                        updateClusterStatus("lastSemester", clusterId, newStatus)
+                    }
+                    resetClustersMenu={resetClustersMenu}
+                    />
                 )}
 
             </div>
