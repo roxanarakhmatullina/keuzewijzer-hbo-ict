@@ -39,12 +39,14 @@ const SubMenu = ({ category, setSelected, setSubMenu, menuHeight, menuWidth }) =
     };
 
     return (
-        <div className="w-full lg:w-auto p-[10px] box-border rounded-[12px] bg-[#D9D9D9] flex flex-col justify-center align-middle items-center gap-[10px]" style={{ height: menuHeight, width: menuWidth }}>
-            <div className="flex w-full">
-                {/*<p onClick={handleClickBack} className="absolute text-left flex-auto text-[14px] font-bold">X</p>*/}
+        <div className="flex flex-col relative w-full h-full lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px]">
+            <button
+                onClick={handleClickBack}
+                className="flex absolute top-[20px] left-[20px] lg:top-[10px] lg:left-[10px] bg-transparent text-black justify-center items-center"
+            >
                 <svg
                     onClick={handleClickBack}
-                    className="w-6 h-6 text-black hover:cursor-pointer cursor-auto absolute flex-auto"
+                    className="w-[30px] h-[30px] lg:w-[20px] lg:h-[20px]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -52,12 +54,13 @@ const SubMenu = ({ category, setSelected, setSubMenu, menuHeight, menuWidth }) =
                 >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                <p className="absoulte text-center flex-auto text-[14px] font-bold">{title}</p>
-            </div>
+            </button>
 
-            <div className="overflow-y-auto w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] box-border rounded-[12px] flex flex-col align-middle items-center gap-[10px]">
+            <p className="text-left text-[20px] lg:text-[14px] font-bold">{title}</p>
+
+            <div className="flex flex-col w-full h-auto gap-[10px] overflow-y-auto">
                 {menuItems.map((item) => (
-                    <div key={item} onClick={() => handleClick(item)} className=" hover: cursor-pointer w-full min-w-full h-[75px] min-h-[75px] cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px] bg-[#fff]">
+                    <div key={item} onClick={() => handleClick(item)} className="flex flex-row relative w-full lg:max-w-[250px] min-h-[75px] max-h-[75px] p-[20px] box-border rounded-[12px] bg-[#fff] justify-between align-middle items-center gap-[10px] hover: cursor-pointer cursor-auto">
                         <h1
                             style={{ lineHeight: "1.25" }}
                             className={"text-left flex-auto text-[14px] font-bold"}>{item}</h1>

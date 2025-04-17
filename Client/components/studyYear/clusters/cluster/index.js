@@ -116,7 +116,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
     }, [openFreeMenu]);
 
     return (
-        <div ref={outerDivRef} className=" relative w-full">
+        <div ref={outerDivRef} className="relative w-full">
             <div
                 ref={clusterRef}
                 onMouseEnter={handleHoverCluster}
@@ -129,7 +129,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
                 role="button" // Indicates interactivity for accessibility
                 aria-pressed={openClusters} // ARIA state for toggleable behavior
                 /*style={{zIndex: hoverCluster ? 2 : 0}}*/
-                className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice && (selected === null) ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice? 'cursor-pointer' : 'cursor-auto'}cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+                className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice && (selected === null) ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
 
                 <h1
                     style={{ lineHeight: "1.25" }}
