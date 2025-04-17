@@ -15,12 +15,6 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         setHoverLink(!hoverLink);
     }
 
-    /*const handleClick = () => {
-        if(isFreeChoice) {
-            setOpenClusters(true);
-        }
-    };*/
-
     const handleClick = () => {
         if (isFreeChoice) {
             setOpenFreeMenu(!openFreeMenu);
@@ -46,7 +40,14 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
     const clusterRef = useRef(null);
     const [distance, setDistance] = useState({ top: 0, right: 0, bottom: 0, left: 0 });
 
+    // Get the height and width of the menu
+
+    const [menuHeight, setMenuHeight] = useState(null);
+    const half = 75 / 2 - menuHeight / 2;
+
+    //Gets distance from edges of the screen
     useEffect(() => {
+        console.log('started');
         function updateDistance() {
             if (clusterRef.current) {
                 const rect = clusterRef.current.getBoundingClientRect();
@@ -62,15 +63,10 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         updateDistance();
         window.addEventListener("resize", updateDistance);
         return () => window.removeEventListener("resize", updateDistance);
-    }, [openFreeMenu]);
-
-    // Get the height and width of the menu
-
-    const [menuHeight, setMenuHeight] = useState(null);
-    const [menuWidth, setMenuWidth] = useState(null);
-    const half = 75 / 2 - menuHeight / 2;
+    }, [openFreeMenu, menuHeight]);
 
 
+    // Blocks scrolling when the menu is open
     const outerDivRef = useRef(null);
 
     useEffect(() => {
@@ -90,6 +86,8 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         };
     }, [openFreeMenu]);
 
+
+    // Unmount the menu with a 300ms delay
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -104,7 +102,8 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         }
     }, [openFreeMenu]);
 
-    useEffect(() => {
+    // 
+    {/*useEffect(() => {
         if (openFreeMenu) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -113,7 +112,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         return () => {
             document.body.style.overflow = '';
         };
-    }, [openFreeMenu]);
+    }, [openFreeMenu]);*/}
 
     return (
         <div ref={outerDivRef} className="relative w-full">
@@ -202,7 +201,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             </div>
 
             <div
-                className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30'}`}
+                className={`absolute z-[2] transition-transform ease-out duration-300`}
                 style={window.innerWidth >= 1024 
                     ? { 
                         left: distance.right < 290 ? -290 : 270, 
@@ -226,8 +225,6 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
                     setOpenFreeMenu={setOpenFreeMenu}
                     menuHeight={menuHeight}
                     setMenuHeight={setMenuHeight}
-                    menuWidth={menuWidth}
-                    setMenuWidth={setMenuWidth}
                 />)}
             </div>
             {/*<h1>menuHeight: {menuHeight} menuWidth: {menuWidth}</h1>*/}

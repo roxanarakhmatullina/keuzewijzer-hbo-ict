@@ -1,7 +1,7 @@
 'use client'
-import React, { use, useState, useEffect } from 'react';
+import React, { use, useState, useEffect, useRef, useLayoutEffect } from 'react';
 
-const SubMenu = ({ category, setSelected, setSubMenu, menuHeight, menuWidth }) => {
+const SubMenu = ({ category, setSelected, subMenu, setSubMenu, menuHeight, setSubMenuHeight, subMenuHeight }) => {
     const menuItems = ['test1', 'test2', 'test3', 'test4', 'test5', 'test6', 'test7', 'test8'];
     const [title, setTitle] = useState(null);
 
@@ -38,8 +38,17 @@ const SubMenu = ({ category, setSelected, setSubMenu, menuHeight, menuWidth }) =
         }
     };
 
+    const subMenuRef = useRef(null);
+
+    useEffect(() => {
+        if (subMenuRef.current && subMenu) {
+            const rect = subMenuRef.current.getBoundingClientRect();
+            setSubMenuHeight(rect.height);
+        }
+    }, [subMenu]);
+
     return (
-        <div className="flex flex-col relative w-full h-full lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px]">
+        <div ref={subMenuRef} className="flex flex-col relative w-full h-full lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px]">
             <button
                 onClick={handleClickBack}
                 className="flex absolute top-[20px] left-[20px] lg:top-[10px] lg:left-[10px] bg-transparent text-black justify-center items-center"

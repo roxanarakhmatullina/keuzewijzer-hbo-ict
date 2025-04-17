@@ -2,11 +2,14 @@
 import React, { use, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import SubMenu from './submenu';
 
-const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuHeight, setMenuHeight, menuWidth, setMenuWidth }) => {
-    const menuItems = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6', 'category7', 'category8'];
+const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuHeight, setMenuHeight}) => {
+    const menuItems = ['category1', 'category2', 'category3'];
     const [subMenu, setSubMenu] = useState(null);
+    const [subMenuHeight, setSubMenuHeight] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
 
+
+    // Unmount the submenu with a 300ms delay
     useEffect(() => {
         if (subMenu) {
             setIsVisible(true); // Immediately set to true when the menu opens
@@ -19,31 +22,34 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
         }
     }, [subMenu]);
 
+    // Open submenu
     const handleClick = (item) => {
         setSubMenu(item);
     }
 
+    // when something in the submenu is selected, everything closes
     const handleSubMenuSelect = (item) => {
         setSelected(item);
         setSubMenu(null);
         setOpenFreeMenu(false);
     };
 
+
+    // Gets measurements of the menu
     const menuRef = useRef(null);
     const hasMeasured = useRef(false); // Track if dimensions have already been measured
 
-
     useLayoutEffect(() => {
-        if (menuRef.current && openFreeMenu && !hasMeasured.current) {
+        if (menuRef.current && openFreeMenu) {
             const rect = menuRef.current.getBoundingClientRect();
-            setMenuHeight(rect.height * 100);
-            setMenuWidth(rect.width * 100);
-            hasMeasured.current = true; // Mark as measured
+            setMenuHeight(rect.height);
         }
-    }, [openFreeMenu]);
+    }, [openFreeMenu, subMenu, subMenuHeight]);
 
     return (
-        <div ref={menuRef} className={`flex flex-col relative w-full h-full lg:w-auto lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px] overflow-hidden`}>
+        <div ref={menuRef} className={`flex flex-col relative w-full h-full lg:w-auto lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px] `}
+            style={subMenu && (menuHeight < subMenuHeight) ? {height: subMenuHeight} : {}}
+        >
             {(window.innerWidth < 1024) && (<button
                 onClick={() => setOpenFreeMenu(false)}
                 className="flex absolute top-[20px] right-[20px] bg-transparent text-black justify-center items-center"
@@ -85,15 +91,18 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
                 }
             </div>
 
-            <div className={`absolute w-full h-full top-0 transition-transform duration-300 ease-out ${subMenu ? 'translate-x-0' : 'translate-x-full'}`}>
+            {subMenu &&(<div className={`absolute w-full h-full top-0`}>
                 {isVisible && (<SubMenu
                     category={subMenu}
                     setSelected={handleSubMenuSelect}
+                    subMenu={subMenu}
                     setSubMenu={setSubMenu}
                     menuHeight={menuHeight}
-                    menuWidth={menuWidth}
+                    setSubMenuHeight={setSubMenuHeight}
+                    subMenuHeight={subMenuHeight}
                 />)}
             </div>
+            )}
 
             {/*<h1>menuHeight:{menuHeight} menuWidth:{menuWidth}</h1>*/}
         </div>
