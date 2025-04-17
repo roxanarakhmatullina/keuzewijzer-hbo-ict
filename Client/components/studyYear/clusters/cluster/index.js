@@ -104,6 +104,17 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         }
     }, [openFreeMenu]);
 
+    useEffect(() => {
+        if (openFreeMenu) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [openFreeMenu]);
+
     return (
         <div ref={outerDivRef} className=" relative w-full">
             <div
@@ -191,8 +202,23 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             </div>
 
             <div
-                className={`absolute z-[2] transition-transform ease-in-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30'}`}
-                style={{ left: distance.right < 290 ? -290 : 270, top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - menuHeight - 10 - distance.top : half, transformOrigin: distance.right < 290 ? "center right" : "center left"}}>
+                className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30'}`}
+                style={window.innerWidth >= 1024 
+                    ? { 
+                        left: distance.right < 290 ? -290 : 270, 
+                        top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - menuHeight - 10 - distance.top : half, 
+                        transformOrigin: distance.right < 290 ? "center right" : "center left" 
+                    } 
+                    : { 
+                        position: "fixed", 
+                        top: 0, 
+                        left: 0, 
+                        width: "100vw", 
+                        height: "100vh", 
+                        transformOrigin: "center center",
+                        zIndex: 1000
+                    }
+                }>
                 {isVisible &&(<Free_Space_Menu
                     selected={selected}
                     setSelected={setSelected}
