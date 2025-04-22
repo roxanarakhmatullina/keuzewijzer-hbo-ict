@@ -58,7 +58,7 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
 
     return (
         <div ref={menuRef} className={`flex flex-col relative w-full h-full lg:w-auto lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px] transition-[height] duration-500 ease-out overflow-hidden`}
-            style={subMenu ? {height: 551} : {height: menuHeight}}
+            style={subMenu ? {height: subMenuHeight || 551} : {height: menuHeight}}
         >
             {(window.innerWidth < 1024) && (<button
                 onClick={() => setOpenFreeMenu(false)}

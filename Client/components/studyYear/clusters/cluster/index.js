@@ -74,6 +74,9 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         const handleClickOutside = (event) => {
             if (outerDivRef.current && !outerDivRef.current.contains(event.target)) {
                 setOpenFreeMenu(false);
+                setTimeout(() => {
+                    setSubMenu(null);
+                }, 300); // Wait for the closing animation to finish
             }
         };
 
@@ -103,7 +106,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
     }, [openFreeMenu]);
 
     // 
-    {/*useEffect(() => {
+    useEffect(() => {
         if (openFreeMenu) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -112,7 +115,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         return () => {
             document.body.style.overflow = '';
         };
-    }, [openFreeMenu]);*/}
+    }, [openFreeMenu]);
 
     const [subMenuAnimation, setSubMenuAnimation] = useState(false);
 
@@ -215,7 +218,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             </div>
 
             <div
-                className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && !selected ? 'transition-[top] duration-500 ease-out' : ''}`}
+                className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-[top] duration-500 ease-out' : ''}`}
                 style={window.innerWidth >= 1024 
                         ? { 
                             left: distance.right < 290 ? -290 : 270, 
