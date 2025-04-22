@@ -9,6 +9,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
     const [hoverCluster, setHoverCluster] = useState(false);
     const [openClusters, setOpenClusters] = useState(false);
     const [openFreeMenu, setOpenFreeMenu] = useState(false);
+    const [subMenu, setSubMenu] = useState(null);
     const [selected, setSelected] = useState(null);
 
     const handleHoverLink = () => {
@@ -42,12 +43,11 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
 
     // Get the height and width of the menu
 
-    const [menuHeight, setMenuHeight] = useState(null);
-    const half = 75 / 2 - menuHeight / 2;
+    const [containerHeight, setContainerHeight] = useState(null);
+    const half = 75 / 2 - containerHeight / 2;
 
     //Gets distance from edges of the screen
     useEffect(() => {
-        console.log('started');
         function updateDistance() {
             if (clusterRef.current) {
                 const rect = clusterRef.current.getBoundingClientRect();
@@ -63,7 +63,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
         updateDistance();
         window.addEventListener("resize", updateDistance);
         return () => window.removeEventListener("resize", updateDistance);
-    }, [openFreeMenu, menuHeight]);
+    }, [openFreeMenu, containerHeight]);
 
 
     // Blocks scrolling when the menu is open
@@ -113,6 +113,20 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             document.body.style.overflow = '';
         };
     }, [openFreeMenu]);*/}
+
+    const [subMenuAnimation, setSubMenuAnimation] = useState(false);
+
+    useEffect(() => {
+        if (subMenu) {
+            setSubMenuAnimation(true); // Immediately set to true when the menu opens
+        } else {
+            const timeout = setTimeout(() => {
+                setSubMenuAnimation(false); // Delay setting to false by 500ms when the menu closes
+            }, 500);
+    
+            return () => clearTimeout(timeout); // Cleanup timeout on component unmount or when `openFreeMenu` changes
+        }
+    }, [subMenu]);
 
     return (
         <div ref={outerDivRef} className="relative w-full">
@@ -201,33 +215,34 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             </div>
 
             <div
-                className={`absolute z-[2] transition-transform ease-out duration-300`}
+                className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && !selected ? 'transition-[top] duration-500 ease-out' : ''}`}
                 style={window.innerWidth >= 1024 
-                    ? { 
-                        left: distance.right < 290 ? -290 : 270, 
-                        top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - menuHeight - 10 - distance.top : half, 
-                        transformOrigin: distance.right < 290 ? "center right" : "center left" 
-                    } 
-                    : { 
-                        position: "fixed", 
-                        top: 0, 
-                        left: 0, 
-                        width: "100vw", 
-                        height: "100vh", 
-                        transformOrigin: "center center",
-                        zIndex: 1000
-                    }
+                        ? { 
+                            left: distance.right < 290 ? -290 : 270, 
+                            top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - containerHeight - 10 - distance.top : half, 
+                            transformOrigin: distance.right < 290 ? "center right" : "center left" 
+                        } 
+                        : { 
+                            position: "fixed", 
+                            top: 0, 
+                            left: 0, 
+                            width: "100vw", 
+                            height: "100vh", 
+                            transformOrigin: "center center",
+                            zIndex: 1000
+                        }
                 }>
                 {isVisible &&(<Free_Space_Menu
                     selected={selected}
                     setSelected={setSelected}
                     openFreeMenu={openFreeMenu}
                     setOpenFreeMenu={setOpenFreeMenu}
-                    menuHeight={menuHeight}
-                    setMenuHeight={setMenuHeight}
+                    setContainerHeight={setContainerHeight}
+                    subMenu={subMenu}
+                    setSubMenu={setSubMenu}
                 />)}
             </div>
-            {/*<h1>menuHeight: {menuHeight} menuWidth: {menuWidth}</h1>*/}
+            {/*<h1>containerHeight: {containerHeight}</h1>*/}
         </div>
 
     )

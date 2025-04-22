@@ -10,8 +10,8 @@ const SubMenu = ({ category, setSelected, subMenu, setSubMenu, menuHeight, setSu
             setTitle(category); // Immediately set to true when the menu opens
         } else {
             const timeout = setTimeout(() => {
-                setTitle(null); // Delay setting to false by 300ms when the menu closes
-            }, 300);
+                setTitle(null); // Delay setting to false by 500ms when the menu closes
+            }, 500);
 
             return () => clearTimeout(timeout); // Cleanup timeout on component unmount or when `openFreeMenu` changes
         }
@@ -19,7 +19,6 @@ const SubMenu = ({ category, setSelected, subMenu, setSubMenu, menuHeight, setSu
 
     const handleClick = (item) => {
         setSelected(item);
-        setSubMenu(null);
     }
     const handleClickBack = () => {
         setSubMenu(null);
@@ -39,11 +38,13 @@ const SubMenu = ({ category, setSelected, subMenu, setSubMenu, menuHeight, setSu
     };
 
     const subMenuRef = useRef(null);
+    const hasMeasured = useRef(false); // Track if dimensions have already been measured
 
-    useEffect(() => {
-        if (subMenuRef.current && subMenu) {
+    useLayoutEffect(() => {
+        if (subMenuRef.current && subMenu && !hasMeasured.current) {
             const rect = subMenuRef.current.getBoundingClientRect();
             setSubMenuHeight(rect.height);
+            hasMeasured.current = true; // Mark as measured
         }
     }, [subMenu]);
 
