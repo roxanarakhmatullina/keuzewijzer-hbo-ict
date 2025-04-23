@@ -17,6 +17,13 @@ public class ClusterDTO
 
     [Required] 
     public Boolean LastSemester { get; set; } = false;
+    [Required]
+    public Boolean  Zwolle { get; set; } = false;
+
+    [Required] 
+    public Boolean Almere { get; set; } = false;
+
+    
 
     [Required] 
     public Boolean IsFreeChoice { get; set; } = false;

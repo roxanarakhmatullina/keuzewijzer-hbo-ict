@@ -23,7 +23,7 @@ namespace Server.Controllers
         }
 
         [HttpGet("cohort/{cohortId}/graduateProfile/{id}")]
-        public async Task<ActionResult> GetStudyRoutes(Guid cohortId, Guid id)
+        public async Task<ActionResult> GetStudyRoutes(Guid cohortId, Guid id, string location)
         {
             var cohort = await _context.Cohorts.FirstOrDefaultAsync(c => c.Id.Equals(cohortId));
             if (cohort == null) return BadRequest("Cohort not found");
@@ -46,6 +46,8 @@ namespace Server.Controllers
                         Level = cl.Level,
                         FirstSemester = cl.FirstSemester,
                         LastSemester = cl.LastSemester,
+                        Zwolle = cl.Zwolle,  
+                        Almere = cl.Almere, 
                         IsRetaken = cl.IsRetaken,
                         RetakenCount = cl.RetakenCount,
                         IsLocked = cl.IsLocked,
@@ -54,7 +56,9 @@ namespace Server.Controllers
                         {
                             Id = pr.PrerequisiteId,
                             Name = pr.Prerequisite.Name,
-                        }).ToList()
+                        }).ToList(),
+                            // Determine availability directly based on Zwolle and Almere
+                        AvailabilityStatus = GetAvailabilityStatus(cl, location)
                     })
                     .ToListAsync();
 
@@ -90,6 +94,21 @@ namespace Server.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+         private string GetAvailabilityStatus(Cluster cluster, string location)
+        {
+            if (location == "Zwolle" && !cluster.Zwolle)
+            {
+                return "Unavailable in Zwolle";
+            }
+            if (location == "Almere" && !cluster.Almere)
+            {
+                return "Unavailable in Almere";
+            }
+            return "Available";
+        }
+
+
 
         private void ProcessRetakenClusters(List<StudyYearDTO> studyRoute, List<SmallClusterDTO> clusters)
         {

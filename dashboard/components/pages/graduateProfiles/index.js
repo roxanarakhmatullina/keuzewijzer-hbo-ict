@@ -26,6 +26,7 @@ const GraduateProfilePage = () => {
         color: "",
         link: "",
         cohortIds: [],
+        location: [],
     });
     const {setLoading} = useAuth();
 
@@ -55,6 +56,21 @@ const GraduateProfilePage = () => {
                 setGraduateProfileCohorts(cohorts);
             });
     }
+
+    const handleChangeLocation = (location, checked) => {
+        setGraduateProfileDTO(prevState => {
+              let updatedLocations = [...prevState.location];
+              if (checked) {
+                  updatedLocations.push(location);
+              } else {
+                  updatedLocations = updatedLocations.filter(loc => loc !== location);
+              }
+              return {
+                  ...prevState,
+                  location: updatedLocations,
+              };
+          });
+     };
 
     const handlePopup = (e, state) => {
         if(state === false) {
@@ -94,6 +110,7 @@ const GraduateProfilePage = () => {
 
     const handleSave = (e) => {
         setLoading(true);
+        console.log("Saving DTO:", graduateProfileDTO);
         if(state === "new") {
             api.post('/GraduateProfile', graduateProfileDTO)
                 .then(res => {
@@ -125,15 +142,19 @@ const GraduateProfilePage = () => {
     }
 
     const handleEdit = (e, profile) => {
+        console.log("Editing profile:", profile); // 👈 Add this here
+    
         handlePopup(e, true);
         setState("edit");
         setGraduateProfileDTO({
             ...profile,
             link: profile.link || null,
             cohortIds: [],
+            location: Array.isArray(profile.location) ? profile.location : []
         });
         fetchCohortsFromGraduateProfile(profile.id);
     }
+    
 
     const handleDelete = (e, id) => {
         handlePopup(e, true);
@@ -165,6 +186,7 @@ const GraduateProfilePage = () => {
                             color: "",
                             link: null,
                             cohortIds: [],
+                            location: [],
                         });
                         setState("new");
                         handlePopup(e, true);
@@ -218,6 +240,40 @@ const GraduateProfilePage = () => {
                                 <p>Een webpagina waarna verwezen kan worden voor meer informatie.</p>
                             )}
                         />
+
+                       <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
+                        <Label
+                            text={"Wordt gegeven op locatie:"}
+                            required
+                            info={() => (
+                                <>
+                                    <p>Selecteer waar deze cluster wordt gegeven.</p>
+                                    <p>Je kunt beide locaties selecteren indien van toepassing.</p>
+                                </>
+                            )}
+                        />
+                        <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
+                            <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
+                                <input
+                                    type={"checkbox"}
+                                    checked={graduateProfileDTO?.location.includes("Zwolle")}
+                                    onChange={(e) => handleChangeLocation("Zwolle", e.target.checked)}
+                                    className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
+                                />
+                                <label className={"w-full"}>Zwolle</label>
+                            </div>
+                            <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
+                                <input
+                                    type={"checkbox"}
+                                    checked={graduateProfileDTO?.location.includes("Almere")}
+                                    onChange={(e) => handleChangeLocation("Almere", e.target.checked)}
+                                    className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
+                                />
+                                <label className={"w-full"}>Almere</label>
+                            </div>
+                        </div>
+                    </div>
+
 
                         <MultiSelection
                             label={"Cohorten:"}

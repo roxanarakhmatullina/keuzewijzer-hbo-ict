@@ -33,6 +33,8 @@ const ClustersPage = () => {
         isLocked: false,
         firstSemester: false,
         lastSemester: false,
+        zwolle: false,
+        almere: false,
         level: 0,
         isFreeChoice: false,
         cohortIds: [],
@@ -245,6 +247,8 @@ const ClustersPage = () => {
                     isFreeChoice: data.isFreeChoice,
                     firstSemester: data.firstSemester,
                     lastSemester: data.lastSemester,
+                    zwolle: data.zwolle,
+                    almere: data.almere,
                     level: data.level,
                     cohortIds: data.cohortIds,
                     graduateProfileIds: data.graduateProfileIds,
@@ -263,6 +267,7 @@ const ClustersPage = () => {
             id: id,
             name: "Delete",
             firstSemester: true,
+            zwolle: true,
             level: 0,
         });
         setState("delete");
@@ -289,6 +294,8 @@ const ClustersPage = () => {
                             isFreeChoice: false,
                             firstSemester: false,
                             lastSemester: false,
+                            zwolle: false,
+                            almere: false,
                             level: 0,
                             cohortIds: [],
                             graduateProfileIds: [],
@@ -312,7 +319,7 @@ const ClustersPage = () => {
                 title={state === "new" ? "Nieuwe cluster" : state === "edit" ? "Aanpassen cluster" : state === "delete" ? "Verwijder cluster" : ""}
                 isOpen={popup} onAccept={handleSave} acceptText={state === "delete" ? "Verwijderen" : "Opslaan"}
                 onCancel={handlePopup} cancelText={"Annuleren"}
-                canAccept={clusterDTO?.name && clusterDTO?.level !== "" && (clusterDTO.firstSemester || clusterDTO.lastSemester)}
+                canAccept={clusterDTO?.name && clusterDTO?.level !== "" && (clusterDTO.firstSemester || clusterDTO.lastSemester || clusterDTO.zwolle || clusterDTO.almere)}
                 state={state}
                 description={state === "delete" ? "Weet je zeker dat je deze cluster wilt verwijderen?" : ""}
             >
@@ -391,6 +398,38 @@ const ClustersPage = () => {
                                         className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
                                     />
                                     <label className={"w-full"}>Tweede semester (Lente)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
+                            <Label text={"Wordt gegeven op locatie:"} required info={
+                                () => (
+                                    <>
+                                        <p>Zwolle</p>
+                                        <p>Almere</p>
+                                    </>
+                                )
+                            }/>
+                            <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
+                                <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
+                                    <input
+                                        type={"checkbox"}
+                                        checked={clusterDTO?.zwolle}
+                                        onChange={(e) => handleChange("zwolle", e.target.checked)}
+                                        className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
+                                    />
+                                    <label className={"w-full"}>zwolle</label>
+                                </div>
+
+                                <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
+                                    <input
+                                        type={"checkbox"}
+                                        checked={clusterDTO?.almere}
+                                        onChange={(e) => handleChange("almere", e.target.checked)}
+                                        className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
+                                    />
+                                    <label className={"w-full"}>almere</label>
                                 </div>
                             </div>
                         </div>
