@@ -142,7 +142,7 @@ deploy-server:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5125:8080 --name $SERVER_NAME --network $DOCKER_NETWORK $IMAGE_NAME:$SERVER_TAG &&
-      docker image prune -a -f"
+      docker image prune -f --filter="reference=*-client" --filter="reference=*-server" --filter="reference=*-dashboard""
   dependencies:
     - build-server
   rules:
@@ -272,7 +272,7 @@ deploy-server-uat:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_SERVER_TAG &&
-      docker image prune -a -f"
+      docker image prune -f --filter="reference=*-client-uat" --filter="reference=*-server-uat" --filter="reference=*-dashboard-uat""
   dependencies:
     - build-server-uat
   rules:
