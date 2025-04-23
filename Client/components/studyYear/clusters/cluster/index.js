@@ -3,12 +3,14 @@ import React, { use, useState, useRef, useEffect, useLayoutEffect } from 'react'
 import ClusterInfo from "@/components/studyYear/clusters/cluster/info";
 import Retry from "@/icons/retry";
 import Free_Space_Menu from './free_space';
+import { api } from "@/hooks/api";
 
 const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeChoice, isRetaken }) => {
     const [hoverLink, setHoverLink] = useState(false);
     const [hoverCluster, setHoverCluster] = useState(false);
     const [openClusters, setOpenClusters] = useState(false);
     const [openFreeMenu, setOpenFreeMenu] = useState(false);
+    const [menuItems, setMenuItems] = useState([]);
     const [subMenu, setSubMenu] = useState(null);
     const [selected, setSelected] = useState(null);
 
@@ -37,6 +39,15 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             window.open(link, "_blank");
         }
     };
+
+    // Fetching the categories
+    useEffect(() => {
+        // fetch categories
+        api.get("/Category").then(res => {
+            setMenuItems(res.data);
+        });
+        console.log("menuItems", menuItems);
+    }, []); // Removed the dependency array to trigger on every render
 
     const clusterRef = useRef(null);
     const [distance, setDistance] = useState({ top: 0, right: 0, bottom: 0, left: 0 });
@@ -100,7 +111,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             const timeout = setTimeout(() => {
                 setIsVisible(false); // Delay setting to false by 300ms when the menu closes
             }, 300);
-    
+
             return () => clearTimeout(timeout); // Cleanup timeout on component unmount or when `openFreeMenu` changes
         }
     }, [openFreeMenu]);
@@ -126,7 +137,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
             const timeout = setTimeout(() => {
                 setSubMenuAnimation(false); // Delay setting to false by 500ms when the menu closes
             }, 500);
-    
+
             return () => clearTimeout(timeout); // Cleanup timeout on component unmount or when `openFreeMenu` changes
         }
     }, [subMenu]);
@@ -145,7 +156,7 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
                 role="button" // Indicates interactivity for accessibility
                 aria-pressed={openClusters} // ARIA state for toggleable behavior
                 /*style={{zIndex: hoverCluster ? 2 : 0}}*/
-                className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice && (selected === null) ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+                className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice && (selected === null) ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice ? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
 
                 <h1
                     style={{ lineHeight: "1.25" }}
@@ -219,27 +230,28 @@ const Cluster = ({ name, link, canChange, clusterSelected, clustersSize, isFreeC
 
             <div
                 className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-[top] duration-500 ease-out' : ''}`}
-                style={window.innerWidth >= 1024 
-                        ? { 
-                            left: distance.right < 290 ? -290 : 270, 
-                            top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - containerHeight - 10 - distance.top : half, 
-                            transformOrigin: distance.right < 290 ? "center right" : "center left" 
-                        } 
-                        : { 
-                            position: "fixed", 
-                            top: 0, 
-                            left: 0, 
-                            width: "100vw", 
-                            height: "100vh", 
-                            transformOrigin: "center center",
-                            zIndex: 1000
-                        }
+                style={window.innerWidth >= 1024
+                    ? {
+                        left: distance.right < 290 ? -290 : 270,
+                        top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - containerHeight - 10 - distance.top : half,
+                        transformOrigin: distance.right < 290 ? "center right" : "center left"
+                    }
+                    : {
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        transformOrigin: "center center",
+                        zIndex: 1000
+                    }
                 }>
-                {isVisible &&(<Free_Space_Menu
+                {isVisible && (<Free_Space_Menu
                     selected={selected}
                     setSelected={setSelected}
                     openFreeMenu={openFreeMenu}
                     setOpenFreeMenu={setOpenFreeMenu}
+                    menuItems={menuItems}
                     setContainerHeight={setContainerHeight}
                     subMenu={subMenu}
                     setSubMenu={setSubMenu}

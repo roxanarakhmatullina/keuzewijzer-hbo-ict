@@ -1,13 +1,12 @@
 'use client'
 import React, { use, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import SubMenu from './submenu';
+import { api } from "@/hooks/api";
 
-const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, setContainerHeight, subMenu, setSubMenu}) => {
-    const menuItems = ['category1', 'category2', 'category3'];
+const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu }) => {
     const [menuHeight, setMenuHeight] = useState(null);
     const [subMenuHeight, setSubMenuHeight] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
-
 
     // Unmount the submenu with a 500ms delay
     useEffect(() => {
@@ -24,7 +23,7 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
 
     // Open submenu
     const handleClick = (item) => {
-        setSubMenu(item);
+        setSubMenu(item.id);
     }
 
     // when something in the submenu is selected, everything closes
@@ -43,7 +42,7 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
     useLayoutEffect(() => {
         if (menuRef.current && openFreeMenu && !hasMeasured.current) {
             const rect = menuRef.current.getBoundingClientRect();
-            setMenuHeight(rect.height*100);
+            setMenuHeight(rect.height * 100);
             hasMeasured.current = true; // Mark as measured
         }
     }, [openFreeMenu]);
@@ -58,7 +57,7 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
 
     return (
         <div ref={menuRef} className={`flex flex-col relative w-full h-full lg:w-auto lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px] transition-[height] duration-500 ease-out overflow-hidden`}
-            style={subMenu ? {height: subMenuHeight || 551} : {height: menuHeight}}
+            style={subMenu ? { height: subMenuHeight || 551 } : { height: menuHeight }}
         >
             {(window.innerWidth < 1024) && (<button
                 onClick={() => setOpenFreeMenu(false)}
@@ -80,9 +79,9 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
 
             <div className="flex flex-col w-full h-auto gap-[10px] overflow-y-auto">
                 {menuItems.map((item) => (
-                    <div key={item} onClick={() => handleClick(item)} className="flex flex-row relative w-full min-w-[250px] lg:max-w-[250px] min-h-[75px] max-h-[75px] p-[20px] box-border rounded-[12px] bg-[#fff] justify-between align-middle items-center gap-[10px] hover: cursor-pointer cursor-auto">
+                    <div key={item.id} onClick={() => handleClick(item)} className="flex flex-row relative w-full min-w-[250px] lg:max-w-[250px] min-h-[75px] max-h-[75px] p-[20px] box-border rounded-[12px] bg-[#fff] justify-between align-middle items-center gap-[10px] hover: cursor-pointer cursor-auto">
                         <h1 style={{ lineHeight: "1.25" }} className={"text-left flex-auto text-[14px] font-bold"}>
-                            {item}
+                            {item.name}
                         </h1>
                         <svg
                             className="w-[20px] h-[20px] text-black hover:cursor-pointer cursor-auto absolute flex-auto right-[10px]"
