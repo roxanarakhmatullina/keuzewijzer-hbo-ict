@@ -1,10 +1,10 @@
 stages:
-  - test
   - build
   - deploy
 
 variables:
   IMAGE_NAME: tlucassen/keuzewijzer
+
   CLIENT_TAG: "$CI_COMMIT_SHA-client"
   DASHBOARD_TAG: "$CI_COMMIT_SHA-dashboard"
   SERVER_TAG: "$CI_COMMIT_SHA-server"
@@ -12,8 +12,18 @@ variables:
   DASHBOARD_NAME: dashboard
   SERVER_NAME: server
 
+  UAT_CLIENT_TAG: "$CI_COMMIT_SHA-client-uat"
+  UAT_DASHBOARD_TAG: "$CI_COMMIT_SHA-dashboard-uat"
+  UAT_SERVER_TAG: "$CI_COMMIT_SHA-server-uat"
+  UAT_CLIENT_NAME: uat-client
+  UAT_DASHBOARD_NAME: uat-dashboard
+  UAT_SERVER_NAME: uat-server
+
 build-client:
   stage: build
+  environment:
+    name: prod
+    url: https://keuzewijzerhboict.nl
   tags:
     - build-client
   variables:
@@ -24,11 +34,17 @@ build-client:
   script:
     - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$CLIENT_TAG -f Client/dockerfile ./Client
     - docker push $IMAGE_NAME:$CLIENT_TAG
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - Client/*
+        - Client/**/*
 
 build-dashboard:
   stage: build
+  environment:
+    name: prod
+    url: https://keuzewijzerhboict.nl
   tags:
     - build-dashboard
   variables:
@@ -39,11 +55,18 @@ build-dashboard:
   script:
     - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$API_URL -t $IMAGE_NAME:$DASHBOARD_TAG -f dashboard/dockerfile ./dashboard
     - docker push $IMAGE_NAME:$DASHBOARD_TAG
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - dashboard/*
+        - dashboard/**/*
+  
 
 build-server:
   stage: build
+  environment:
+    name: prod
+    url: https://keuzewijzerhboict.nl
   tags:
     - build-server
   variables:
@@ -54,11 +77,17 @@ build-server:
   script:
     - docker build --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USER=$DB_USER --build-arg DB_PASSWORD=$DB_PASS --build-arg DB_NAME=$DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$JWT_AUDIENCE --build-arg JWT_ISSUER=$JWT_ISSUER --build-arg JWT_SECRET=$JWT_SECRET -t $IMAGE_NAME:$SERVER_TAG -f Server/Dockerfile ./Server
     - docker push $IMAGE_NAME:$SERVER_TAG
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - Server/*
+        - Server/**/*
 
 deploy-client:
   stage: deploy
+  environment:
+    name: prod
+    url: https://keuzewijzerhboict.nl
   tags:
     - docker-deploy
   before_script:
@@ -68,11 +97,19 @@ deploy-client:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 3000:3000 --name $CLIENT_NAME $IMAGE_NAME:$CLIENT_TAG"
-  only:
-    - main
+  dependencies:
+    - build-client
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - Client/*
+        - Client/**/*
 
 deploy-dashboard:
   stage: deploy
+  environment:
+    name: prod
+    url: https://keuzewijzerhboict.nl
   tags:
     - docker-deploy
   before_script:
@@ -82,11 +119,20 @@ deploy-dashboard:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 3001:3000 --name $DASHBOARD_NAME $IMAGE_NAME:$DASHBOARD_TAG"
-  only:
-    - main
+  dependencies:
+    - build-dashboard
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - dashboard/*
+        - dashboard/**/*
+  
 
 deploy-server:
   stage: deploy
+  environment:
+    name: prod
+    url: https://keuzewijzerhboict.nl
   tags:
     - docker-deploy
   before_script:
@@ -95,7 +141,142 @@ deploy-server:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 5125:8080 --name $SERVER_NAME --network DB_connect $IMAGE_NAME:$SERVER_TAG &&
-      docker image prune -a -f"
-  only:
-    - main
+      docker run -d -p 5125:8080 --name $SERVER_NAME --network $DOCKER_NETWORK $IMAGE_NAME:$SERVER_TAG &&
+      docker image prune -f --filter="reference=*-client" --filter="reference=*-server" --filter="reference=*-dashboard""
+  dependencies:
+    - build-server
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - Server/*
+        - Server/**/*
+
+build-client-uat:
+  stage: build
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
+  tags:
+    - build-client-uat
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker info
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$UAT_API_URL -t $IMAGE_NAME:$UAT_CLIENT_TAG -f Client/dockerfile ./Client
+    - docker push $IMAGE_NAME:$UAT_CLIENT_TAG
+  rules:
+    - if: $CI_COMMIT_BRANCH == "uat"
+      changes:
+        - Client/*
+        - Client/**/*
+
+build-dashboard-uat:
+  stage: build
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
+  tags:
+    - build-dashboard-uat
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker info
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build --pull --build-arg NEXT_PUBLIC_API_URL=$UAT_API_URL -t $IMAGE_NAME:$UAT_DASHBOARD_TAG -f dashboard/dockerfile ./dashboard
+    - docker push $IMAGE_NAME:$UAT_DASHBOARD_TAG
+  rules:
+    - if: $CI_COMMIT_BRANCH == "uat"
+      changes:
+        - dashboard/*
+        - dashboard/**/*
+
+build-server-uat:
+  stage: build
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
+  tags:
+    - build-server-uat
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker info
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build --build-arg DB_HOST=$UAT_DB_HOST --build-arg DB_PORT=$UAT_DB_PORT --build-arg DB_USER=$UAT_DB_USER --build-arg DB_PASSWORD=$UAT_DB_PASS --build-arg DB_NAME=$UAT_DB_NAME --build-arg EMAIL_FROM=$EMAIL_FROM --build-arg EMAIL_PASS=$EMAIL_PASS --build-arg EMAIL_PORT=$EMAIL_PORT --build-arg EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER --build-arg EMAIL_USR=$EMAIL_USR --build-arg JWT_AUDIENCE=$UAT_JWT_AUDIENCE --build-arg JWT_ISSUER=$UAT_JWT_ISSUER --build-arg JWT_SECRET=$UAT_JWT_SECRET -t $IMAGE_NAME:$UAT_SERVER_TAG -f Server/Dockerfile ./Server
+    - docker push $IMAGE_NAME:$UAT_SERVER_TAG
+  rules:
+    - if: $CI_COMMIT_BRANCH == "uat"
+      changes:
+        - Server/*
+        - Server/**/*
+
+deploy-client-uat:
+  stage: deploy
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
+  tags:
+    - docker-deploy-uat
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker ps -a --filter "name=$UAT_CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 3002:3000 --name $UAT_CLIENT_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_CLIENT_TAG"
+  dependencies:
+    - build-client-uat
+  rules:
+    - if: $CI_COMMIT_BRANCH == "uat"
+      changes:
+        - Client/*
+        - Client/**/*
+
+deploy-dashboard-uat:
+  stage: deploy
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
+  tags:
+    - docker-deploy-uat
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker ps -a --filter "name=$UAT_DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 3003:3000 --name $UAT_DASHBOARD_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_DASHBOARD_TAG"
+  dependencies:
+    - build-dashboard-uat
+  rules:
+    - if: $CI_COMMIT_BRANCH == "uat"
+      changes:
+        - dashboard/*
+        - dashboard/**/*
+
+deploy-server-uat:
+  stage: deploy
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
+  tags:
+    - docker-deploy-uat
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
+      docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
+      docker ps -a --filter "name=$UAT_SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
+      docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_SERVER_TAG &&
+      docker image prune -f --filter="reference=*-client-uat" --filter="reference=*-server-uat" --filter="reference=*-dashboard-uat""
+  dependencies:
+    - build-server-uat
+  rules:
+    - if: $CI_COMMIT_BRANCH == "uat"
+      changes:
+        - Server/*
+        - Server/**/*
