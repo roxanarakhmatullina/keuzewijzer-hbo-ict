@@ -26,8 +26,7 @@ const FreeSpacePage = () => {
     const [categoryDTO, setCategoryDTO] = useState({
         id: "",
         name: "",
-        cohortIds: [],
-        clusterIds: [],
+        cohortClusters: [],
     });
     const { setLoading } = useAuth();
 
@@ -36,18 +35,14 @@ const FreeSpacePage = () => {
         fetchCohorts();
     }, []);
 
-    useEffect(() => {
-        console.log("Clusters: ", clusters);
-    }, [clusters]);
-
     const fetchCategories = async () => {
-        {/*setLoading(true);
-        await api.get('/Categories')
+        setLoading(true);
+        await api.get('/Category')
             .then(res => {
                 setCategories(res.data);
                 setFilteredCategories(res.data);
             })
-            .finally(() => setLoading(false));*/}
+            .finally(() => setLoading(false));
     }
 
     const fetchCohorts = async () => {
@@ -92,7 +87,7 @@ const FreeSpacePage = () => {
         setCategoryCohorts(newCohortsList);
         setCategoryDTO(prevState => ({
             ...prevState,
-            cohortIds: newCohortsList
+            cohortClusters: newCohortsList.map(cohort => ({ cohortId: cohort, clusterIds: [] }))
         }));
     };
 
@@ -114,7 +109,7 @@ const FreeSpacePage = () => {
 
         setCategoryDTO(prevState => ({
             ...prevState,
-            clusterIds: Object.values(categoryClusters).flat()
+            //clusterIds: Object.values(categoryClusters).flat()
         }));
     };
 
@@ -132,10 +127,8 @@ const FreeSpacePage = () => {
     const handleSave = (e) => {
         setLoading(true);
         if (state === "new") {
-            api.post('/Categories', {
-                ...categoryDTO,
-                level: parseInt(categoryDTO.level),
-            })
+            console.log("categoryDTO: ", categoryDTO);
+            api.post('/Category', categoryDTO)
                 .then(res => {
                     fetchCategories();
                     setPopup(false);
@@ -144,10 +137,7 @@ const FreeSpacePage = () => {
                     setLoading(false);
                 });
         } else if (state === "edit") {
-            api.post(`/Categories/${categoryDTO.id}`, {
-                ...categoryDTO,
-                level: parseInt(categoryDTO.level),
-            })
+            api.post(`/Category/${categoryDTO.id}`, categoryDTO)
                 .then(res => {
                     fetchCategories();
                     setPopup(false);
@@ -156,14 +146,14 @@ const FreeSpacePage = () => {
                     setLoading(false);
                 });
         } else if (state === "delete") {
-            api.delete(`/Categories/${categoryDTO.id}`)
+            api.delete(`/Category/${categoryDTO.id}`)
                 .then(res => {
                     fetchCategories();
                     setPopup(false);
                 })
                 .finally(() => {
                     setLoading(false);
-                })
+                });
         }
     };
 
@@ -176,16 +166,16 @@ const FreeSpacePage = () => {
 
     const handleEdit = async (e, category) => {
         setLoading(true);
-        await api.get(`/Categories/${category.id}`)
+        await api.get(`/Category/${category.id}`)
             .then(res => {
+                console.log("category: ", res.data);
                 const data = res.data;
-                setCategoryCohorts(data.cohortIds);
-                setCategoryClusters(data.clusterIds);
+                setCategoryCohorts(data.cohortClusters.map(cohort => ({ id: cohort.cohortId, name: cohort.cohortName })));
+                //setCategoryClusters(data.clusterIds);
                 setCategoryDTO({
                     id: data.id,
                     name: data.name,
-                    cohortIds: data.cohortIds,
-                    clusterIds: data.prerequisiteIds
+                    cohortClusters: data.cohortClusters,
                 });
             }).finally(() => {
                 setLoading(false);
@@ -222,8 +212,7 @@ const FreeSpacePage = () => {
                         setCategoryDTO({
                             id: "",
                             name: "",
-                            cohortIds: [],
-                            clusterIds: []
+                            cohortClusters: [],
                         });
                         setCohorts([]);
                         setClusters([]);
@@ -238,52 +227,55 @@ const FreeSpacePage = () => {
             </div>
 
             <Popup
-                title={state === "new" ? "Nieuwe cluster" : state === "edit" ? "Aanpassen cluster" : state === "delete" ? "Verwijder cluster" : ""}
+                title={state === "new" ? "Nieuwe category" : state === "edit" ? "Aanpassen category" : state === "delete" ? "Verwijder category" : ""}
                 isOpen={popup} onAccept={handleSave} acceptText={state === "delete" ? "Verwijderen" : "Opslaan"}
                 onCancel={handlePopup} cancelText={"Annuleren"}
-                canAccept={categoryDTO?.name !== "" && categoryDTO?.cohortIds?.length > 0 && categoryDTO.clusterIds?.length > 0}
+                canAccept={categoryDTO?.name}
                 state={state}
-                description={state === "delete" ? "Weet je zeker dat je deze cluster wilt verwijderen?" : ""}
+                description={state === "delete" ? "Weet je zeker dat je deze category wilt verwijderen?" : ""}
             >
-                <Input
-                    type={"text"}
-                    value={categoryDTO?.name}
-                    onChange={(e) => handleChange("name", e.target.value)}
-                    placeholder={"Naam"}
-                    label={"Naam"}
-                    required
-                />
+                {state !== "delete" && (
+                    <>
+                        <Input
+                            type={"text"}
+                            value={categoryDTO?.name}
+                            onChange={(e) => handleChange("name", e.target.value)}
+                            placeholder={"Naam"}
+                            label={"Naam"}
+                            required
+                        />
 
-                <MultiSelection
-                    label={"Cohorten:"}
-                    info={() => (
-                        <p>Selecteer één of meerdere cohorten; dit verbindt de afstudeerprofiel met één of meer cohorten.</p>
-                    )}
-                    options={cohorts}
-                    onChange={(state, value) => handleChangeCohort(state, value)}
-                    selectedOptions={categoryCohorts}
-                    optionLabelName={"name"}
-                    optionValueName={"id"}
-                />
-
-                {categoryCohorts.map((cohort) => {
-                    const cohortName = cohorts.find(c => c.id === cohort)?.name || cohort;
-                    return (
                         <MultiSelection
-                            key={cohort}
-                            label={`Clusters for ${cohortName}:`}
+                            label={"Cohorten:"}
                             info={() => (
-                                <p>Selecteer één of meerdere clusters voor {cohortName}; dit verbindt de categorie met één of meer clusters.</p>
+                                <p>Selecteer één of meerdere cohorten; dit verbindt de afstudeerprofiel met één of meer cohorten.</p>
                             )}
-                            options={clusters[cohort] || []}
-                            onChange={(state, value) => handleChangeClusters(state, value, cohort)}
-                            selectedOptions={categoryClusters[cohort] || []}
+                            options={cohorts}
+                            onChange={(state, value) => handleChangeCohort(state, value)}
+                            selectedOptions={categoryCohorts}
                             optionLabelName={"name"}
                             optionValueName={"id"}
                         />
-                    );
-                })}
-                
+
+                        {categoryCohorts.map((cohort) => {
+                            const cohortName = cohorts.find(c => c.id === cohort)?.name || cohort;
+                            return (
+                                <MultiSelection
+                                    key={cohort}
+                                    label={`Clusters for ${cohortName}:`}
+                                    info={() => (
+                                        <p>Selecteer één of meerdere clusters voor {cohortName}; dit verbindt de categorie met één of meer clusters.</p>
+                                    )}
+                                    options={clusters[cohort] || []}
+                                    onChange={(state, value) => handleChangeClusters(state, value, cohort)}
+                                    selectedOptions={categoryClusters[cohort] || []}
+                                    optionLabelName={"name"}
+                                    optionValueName={"id"}
+                                />
+                            );
+                        })}
+                    </>
+                )}
             </Popup>
 
         </div>
