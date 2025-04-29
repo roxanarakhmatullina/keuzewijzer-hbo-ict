@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import api from "@/hooks/api";
 import Table from "@/components/table";
 import Popup from "@/components/popup";
@@ -36,14 +36,18 @@ const FreeSpacePage = () => {
         fetchCohorts();
     }, []);
 
+    useEffect(() => {
+        console.log("Clusters: ", clusters);
+    }, [clusters]);
+
     const fetchCategories = async () => {
-        setLoading(true);
+        {/*setLoading(true);
         await api.get('/Categories')
             .then(res => {
                 setCategories(res.data);
                 setFilteredCategories(res.data);
             })
-            .finally(() => setLoading(false));
+            .finally(() => setLoading(false));*/}
     }
 
     const fetchCohorts = async () => {
@@ -59,27 +63,27 @@ const FreeSpacePage = () => {
         }
     }, [categoryCohorts]);
 
+    const fetchCohortClusters = async (cohort) => {
+        await api.get(`/Cohort/${cohort}/clusters`).then(res => {
+                setClusters(res.data);
+            });
+    }
+
     const fetchCategoryClusters = async () => {
         if (categoryCohorts.length === 0) {
             setClusters([]);
             return;
         }
 
-        const clustersSet = new Set();
-        const clusters = [];
+        const clustersByCohort = {};
 
         for (const cohort of categoryCohorts) {
             await api.get(`/Cohort/${cohort}/clusters`).then(res => {
-                res.data.forEach(cluster => {
-                    if (!clustersSet.has(cluster.id)) {
-                        clustersSet.add(cluster.id);
-                        clusters.push(cluster);
-                    }
-                });
+                clustersByCohort[cohort] = res.data;
             });
         }
 
-        setClusters(clusters);
+        setClusters(clustersByCohort);
     };
 
     const handleChangeCohort = (checked, cohort) => {
@@ -261,18 +265,23 @@ const FreeSpacePage = () => {
                     optionValueName={"id"}
                 />
 
-                <MultiSelection
-                    label={"Clusters:"}
-                    info={() => (
-                        <p>Selecteer één of meerdere clusters; dit verbindt de categorie met één of meer clusters.</p>
-                    )}
-                    options={clusters}
-                    onChange={(state, value) => handleChangeClusters(state, value)}
-                    selectedOptions={categoryClusters}
-                    optionLabelName={"name"}
-                    optionValueName={"id"}
-                />
-
+                {categoryCohorts.map((cohort) => {
+                    const cohortName = cohorts.find(c => c.id === cohort)?.name || cohort;
+                    return (
+                        <MultiSelection
+                            key={cohort}
+                            label={`Clusters for ${cohortName}:`}
+                            info={() => (
+                                <p>Selecteer één of meerdere clusters voor {cohortName}; dit verbindt de categorie met één of meer clusters.</p>
+                            )}
+                            options={clusters[cohort] || []}
+                            onChange={(state, value) => handleChangeClusters(state, value)}
+                            selectedOptions={categoryClusters}
+                            optionLabelName={"name"}
+                            optionValueName={"id"}
+                        />
+                    );
+                })}
                 
             </Popup>
 
