@@ -63,12 +63,6 @@ const FreeSpacePage = () => {
         }
     }, [categoryCohorts]);
 
-    const fetchCohortClusters = async (cohort) => {
-        await api.get(`/Cohort/${cohort}/clusters`).then(res => {
-                setClusters(res.data);
-            });
-    }
-
     const fetchCategoryClusters = async () => {
         if (categoryCohorts.length === 0) {
             setClusters([]);
@@ -102,18 +96,25 @@ const FreeSpacePage = () => {
         }));
     };
 
-    const handleChangeClusters = (checked, cluster) => {
-        let newClustersList;
-        if (checked) {
-            newClustersList = [...categoryClusters, cluster];
-        } else {
-            newClustersList = categoryClusters.filter(p => p !== cluster);
-        }
+    const handleChangeClusters = (checked, cluster, cohort) => {
+        setCategoryClusters(prevState => {
+            const updatedClusters = { ...prevState };
 
-        setCategoryClusters(newClustersList);
+            if (checked) {
+                updatedClusters[cohort] = [...(updatedClusters[cohort] || []), cluster];
+            } else {
+                updatedClusters[cohort] = updatedClusters[cohort].filter(c => c !== cluster);
+                if (updatedClusters[cohort].length === 0) {
+                    delete updatedClusters[cohort];
+                }
+            }
+
+            return updatedClusters;
+        });
+
         setCategoryDTO(prevState => ({
             ...prevState,
-            clusterIds: newClustersList
+            clusterIds: Object.values(categoryClusters).flat()
         }));
     };
 
@@ -275,8 +276,8 @@ const FreeSpacePage = () => {
                                 <p>Selecteer één of meerdere clusters voor {cohortName}; dit verbindt de categorie met één of meer clusters.</p>
                             )}
                             options={clusters[cohort] || []}
-                            onChange={(state, value) => handleChangeClusters(state, value)}
-                            selectedOptions={categoryClusters}
+                            onChange={(state, value) => handleChangeClusters(state, value, cohort)}
+                            selectedOptions={categoryClusters[cohort] || []}
                             optionLabelName={"name"}
                             optionValueName={"id"}
                         />
