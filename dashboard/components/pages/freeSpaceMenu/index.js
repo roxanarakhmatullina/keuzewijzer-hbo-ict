@@ -30,6 +30,11 @@ const FreeSpacePage = () => {
     });
     const { setLoading } = useAuth();
 
+    //Debugging
+    useEffect(() => {
+        console.log("categoryDTO", categoryDTO);
+    }, [categoryDTO]);
+
     // Fetch everything on load
     useEffect(() => {
         fetchCategories();
@@ -147,7 +152,10 @@ const FreeSpacePage = () => {
                     setLoading(false);
                 });
         } else if (state === "edit") {
-            api.post(`/Category/${categoryDTO.id}`, categoryDTO)
+            api.put(`/Category/${categoryDTO.id}`, {
+                name: categoryDTO.name,
+                cohortClusters: categoryDTO.cohortClusters,
+            })
                 .then(res => {
                     fetchCategories();
                     setPopup(false);
@@ -188,10 +196,13 @@ const FreeSpacePage = () => {
                     clustersByCohort[cc.cohortId] = (cc.clusters.map(c => c.id));
                 });
                 setCategoryClusters(clustersByCohort);
+                const cohortClusters = data.cohortClusters.map(cc => (
+                    { cohortId: cc.cohortId, clusterIds: clustersByCohort[cc.cohortId] }
+                ))
                 setCategoryDTO({
                     id: data.id,
                     name: data.name,
-                    cohortClusters: data.cohortClusters,
+                    cohortClusters: cohortClusters,
                 });
             }).finally(() => {
                 setLoading(false);

@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
                     "https://keuzewijzerhboict.nl:3000",
                     "http://keuzewijzerhboict.nl:3000",
                     "https://uat.keuzewijzerhboict.nl")
-                .WithMethods("GET", "POST", "DELETE")
+                .WithMethods("GET", "POST", "DELETE", "PUT")
                 .AllowAnyHeader()
                 .AllowCredentials(); // Enable credentials support
         });
