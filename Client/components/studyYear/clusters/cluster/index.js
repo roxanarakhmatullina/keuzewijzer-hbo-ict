@@ -203,6 +203,16 @@ const Cluster = ({
         role="button" // Indicates interactivity for accessibility
         aria-pressed={openClusters} // ARIA state for toggleable behavior
         /*style={{zIndex: hoverCluster ? 2 : 0}}*/
+        style={{
+          backgroundColor:
+            clusterStatus === "passed"
+              ? "#ccffcc"
+              : clusterStatus === "failed"
+                ? "#ffcccc"
+                : isFreeChoice
+                  ? "transparent"
+                  : "#ffffff",
+        }}
         className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice && (selected === null) ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice ? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
 
         <h1
@@ -271,42 +281,7 @@ const Cluster = ({
             </div>
           </div>
 
-        </div>
-
-      </div>
-
-      <div
-        className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-[top] duration-500 ease-out' : ''}`}
-        style={window.innerWidth >= 1024
-          ? {
-            left: distance.right < 290 ? -290 : 270,
-            top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - containerHeight - 10 - distance.top : half,
-            transformOrigin: distance.right < 290 ? "center right" : "center left"
-          }
-          : {
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            transformOrigin: "center center",
-            zIndex: 1000
-          }
-        }>
-        {isVisible && (<Free_Space_Menu
-          selected={selected}
-          setSelected={setSelected}
-          openFreeMenu={openFreeMenu}
-          setOpenFreeMenu={setOpenFreeMenu}
-          menuItems={menuItems}
-          setContainerHeight={setContainerHeight}
-          subMenu={subMenu}
-          setSubMenu={setSubMenu}
-        />)}
-      </div>
-      {/*<h1>containerHeight: {containerHeight}</h1>*/}
-
-      {/*Retake Button*/}
+          {/*Retake Button*/}
       <div ref={retakeMenuRef} className="relative">
         {!menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus == null && !handleMultipleClusters && (
           <>
@@ -409,6 +384,41 @@ const Cluster = ({
           </>
         )}
       </div>
+
+        </div>
+
+      </div>
+
+      <div
+        className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-[top] duration-500 ease-out' : ''}`}
+        style={window.innerWidth >= 1024
+          ? {
+            left: distance.right < 290 ? -290 : 270,
+            top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - containerHeight - 10 - distance.top : half,
+            transformOrigin: distance.right < 290 ? "center right" : "center left"
+          }
+          : {
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            transformOrigin: "center center",
+            zIndex: 1000
+          }
+        }>
+        {isVisible && (<Free_Space_Menu
+          selected={selected}
+          setSelected={setSelected}
+          openFreeMenu={openFreeMenu}
+          setOpenFreeMenu={setOpenFreeMenu}
+          menuItems={menuItems}
+          setContainerHeight={setContainerHeight}
+          subMenu={subMenu}
+          setSubMenu={setSubMenu}
+        />)}
+      </div>
+      {/*<h1>containerHeight: {containerHeight}</h1>*/}
     </div>
   );
 };
