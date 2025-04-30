@@ -30,11 +30,13 @@ const FreeSpacePage = () => {
     });
     const { setLoading } = useAuth();
 
+    // Fetch everything on load
     useEffect(() => {
         fetchCategories();
         fetchCohorts();
     }, []);
 
+    // Fetch all the categories
     const fetchCategories = async () => {
         setLoading(true);
         await api.get('/Category')
@@ -45,6 +47,7 @@ const FreeSpacePage = () => {
             .finally(() => setLoading(false));
     }
 
+    // Fetch all the cohorts
     const fetchCohorts = async () => {
         await api.get('/Cohort/dashboard')
             .then(res => {
@@ -52,6 +55,7 @@ const FreeSpacePage = () => {
             });
     }
 
+    // Fetch all the clusters for the selected cohorts
     useEffect(() => {
         if (categoryCohorts) {
             fetchCategoryClusters();
@@ -75,6 +79,7 @@ const FreeSpacePage = () => {
         setClusters(clustersByCohort);
     };
 
+    // Handle the change of the cohort selection
     const handleChangeCohort = (checked, cohort) => {
         let newCohortsList;
 
@@ -87,32 +92,37 @@ const FreeSpacePage = () => {
         setCategoryCohorts(newCohortsList);
         setCategoryDTO(prevState => ({
             ...prevState,
-            cohortClusters: newCohortsList.map(cohort => ({ cohortId: cohort, clusterIds: [] }))
+            cohortClusters: newCohortsList.map(c =>
+                prevState.cohortClusters.some(cc => cc.cohortId === c) 
+                    ? prevState.cohortClusters.find(cc => cc.cohortId === c) 
+                    : { cohortId: c, clusterIds: [] }
+            )
         }));
     };
 
+    // Handle the change of the cluster selection
     const handleChangeClusters = (checked, cluster, cohort) => {
-        setCategoryClusters(prevState => {
-            const updatedClusters = { ...prevState };
+        const newClustersLists = { ...categoryClusters };
 
-            if (checked) {
-                updatedClusters[cohort] = [...(updatedClusters[cohort] || []), cluster];
-            } else {
-                updatedClusters[cohort] = updatedClusters[cohort].filter(c => c !== cluster);
-                if (updatedClusters[cohort].length === 0) {
-                    delete updatedClusters[cohort];
-                }
-            }
+        if (checked) {
+            // Ensure the cohort key exists and is an array before adding the cluster
+            newClustersLists[cohort] = [...(newClustersLists[cohort] || []), cluster];
+        } else {
+            // Remove the cluster from the cohort's list
+            newClustersLists[cohort] = (newClustersLists[cohort] || []).filter(c => c !== cluster);
+        }
 
-            return updatedClusters;
-        });
+        setCategoryClusters(newClustersLists);
 
         setCategoryDTO(prevState => ({
             ...prevState,
-            //clusterIds: Object.values(categoryClusters).flat()
+            cohortClusters: prevState.cohortClusters.map(cc => 
+                cc.cohortId === cohort ? { ...cc, clusterIds: newClustersLists[cohort] || [] } : cc
+            )
         }));
     };
 
+    // Handle the popup state
     const handlePopup = (e, state) => {
         if (state === false) {
             if (!e.target.closest('#popup')) setPopup(false);
@@ -124,10 +134,10 @@ const FreeSpacePage = () => {
         }
     };
 
+    // Handle the save action
     const handleSave = (e) => {
         setLoading(true);
         if (state === "new") {
-            console.log("categoryDTO: ", categoryDTO);
             api.post('/Category', categoryDTO)
                 .then(res => {
                     fetchCategories();
@@ -157,21 +167,27 @@ const FreeSpacePage = () => {
         }
     };
 
+    // Handle the change of the input field
     const handleChange = (attribute, value) => {
         setCategoryDTO(prevState => ({
             ...prevState,
             [attribute]: value,
         }));
     };
-
+    
+    // Handle the edit action
     const handleEdit = async (e, category) => {
         setLoading(true);
         await api.get(`/Category/${category.id}`)
             .then(res => {
-                console.log("category: ", res.data);
                 const data = res.data;
-                setCategoryCohorts(data.cohortClusters.map(cohort => ({ id: cohort.cohortId, name: cohort.cohortName })));
-                //setCategoryClusters(data.clusterIds);
+                setCategoryCohorts(data.cohortClusters.map(cc => cc.cohortId));
+                // Build categoryClusters as an object: { [cohortId]: [clusterIds] }
+                const clustersByCohort = {};
+                data.cohortClusters.forEach(cc => {
+                    clustersByCohort[cc.cohortId] = (cc.clusters.map(c => c.id));
+                });
+                setCategoryClusters(clustersByCohort);
                 setCategoryDTO({
                     id: data.id,
                     name: data.name,
@@ -184,6 +200,8 @@ const FreeSpacePage = () => {
             });
     };
 
+
+    // Handle the delete action
     const handleDelete = (e, id) => {
         handlePopup(e, true);
         setCategoryDTO({
@@ -193,6 +211,7 @@ const FreeSpacePage = () => {
         setState("delete");
     };
 
+    // Handle the filter action
     const handleFilter = (e) => {
         filterData(categories, "name", e.target.value.toLowerCase()).then(res => {
             setFilteredCategories(res);
