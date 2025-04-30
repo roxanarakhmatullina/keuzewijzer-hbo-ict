@@ -96,7 +96,9 @@ deploy-client:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3000:3000 --name $CLIENT_NAME $IMAGE_NAME:$CLIENT_TAG"
+      docker run -d -p 3000:3000 --name $CLIENT_NAME $IMAGE_NAME:$CLIENT_TAG &&
+      deployed_image=$IMAGE_NAME:$CLIENT_TAG &&
+      docker images --format '{{.Repository}}:{{.Tag}}' | grep 'client' | grep -v \$deployed_image | xargs -r docker rmi || true"
   dependencies:
     - build-client
   rules:
@@ -118,7 +120,9 @@ deploy-dashboard:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3001:3000 --name $DASHBOARD_NAME $IMAGE_NAME:$DASHBOARD_TAG"
+      docker run -d -p 3001:3000 --name $DASHBOARD_NAME $IMAGE_NAME:$DASHBOARD_TAG &&
+      deployed_image=$IMAGE_NAME:$DASHBOARD_TAG &&
+      docker images --format '{{.Repository}}:{{.Tag}}' | grep 'dashboard' | grep -v \$deployed_image | xargs -r docker rmi || true"
   dependencies:
     - build-dashboard
   rules:
@@ -142,7 +146,8 @@ deploy-server:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5125:8080 --name $SERVER_NAME --network $DOCKER_NETWORK $IMAGE_NAME:$SERVER_TAG &&
-      docker image prune -a -f"
+      deployed_image=$IMAGE_NAME:$SERVER_TAG &&
+      docker images --format '{{.Repository}}:{{.Tag}}' | grep 'server' | grep -v \$deployed_image | xargs -r docker rmi || true"
   dependencies:
     - build-server
   rules:
@@ -227,7 +232,9 @@ deploy-client-uat:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_CLIENT_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3002:3000 --name $UAT_CLIENT_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_CLIENT_TAG"
+      docker run -d -p 3002:3000 --name $UAT_CLIENT_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_CLIENT_TAG &&
+      deployed_image=$IMAGE_NAME:$UAT_CLIENT_TAG &&
+      docker images --format '{{.Repository}}:{{.Tag}}' | grep 'client-uat' | grep -v \$deployed_image | xargs -r docker rmi || true"
   dependencies:
     - build-client-uat
   rules:
@@ -249,7 +256,9 @@ deploy-dashboard-uat:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@h2853458.stratoserver.net "
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_DASHBOARD_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
-      docker run -d -p 3003:3000 --name $UAT_DASHBOARD_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_DASHBOARD_TAG"
+      docker run -d -p 3003:3000 --name $UAT_DASHBOARD_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_DASHBOARD_TAG &&
+      deployed_image=$IMAGE_NAME:$UAT_DASHBOARD_TAG &&
+      docker images --format '{{.Repository}}:{{.Tag}}' | grep 'dashboard-uat' | grep -v \$deployed_image | xargs -r docker rmi || true"
   dependencies:
     - build-dashboard-uat
   rules:
@@ -272,7 +281,8 @@ deploy-server-uat:
       docker login -u $REGISTRY_USER -p $REGISTRY_PASS &&
       docker ps -a --filter "name=$UAT_SERVER_NAME" -q | xargs -r docker stop | xargs -r docker rm &&
       docker run -d -p 5126:8080 --name $UAT_SERVER_NAME --network $UAT_DOCKER_NETWORK $IMAGE_NAME:$UAT_SERVER_TAG &&
-      docker image prune -a -f"
+      deployed_image=$IMAGE_NAME:$UAT_SERVER_TAG &&
+      docker images --format '{{.Repository}}:{{.Tag}}' | grep 'server-uat' | grep -v \$deployed_image | xargs -r docker rmi || true"
   dependencies:
     - build-server-uat
   rules:
