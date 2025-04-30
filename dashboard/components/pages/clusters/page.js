@@ -419,7 +419,7 @@ const ClustersPage = () => {
                                         onChange={(e) => handleChange("zwolle", e.target.checked)}
                                         className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
                                     />
-                                    <label className={"w-full"}>zwolle</label>
+                                    <label className={"w-full"}>Zwolle</label>
                                 </div>
 
                                 <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
@@ -429,7 +429,7 @@ const ClustersPage = () => {
                                         onChange={(e) => handleChange("almere", e.target.checked)}
                                         className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
                                     />
-                                    <label className={"w-full"}>almere</label>
+                                    <label className={"w-full"}>Almere</label>
                                 </div>
                             </div>
                         </div>

@@ -1,12 +1,13 @@
 'use client'
-import Add from '@mui/icons-material/Add';
-import Check from '@mui/icons-material/Check';
 import {useEffect, useState} from "react";
 import api from "@/hooks/api";
-import {useAuth} from "@/Providers/AuthProvider";
 import Table from "@/components/table";
 import Popup from "@/components/popup";
+import Add from '@mui/icons-material/Add';
+import Check from '@mui/icons-material/Check';
+import {useAuth} from "@/Providers/AuthProvider";
 import Input from "@/components/input";
+import Select from "@/components/select";
 import Loading from "@/components/loading";
 import {filterData} from "@/hooks/filter";
 import Label from "@/components/label";
@@ -25,8 +26,9 @@ const GraduateProfilePage = () => {
         name: "",
         color: "",
         link: "",
+        zwolle: false, // Almere and Zwolle location states
+        almere: false,
         cohortIds: [],
-        location: [],
     });
     const {setLoading} = useAuth();
 
@@ -57,21 +59,6 @@ const GraduateProfilePage = () => {
             });
     }
 
-    const handleChangeLocation = (location, checked) => {
-        setGraduateProfileDTO(prevState => {
-              let updatedLocations = [...prevState.location];
-              if (checked) {
-                  updatedLocations.push(location);
-              } else {
-                  updatedLocations = updatedLocations.filter(loc => loc !== location);
-              }
-              return {
-                  ...prevState,
-                  location: updatedLocations,
-              };
-          });
-     };
-
     const handlePopup = (e, state) => {
         if(state === false) {
             if(!e.target.closest('#popup')) setPopup(false);
@@ -97,7 +84,6 @@ const GraduateProfilePage = () => {
                 ...prevState,
                 cohortIds: newCohortsList,
             }));
-
         } else {
             const newCohortsList = graduateProfileCohorts.filter(c => c !== cohort);
             setGraduateProfileCohorts(newCohortsList);
@@ -142,19 +128,17 @@ const GraduateProfilePage = () => {
     }
 
     const handleEdit = (e, profile) => {
-        console.log("Editing profile:", profile); // 👈 Add this here
-    
         handlePopup(e, true);
         setState("edit");
         setGraduateProfileDTO({
             ...profile,
-            link: profile.link || null,
+            link: profile.link,
             cohortIds: [],
-            location: Array.isArray(profile.location) ? profile.location : []
+            zwolle: profile.zwolle || false, // Retrieve location info (Zwolle, Almere)
+            almere: profile.almere || false,
         });
         fetchCohortsFromGraduateProfile(profile.id);
     }
-    
 
     const handleDelete = (e, id) => {
         handlePopup(e, true);
@@ -163,8 +147,9 @@ const GraduateProfilePage = () => {
             id: id,
             name: "verwijder",
             color: "#ffffff",
-            link: "https://www.website.com",
             cohortIds: [],
+            zwolle: true,
+           
         });
     }
 
@@ -176,7 +161,7 @@ const GraduateProfilePage = () => {
 
     return (
         <>
-            <div className={"w-full flex flex-col gap-[10px]"}>
+            <div className={"w-full flex flex-col gap-[10px]"}> 
                 <SearchView
                     handleNew={(e) => {
                         setGraduateProfileCohorts([]);
@@ -184,16 +169,16 @@ const GraduateProfilePage = () => {
                             id: "",
                             name: "",
                             color: "",
-                            link: null,
+                            link: "",
                             cohortIds: [],
-                            location: [],
+                            zwolle: false, // Initialize location fields for new profile
+                            almere: false,
                         });
                         setState("new");
                         handlePopup(e, true);
                     }}
                     onChange={handleFilter}
                 />
-
                 <Table data={filteredGraduateProfiles} handleEdit={handleEdit} handleDelete={handleDelete}/>
             </div>
 
@@ -203,7 +188,7 @@ const GraduateProfilePage = () => {
                 onAccept={handleSave}
                 onCancel={handlePopup}
                 acceptText={state === "delete" ? "Verwijder" : "Opslaan"} cancelText={"Annuleren"}
-                canAccept={graduateProfileDTO?.name && graduateProfileDTO?.color}
+                canAccept={graduateProfileDTO?.name && graduateProfileDTO?.color !== "" && ( graduateProfileDTO.zwolle || graduateProfileDTO.almere)}
                 description={state === "delete" ? "Weet je zeker dat je dit afstudeerprofiel wilt verwijderen?" : ""}
                 state={state}
             >
@@ -230,50 +215,18 @@ const GraduateProfilePage = () => {
                             )}
                         />
 
+
                         <Input
                             type={"url"}
                             value={graduateProfileDTO?.link || ""}
                             onChange={(e) => handleChange("link", e.target.value)}
+                            placeholder={"Link"}
                             label={"Link"}
-                            placeholder={"https://example.com"}
-                            info={() => (
-                                <p>Een webpagina waarna verwezen kan worden voor meer informatie.</p>
-                            )}
-                        />
-
-                       <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                        <Label
-                            text={"Wordt gegeven op locatie:"}
                             required
                             info={() => (
-                                <>
-                                    <p>Selecteer waar deze cluster wordt gegeven.</p>
-                                    <p>Je kunt beide locaties selecteren indien van toepassing.</p>
-                                </>
-                            )}
+                                <p>Een webpagina waarna verwezen kan worden voor meer informatie.</p>
+                        )}
                         />
-                        <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
-                            <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
-                                <input
-                                    type={"checkbox"}
-                                    checked={graduateProfileDTO?.location.includes("Zwolle")}
-                                    onChange={(e) => handleChangeLocation("Zwolle", e.target.checked)}
-                                    className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
-                                />
-                                <label className={"w-full"}>Zwolle</label>
-                            </div>
-                            <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
-                                <input
-                                    type={"checkbox"}
-                                    checked={graduateProfileDTO?.location.includes("Almere")}
-                                    onChange={(e) => handleChangeLocation("Almere", e.target.checked)}
-                                    className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
-                                />
-                                <label className={"w-full"}>Almere</label>
-                            </div>
-                        </div>
-                    </div>
-
 
                         <MultiSelection
                             label={"Cohorten:"}
@@ -286,7 +239,40 @@ const GraduateProfilePage = () => {
                             optionLabelName={"name"}
                             optionValueName={"id"}
                         />
-                    </>
+
+<div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
+                            <Label text={"Wordt gegeven op locatie:"} required info={
+                                () => (
+                                    <>
+                                        <p>Zwolle</p>
+                                        <p>Almere</p>
+                                    </>
+                                )
+                            }/>
+                            <div className={"w-full flex flex-col gap-[5px] justify-center align-middle items-center"}>
+                                <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
+                                    <input
+                                        type={"checkbox"}
+                                        checked={graduateProfileDTO?.zwolle}
+                                        onChange={(e) => handleChange("zwolle", e.target.checked)}
+                                        className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
+                                    />
+                                    <label className={"w-full"}>Zwolle</label>
+                                </div>
+
+                                <div className={"w-full flex flex-row gap-[10px] justify-start align-middle items-center"}>
+                                    <input
+                                        type={"checkbox"}
+                                        checked={graduateProfileDTO?.almere}
+                                        onChange={(e) => handleChange("almere", e.target.checked)}
+                                        className={"w-auto p-[10px] box-border border-[1px] border-[#c5c5c5] rounded-[8px]"}
+                                    />
+                                    <label className={"w-full"}>Almere</label>
+                                </div>
+                            </div>
+                    
+                        </div>
+                        </>
                 )}
             </Popup>
         </>

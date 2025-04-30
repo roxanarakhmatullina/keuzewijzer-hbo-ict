@@ -81,6 +81,8 @@ namespace Server.Controllers
                 cluster.Name,
                 cluster.Link,
                 cluster.FirstSemester,
+                cluster.Zwolle,
+                cluster.Almere,
                 cluster.LastSemester,
                 cluster.IsLocked,
                 cluster.IsFreeChoice,
@@ -118,6 +120,8 @@ namespace Server.Controllers
             cluster.Link = clusterDto.Link;
             cluster.FirstSemester = clusterDto.FirstSemester;
             cluster.LastSemester = clusterDto.LastSemester;
+            cluster.Zwolle = clusterDto.Zwolle;
+            cluster.Almere = clusterDto.Almere;
             cluster.IsFreeChoice = clusterDto.IsFreeChoice;
             cluster.IsLocked = clusterDto.IsLocked;
             cluster.Level = clusterDto.Level;
@@ -214,6 +218,8 @@ namespace Server.Controllers
                 Link = clusterDto.Link,
                 FirstSemester = clusterDto.FirstSemester,
                 LastSemester = clusterDto.LastSemester,
+                Zwolle = clusterDto.Zwolle,
+                Almere = clusterDto.Almere,
                 IsFreeChoice = clusterDto.IsFreeChoice,
                 IsLocked = clusterDto.IsLocked,
                 Level = clusterDto.Level,
@@ -238,6 +244,8 @@ namespace Server.Controllers
                 newCluster.Link,
                 newCluster.FirstSemester,
                 newCluster.LastSemester,
+                newCluster.Zwolle,
+                newCluster.Almere, 
                 newCluster.IsFreeChoice,
                 newCluster.IsLocked,
                 newCluster.Level,
@@ -270,6 +278,7 @@ namespace Server.Controllers
 
             return NoContent();
         }
+
 
         private bool ClusterExists(Guid id)
         {

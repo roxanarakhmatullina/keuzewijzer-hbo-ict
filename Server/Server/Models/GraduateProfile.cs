@@ -18,7 +18,13 @@ public class GraduateProfile
     [Required]
     public string Color { get; set; } // Set the color for the graduate profile
     
-    public string? Link { get; set; } // Link to information about a graduate profile
+    public string? Link { get; set; }  // Link to information about a graduate profile
+
+    [Required]
+    public Boolean Zwolle { get; set; } = false;
+
+    [Required] 
+    public Boolean Almere { get; set; } = false;
 
     public virtual ICollection<Cluster> Clusters { get; set; } = new List<Cluster>();
     public virtual ICollection<Cohort> Cohorts { get; set; } = new List<Cohort>();

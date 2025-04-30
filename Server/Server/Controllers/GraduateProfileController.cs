@@ -45,6 +45,8 @@ namespace Server.Controllers
                     gp.Id,
                     gp.Name,
                     gp.Color,
+                    gp.Zwolle,
+                    gp.Almere,
                     cohortIds = gp.Cohorts.Select(ch => ch.Id)
                 })
                 .OrderBy(gp => gp.Name)
@@ -105,6 +107,8 @@ namespace Server.Controllers
                     cl.Id,
                     cl.Name,
                     cl.Link,
+                    cl.Zwolle,
+                    cl.Almere,
                 });
 
             return Ok(clusters);
@@ -191,6 +195,8 @@ namespace Server.Controllers
             graduateProfile.Name = graduate.Name;
             graduateProfile.Color = graduate.Color;
             graduateProfile.Link = graduate.Link;
+            graduateProfile.Zwolle = graduate.Zwolle;
+            graduateProfile.Almere = graduate.Almere;
 
             // Fetch Cohorts from the database using the provided cohort IDs
             var cohorts = await _context.Cohorts
@@ -264,6 +270,8 @@ namespace Server.Controllers
                 Name = graduateProfile.Name,
                 Color = graduateProfile.Color,
                 Link = graduateProfile.Link,
+                Zwolle = graduateProfile.Zwolle,
+                Almere = graduateProfile.Almere,
                 Cohorts = cohorts,
             };
             
@@ -306,3 +314,4 @@ namespace Server.Controllers
         }
     }
 }
+
