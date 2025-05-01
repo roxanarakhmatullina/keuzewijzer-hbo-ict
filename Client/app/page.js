@@ -347,7 +347,30 @@ const Home = () => {
       setPutBack(true); // Set putBack to true to trigger the effect
     }
   }, [addSemester]);
+// ...existing code...
 
+// Create clusterHolder and split into realClusterHolder and otherHolder
+useEffect(() => {
+  if (studyYears && studyYears.length > 0) {
+    // Make a copy of clustersList
+    const clusterHolder = [];
+    studyYears.forEach(studyYear => {
+      if (studyYear.firstSemester) clusterHolder.push(...studyYear.firstSemester);
+      if (studyYear.lastSemester) clusterHolder.push(...studyYear.lastSemester);
+    });
+
+    // Split into realClusterHolder and otherHolder
+    const realClusterHolder = clusterHolder.filter(c => [1, 2, 3].includes(c.level));
+    const otherHolder = clusterHolder.filter(c => c.level === 0 || c.level === 4);
+
+    // Merge arrays
+    const newClustersList = [...realClusterHolder, ...otherHolder];
+
+    setClustersList(newClustersList);
+  }
+}, [studyYears]);
+
+// ...existing code...
 useEffect(() => {
   if (putBack) {
     console.log("putBack:", putBack);
