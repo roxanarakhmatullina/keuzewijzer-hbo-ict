@@ -615,6 +615,7 @@ useEffect(() => {
                 }
                 isLastOddStudyYear={isLastOddStudyYear}
                 resetClustersMenu={resetClustersMenu}
+                clustersList={clustersList}
               >
                 {/* Line from right side to bottom */}
                 {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (

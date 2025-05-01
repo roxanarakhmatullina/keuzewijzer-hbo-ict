@@ -5,7 +5,7 @@ import {useGraduateProfile} from "@/hooks";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, isLastOddStudyYear, resetClustersMenu, children}) => {
+const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, isLastOddStudyYear, resetClustersMenu, children, clustersList}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -78,6 +78,7 @@ const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLas
                         updateClusterStatus("firstSemester", clusterId, newStatus)
                     }
                     resetClustersMenu={resetClustersMenu}
+                    clustersList={clustersList}
                     />
                 )}
 
@@ -93,6 +94,7 @@ const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLas
                         updateClusterStatus("lastSemester", clusterId, newStatus)
                     }
                     resetClustersMenu={resetClustersMenu}
+                    clustersList={clustersList}
                     />
                 )}
 

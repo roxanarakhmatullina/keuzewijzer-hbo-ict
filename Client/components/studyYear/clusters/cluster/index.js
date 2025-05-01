@@ -6,6 +6,7 @@ import Free_Space_Menu from './free_space';
 import { api } from "@/hooks/api";
 
 const Cluster = ({
+  clusterId,
   name,
   link,
   canChange,
@@ -19,6 +20,7 @@ const Cluster = ({
   handleMultipleClusters,
   menuDisabled,
   setShutDown,
+  clustersList,
 }) => {
   const [hoverLink, setHoverLink] = useState(false);
   const [hoverCluster, setHoverCluster] = useState(false);
@@ -30,6 +32,12 @@ const Cluster = ({
   const [menuItems, setMenuItems] = useState([]);
   const [subMenu, setSubMenu] = useState(null);
   const [selected, setSelected] = useState(null);
+
+  // Debugging
+  useEffect(() => {
+    console.log("clustersList", clustersList);
+  }, [clustersList]);
+
 
   const handleHoverLink = () => {
     setHoverLink(!hoverLink);
@@ -103,17 +111,36 @@ const Cluster = ({
   //Fetch subMenu items from the API
   useEffect(() => {
     if (subMenu) {
+      setSubMenuItems([]);
       // fetch categories
       api.get(`/Category/${subMenu.id}`).then(res => {
         const cohortClusters = res.data.cohortClusters;
         cohortClusters.forEach(cc => {
           if (cc.cohortId === cohort) {
-            setSubMenuItems(cc.clusters);
+            cc.clusters.forEach(c => {
+              if (!clustersList.some(cluster => cluster.id === c.id)) {
+                setSubMenuItems(prev => [...prev, c]);
+              }
+            })
           }
         });
       });
     }
   }, [subMenu]);
+
+  // Insert cluster when selected
+  useEffect(() => {
+    console.log("selected", selected);
+    console.log("clusterId", clusterId);
+    if (selected) {
+      clustersList.forEach(c => {
+        if (c.id === clusterId) {
+          Object.assign(c, selected);
+        }
+      })
+    }
+    console.log("clustersList", clustersList);
+  }, [selected]);
 
   const clusterRef = useRef(null);
   const [distance, setDistance] = useState({ top: 0, right: 0, bottom: 0, left: 0 });
@@ -196,6 +223,7 @@ const Cluster = ({
 
   const [subMenuAnimation, setSubMenuAnimation] = useState(false);
 
+  // Unmount the submenu with a 500ms delay
   useEffect(() => {
     if (subMenu) {
       setSubMenuAnimation(true); // Immediately set to true when the menu opens
@@ -232,12 +260,12 @@ const Cluster = ({
                   ? "transparent"
                   : "#ffffff",
         }}
-        className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice && (selected === null) ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice ? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+        className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice ? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
 
         <h1
           style={{ lineHeight: "1.25" }}
           className={"text-left flex-auto text-[14px] font-bold"}>
-          {isFreeChoice ? (!selected ? name : selected) : name}
+          {name}
         </h1>
 
         <div
