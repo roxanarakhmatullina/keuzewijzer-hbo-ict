@@ -23,7 +23,7 @@ namespace Server.Controllers
         }
 
         [HttpGet("cohort/{cohortId}/graduateProfile/{id}")]
-        public async Task<ActionResult> GetStudyRoutes(Guid cohortId, Guid id, string location)
+        public async Task<ActionResult> GetStudyRoutes(Guid cohortId, Guid id)
         {
             var cohort = await _context.Cohorts.FirstOrDefaultAsync(c => c.Id.Equals(cohortId));
             if (cohort == null) return BadRequest("Cohort not found");
@@ -56,9 +56,8 @@ namespace Server.Controllers
                         {
                             Id = pr.PrerequisiteId,
                             Name = pr.Prerequisite.Name,
-                        }).ToList(),
-                            // Determine availability directly based on Zwolle and Almere
-                        AvailabilityStatus = GetAvailabilityStatus(cl, location)
+                        }).ToList()
+                        
                     })
                     .ToListAsync();
 
@@ -95,18 +94,6 @@ namespace Server.Controllers
             }
         }
 
-         private string GetAvailabilityStatus(Cluster cluster, string location)
-        {
-            if (location == "Zwolle" && !cluster.Zwolle)
-            {
-                return "Unavailable in Zwolle";
-            }
-            if (location == "Almere" && !cluster.Almere)
-            {
-                return "Unavailable in Almere";
-            }
-            return "Available";
-        }
 
 
 

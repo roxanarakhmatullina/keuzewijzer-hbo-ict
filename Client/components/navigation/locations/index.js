@@ -36,6 +36,14 @@ const Locations = ({navbarOpen}) => {
         if (event.key === 'Enter' || event.key === ' ') setLocation(loc);
     };
 
+    const clusterSupportsUserLocation = false;
+
+    const profilesAvailableInZwolle = Array.isArray(selectedGraduateProfile) ? 
+    selectedGraduateProfile.filter(profile => 
+        profile.Zwolle === true && profile.Almere === false
+    ) : [];
+
+
     return (
         <div
             className={`${navbarOpen ? "flex md:flex" : "hidden md:flex"} w-full md:max-w-[300px] h-auto flex flex-col gap-[15px] justify-center align-middle items-center`}>
@@ -68,6 +76,18 @@ const Locations = ({navbarOpen}) => {
                 </>
             )}
 
+            {location?.name === "Almere" && profilesAvailableInZwolle?.length > 0 && (
+                <div className="w-full text-center">
+                    <h3 className="font-bold text-lg">Available in Zwolle:</h3>
+                    {profilesAvailableInZwolle.map((profile, index) => (
+                        <div key={index} className="w-full bg-[#f3f3f3] p-[10px] rounded-[12px] mt-[10px]">
+                            <p>{profile.name}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+
             {(!location && !selectedGraduateProfile) && (
                 <button
                 onClick={() => location && !selectedGraduateProfile && setLocation(location)}
@@ -77,7 +97,9 @@ const Locations = ({navbarOpen}) => {
                 aria-disabled={!location || selectedGraduateProfile}
                 aria-label={location && !selectedGraduateProfile 
                     ? "Proceed to the next step" 
-                    : "You must select a location and graduate profile to proceed"}
+              
+                  : "You must select a location and graduate profile to proceed"}
+
             >
                 Volgende
             </button>
