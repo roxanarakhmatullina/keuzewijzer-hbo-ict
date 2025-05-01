@@ -3,32 +3,10 @@ import React, { use, useState, useEffect, useLayoutEffect, useRef } from 'react'
 import SubMenu from './submenu';
 import { api } from "@/hooks/api";
 
-const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu, cohort }) => {
+const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu, subMenuItems, cohort }) => {
     const [menuHeight, setMenuHeight] = useState(null);
     const [subMenuHeight, setSubMenuHeight] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [subMenuItems, setSubMenuItems] = useState([]);
-
-    // Debugging
-    useEffect(() => {
-        console.log("subMenuItems", subMenuItems);
-    }, [subMenuItems]);
-
-    //Fetch subMenu items from the API
-    useEffect(() => {
-        if (subMenu) {
-            // fetch categories
-            api.get(`/Category/${subMenu.id}`).then(res => {
-                const cohortClusters = res.data.cohortClusters;
-                console.log("categoryClusters", cohortClusters);
-                cohortClusters.forEach(cc => {
-                    if (cc.cohortId === cohort) {
-                        setSubMenuItems(cc.clusters);
-                    }
-                });
-            });
-        }
-    }, [subMenu]);
 
     // Unmount the submenu with a 500ms delay
     useEffect(() => {
@@ -70,16 +48,17 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
     }, [openFreeMenu]);
 
     useLayoutEffect(() => {
-        if (subMenu) {
-            setContainerHeight(551);
+        if (subMenu && subMenuHeight) {
+            console.log("subMenuHeight", subMenuHeight);
+            setContainerHeight(subMenuHeight);
         } else {
             setContainerHeight(menuHeight);
         }
-    }, [subMenu, menuHeight]);
+    }, [subMenu, menuHeight, subMenuHeight]);
 
     return (
         <div ref={menuRef} className={`flex flex-col relative w-full h-full lg:w-auto lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px] transition-[height] duration-500 ease-out overflow-hidden`}
-            style={subMenu ? { height: subMenuHeight || 551 } : { height: menuHeight }}
+            style={subMenu && subMenuHeight ? { height: subMenuHeight } : { height: menuHeight }}
         >
             {(window.innerWidth < 1024) && (<button
                 onClick={() => setOpenFreeMenu(false)}

@@ -39,11 +39,29 @@ const SubMenu = ({ subMenu, setSubMenu, subMenuItems, setSelected, setSubMenuHei
     const subMenuRef = useRef(null);
     const hasMeasured = useRef(false); // Track if dimensions have already been measured
 
-    useLayoutEffect(() => {
-        if (subMenuRef.current && subMenu && !hasMeasured.current && subMenuItems.length > 0) {
-            const rect = subMenuRef.current.getBoundingClientRect();
-            setSubMenuHeight(rect.height);
-            hasMeasured.current = true; // Mark as measured
+    useEffect(() => {
+        if (subMenuRef.current && subMenu) {
+            const timeout = setTimeout(() => {
+                const rect = subMenuRef.current.getBoundingClientRect();
+                setSubMenuHeight(rect.height);
+                hasMeasured.current = true; // Mark as measured
+                console.log("subMenuHeight", rect.height);
+
+            }, 0); // Delay to ensure DOM is fully rendered
+            return () => clearTimeout(timeout); // Cleanup timeout on component unmount
+        }
+    }, [subMenu]);
+
+    useEffect(() => {
+        if (subMenuRef.current && subMenu) {
+            const observer = new MutationObserver(() => {
+                const rect = subMenuRef.current.getBoundingClientRect();
+                setSubMenuHeight(rect.height);
+            });
+
+            observer.observe(subMenuRef.current, { childList: true, subtree: true });
+
+            return () => observer.disconnect(); // Cleanup observer on unmount
         }
     }, [subMenu]);
 

@@ -98,6 +98,23 @@ const Cluster = ({
     }
   }, []); // Removed the dependency array to trigger on every render
 
+  const [subMenuItems, setSubMenuItems] = useState([]);
+
+  //Fetch subMenu items from the API
+  useEffect(() => {
+    if (subMenu) {
+      // fetch categories
+      api.get(`/Category/${subMenu.id}`).then(res => {
+        const cohortClusters = res.data.cohortClusters;
+        cohortClusters.forEach(cc => {
+          if (cc.cohortId === cohort) {
+            setSubMenuItems(cc.clusters);
+          }
+        });
+      });
+    }
+  }, [subMenu]);
+
   const clusterRef = useRef(null);
   const [distance, setDistance] = useState({ top: 0, right: 0, bottom: 0, left: 0 });
 
@@ -377,7 +394,7 @@ const Cluster = ({
 
       {/* Free Space Menu */}
       <div
-        className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-[top] duration-500 ease-out' : ''}`}
+        className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-all duration-500 ease-out' : ''}`}
         style={window.innerWidth >= 1024
           ? {
             left: distance.right < 290 ? -290 : 270,
@@ -394,6 +411,7 @@ const Cluster = ({
             zIndex: 1000
           }
         }>
+        {/*<div>{containerHeight}</div>*/}
         {isVisible && (<Free_Space_Menu
           selected={selected}
           setSelected={setSelected}
@@ -403,6 +421,7 @@ const Cluster = ({
           setContainerHeight={setContainerHeight}
           subMenu={subMenu}
           setSubMenu={setSubMenu}
+          subMenuItems={subMenuItems}
           cohort={cohort}
         />)}
       </div>
