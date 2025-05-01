@@ -347,150 +347,203 @@ const Home = () => {
       setPutBack(true); // Set putBack to true to trigger the effect
     }
   }, [addSemester]);
+// ...existing code...
 
-  // Put back clusters
-  useEffect(() => {
-    if (putBack) {
-      console.log("putBack:", putBack);
-      setDisplayedStudyYears(prevDisplayedStudyYears => {
-        let updatedStudyYears = [...prevDisplayedStudyYears];
-        let updatedDisplayedClustersList = [...displayedClustersList];
+// Create clusterHolder and split into realClusterHolder and otherHolder
+useEffect(() => {
+  if (studyYears && studyYears.length > 0) {
+    // Make a copy of clustersList
+    const clusterHolder = [];
+    studyYears.forEach(studyYear => {
+      if (studyYear.firstSemester) clusterHolder.push(...studyYear.firstSemester);
+      if (studyYear.lastSemester) clusterHolder.push(...studyYear.lastSemester);
+    });
 
-        for (let studyYear of updatedStudyYears) {
-          const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
+    // Split into realClusterHolder and otherHolder
+    const realClusterHolder = clusterHolder.filter(c => [1, 2, 3].includes(c.level));
+    const otherHolder = clusterHolder.filter(c => c.level === 0 || c.level === 4);
 
-          if (isFirstSemesterEmpty) {
-            console.log("the first semester is empty in study year: ", studyYear.year);
-            for (let j = 0; j < clustersList.length; j++) {
-              const cluster = clustersList[j];
-              const nextCluster = clustersList[j + 1];
-              const nextNextCluster = clustersList[j + 2];
+    // Merge arrays
+    const newClustersList = [...realClusterHolder, ...otherHolder];
 
-              // Check if the cluster is already in the updatedDisplayedClustersList
-              const isAlreadyDisplayed = updatedDisplayedClustersList.some(
-                displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
+    setClustersList(newClustersList);
+  }
+}, [studyYears]);
+
+// ...existing code...
+useEffect(() => {
+  if (putBack) {
+    console.log("putBack:", putBack);
+
+    setDisplayedStudyYears(prevDisplayedStudyYears => {
+      let updatedStudyYears = [...prevDisplayedStudyYears];
+      let updatedDisplayedClustersList = [...displayedClustersList];
+      let movementPossible = true;
+
+      for (let studyYear of updatedStudyYears) {
+        const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
+        if (isFirstSemesterEmpty) {
+          let clusterAdded = false;
+          for (let j = 0; j < clustersList.length; j++) {
+            const cluster = clustersList[j];
+            const nextCluster = clustersList[j + 1];
+            const nextNextCluster = clustersList[j + 2];
+            const isAlreadyDisplayed = updatedDisplayedClustersList.some(
+              displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
+            );
+            // --- NEW RULE: Level 4 cluster must be last ---
+            if (
+              !isAlreadyDisplayed &&
+              cluster.firstSemester &&
+              cluster.level === 4
+            ) {
+              const hasUnplacedLowerLevel = clustersList.some(
+                c =>
+                  c.level < 4 &&
+                  !updatedDisplayedClustersList.some(
+                    displayedCluster =>
+                      displayedCluster.id === c.id && displayedCluster.status !== "failed"
+                  )
               );
-
-              if (!isAlreadyDisplayed && cluster.firstSemester) {
-                // Check prerequisites
-                const prerequisites = cluster.prerequisites;
-                const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
-                  updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
-                );
-                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
-                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
-                );
-
-                if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
-                  studyYear.firstSemester.push({ ...cluster, status: null });
-                  updatedDisplayedClustersList.push({ ...cluster, status: null });
-
+              if (hasUnplacedLowerLevel) {
+                continue;
+              }
+            }
+            if (!isAlreadyDisplayed && cluster.firstSemester) {
+              const prerequisites = cluster.prerequisites;
+              const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
+                updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
+              );
+              const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
+              );
+              if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
+                studyYear.firstSemester = [{ ...cluster, status: null }];
+                updatedDisplayedClustersList.push({ ...cluster, status: null });
+                if (
+                  nextCluster &&
+                  nextCluster.level === cluster.level &&
+                  nextCluster.firstSemester &&
+                  !nextCluster.isLocked &&
+                  !cluster.isLocked &&
+                  !nextCluster.isFreeChoice &&
+                  !cluster.isFreeChoice
+                ) {
+                  studyYear.firstSemester.push({ ...nextCluster, status: null });
+                  updatedDisplayedClustersList.push({ ...nextCluster, status: null });
                   if (
-                    nextCluster &&
-                    nextCluster.level === cluster.level &&
-                    nextCluster.firstSemester &&
-                    !nextCluster.isLocked &&
+                    nextNextCluster &&
+                    nextNextCluster.level === cluster.level &&
+                    nextNextCluster.firstSemester &&
+                    !nextNextCluster.isLocked &&
                     !cluster.isLocked &&
-                    !nextCluster.isFreeChoice &&
+                    !nextNextCluster.isFreeChoice &&
                     !cluster.isFreeChoice
                   ) {
-                    studyYear.firstSemester.push({ ...nextCluster, status: null });
-                    updatedDisplayedClustersList.push({ ...nextCluster, status: null });
-                    if (
-                      nextNextCluster &&
-                      nextNextCluster.level === cluster.level &&
-                      nextNextCluster.firstSemester &&
-                      !nextNextCluster.isLocked &&
-                      !cluster.isLocked &&
-                      !nextNextCluster.isFreeChoice &&
-                      !cluster.isFreeChoice
-                    ) {
-                      studyYear.firstSemester.push({ ...nextNextCluster, status: null });
-                      updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
-                    }
+                    studyYear.firstSemester.push({ ...nextNextCluster, status: null });
+                    updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
                   }
-                  console.log("cluster pushed");
-                  break; // Exit the clustersList loop
                 }
+                clusterAdded = true;
+                break;
               }
             }
           }
-
-          const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
-
-          if (isLastSemesterEmpty) {
-            console.log("the last semester is empty in study year: ", studyYear.year);
-            for (let j = 0; j < clustersList.length; j++) {
-              const cluster = clustersList[j];
-              const nextCluster = clustersList[j + 1];
-              const nextNextCluster = clustersList[j + 2];
-
-              // Check if the cluster is already in the updatedDisplayedClustersList
-              const isAlreadyDisplayed = updatedDisplayedClustersList.some(
-                displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
-              );
-
-              if (!isAlreadyDisplayed && cluster.lastSemester) {
-                // Check prerequisites
-                const prerequisites = cluster.prerequisites;
-                const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
-                  updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
-                );
-
-                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
-                  displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
-                );
-
-                if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
-                  studyYear.lastSemester.push({ ...cluster, status: null });
-                  updatedDisplayedClustersList.push({ ...cluster, status: null });
-
-                  if (
-                    nextCluster &&
-                    nextCluster.level === cluster.level &&
-                    nextCluster.lastSemester &&
-                    !nextCluster.isLocked &&
-                    !cluster.isLocked &&
-                    !nextCluster.isFreeChoice &&
-                    !cluster.isFreeChoice
-                  ) {
-                    studyYear.lastSemester.push({ ...nextCluster, status: null });
-                    updatedDisplayedClustersList.push({ ...nextCluster, status: null });
-                    if (
-                      nextNextCluster &&
-                      nextNextCluster.level === cluster.level &&
-                      nextNextCluster.lastSemester &&
-                      !nextNextCluster.isLocked &&
-                      !cluster.isLocked &&
-                      !nextNextCluster.isFreeChoice &&
-                      !cluster.isFreeChoice
-                    ) {
-                      studyYear.lastSemester.push({ ...nextNextCluster, status: null });
-                      updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
-                    }
-                  }
-                  console.log("cluster pushed");
-                  break; // Exit the clustersList loop
-                }
-              }
-            }
-          }
-
-          if (studyYear.firstSemester?.length === 0 || studyYear.lastSemester?.length === 0) {
-            console.log("cluster not pushed");
-            setCallYourCoach(true);
-            handleReset();
+          if (!clusterAdded) {
+            movementPossible = false;
             break;
           }
         }
 
-        return updatedStudyYears;
-      });
+        const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
+        if (isLastSemesterEmpty) {
+          let clusterAdded = false;
+          for (let j = 0; j < clustersList.length; j++) {
+            const cluster = clustersList[j];
+            const nextCluster = clustersList[j + 1];
+            const nextNextCluster = clustersList[j + 2];
+            const isAlreadyDisplayed = updatedDisplayedClustersList.some(
+              displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
+            );
+            // --- NEW RULE: Level 4 cluster must be last ---
+            if (
+              !isAlreadyDisplayed &&
+              cluster.lastSemester &&
+              cluster.level === 4
+            ) {
+              const hasUnplacedLowerLevel = clustersList.some(
+                c =>
+                  c.level < 4 &&
+                  !updatedDisplayedClustersList.some(
+                    displayedCluster =>
+                      displayedCluster.id === c.id && displayedCluster.status !== "failed"
+                  )
+              );
+              if (hasUnplacedLowerLevel) {
+                continue;
+              }
+            }
+        
+            if (!isAlreadyDisplayed && cluster.lastSemester) {
+              const prerequisites = cluster.prerequisites;
+              const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
+                updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
+              );
+              const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
+              );
+              if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
+                studyYear.lastSemester = [{ ...cluster, status: null }];
+                updatedDisplayedClustersList.push({ ...cluster, status: null });
+                if (
+                  nextCluster &&
+                  nextCluster.level === cluster.level &&
+                  nextCluster.lastSemester &&
+                  !nextCluster.isLocked &&
+                  !cluster.isLocked &&
+                  !nextCluster.isFreeChoice &&
+                  !cluster.isFreeChoice
+                ) {
+                  studyYear.lastSemester.push({ ...nextCluster, status: null });
+                  updatedDisplayedClustersList.push({ ...nextCluster, status: null });
+                  if (
+                    nextNextCluster &&
+                    nextNextCluster.level === cluster.level &&
+                    nextNextCluster.lastSemester &&
+                    !nextNextCluster.isLocked &&
+                    !cluster.isLocked &&
+                    !nextNextCluster.isFreeChoice &&
+                    !cluster.isFreeChoice
+                  ) {
+                    studyYear.lastSemester.push({ ...nextNextCluster, status: null });
+                    updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
+                  }
+                }
+                clusterAdded = true;
+                break;
+              }
+            }
+          }
+          if (!clusterAdded) {
+            movementPossible = false;
+            break;
+          }
+        }
+      }
 
-      // Reset the putBack state after processing
-      setPutBack(false);
-    }
-  }, [putBack]);
+      if (!movementPossible) {
+        setCallYourCoach(true);
+        handleReset();
+        return prevDisplayedStudyYears; // try to remove the visual flash when we move the clusters (not perfect yet)
+      }
+
+      return updatedStudyYears;
+    });
+
+    setPutBack(false);
+  }
+}, [putBack]);
+// ...existing code...
 
   // Handle the confirmation dialog
   const handleConfirmationDialog = () => {
