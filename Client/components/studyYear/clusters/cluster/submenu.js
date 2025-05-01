@@ -1,13 +1,13 @@
 'use client'
 import React, { use, useState, useEffect, useRef, useLayoutEffect } from 'react';
 
-const SubMenu = ({ category, setSelected, subMenu, setSubMenu, menuHeight, setSubMenuHeight, subMenuHeight }) => {
+const SubMenu = ({ subMenu, setSubMenu, setSelected, menuHeight, setSubMenuHeight, subMenuHeight }) => {
     const menuItems = ['test1', 'test2', 'test3', 'test4', 'test5', 'test6', 'test7', 'test8'];
     const [title, setTitle] = useState(null);
 
     useEffect(() => {
-        if (category) {
-            setTitle(category); // Immediately set to true when the menu opens
+        if (subMenu) {
+            setTitle(subMenu.name); // Immediately set to true when the menu opens
         } else {
             const timeout = setTimeout(() => {
                 setTitle(null); // Delay setting to false by 500ms when the menu closes
@@ -15,7 +15,7 @@ const SubMenu = ({ category, setSelected, subMenu, setSubMenu, menuHeight, setSu
 
             return () => clearTimeout(timeout); // Cleanup timeout on component unmount or when `openFreeMenu` changes
         }
-    }, [category]);
+    }, [subMenu]);
 
     const handleClick = (item) => {
         setSelected(item);

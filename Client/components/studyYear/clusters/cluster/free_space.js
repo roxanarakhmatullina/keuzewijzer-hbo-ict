@@ -3,10 +3,20 @@ import React, { use, useState, useEffect, useLayoutEffect, useRef } from 'react'
 import SubMenu from './submenu';
 import { api } from "@/hooks/api";
 
-const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu }) => {
+const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu, cohort }) => {
     const [menuHeight, setMenuHeight] = useState(null);
-    const [subMenuHeight, setSubMenuHeight] = useState(null);
+    const [subMenuHeight, setSubMenuHeight] = useState({});
     const [isVisible, setIsVisible] = useState(false);
+    const [subMenuItems, setSubMenuItems] = useState([]);
+
+    // Fetch subMenu items from the API
+    //useEffect(() => {
+    //    // fetch categories
+    //    api.get("/Category").then(res => {
+    //      setSubMenuItems(res.data);
+    //    });
+    //    console.log("menuItems", menuItems);
+    //  }, []);
 
     // Unmount the submenu with a 500ms delay
     useEffect(() => {
@@ -23,7 +33,7 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
 
     // Open submenu
     const handleClick = (item) => {
-        setSubMenu(item.id);
+        setSubMenu(item);
     }
 
     // when something in the submenu is selected, everything closes
@@ -102,9 +112,8 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
 
             <div className={`absolute w-full h-full top-0 transition-transform duration-500 ease-out ${subMenu ? 'translate-x-0' : 'translate-x-full'}`}>
                 {isVisible && (<SubMenu
-                    category={subMenu}
-                    setSelected={handleSubMenuSelect}
                     subMenu={subMenu}
+                    setSelected={handleSubMenuSelect}
                     setSubMenu={setSubMenu}
                     menuHeight={menuHeight}
                     setSubMenuHeight={setSubMenuHeight}

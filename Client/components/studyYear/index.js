@@ -68,7 +68,12 @@ const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndO
 
                 {/* First Cluster */}
                 {firstClusters && firstClusters.length > 0 && (
-                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor}
+                    <Clusters
+                    year={year}
+                    clusters={firstClusters}
+                    currentCluster={firstCluster}
+                    setCurrentCluster={setFirstCluster}
+                    handleColor={handleColor}
                     updateClusterStatus={(clusterId, newStatus) =>
                         updateClusterStatus("firstSemester", clusterId, newStatus)
                     }
@@ -78,7 +83,12 @@ const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndO
 
                 {/* Last Cluster */}
                 {secondClusters && secondClusters.length > 0 && (
-                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor}
+                    <Clusters
+                    year={year}
+                    clusters={secondClusters}
+                    currentCluster={lastCluster}
+                    setCurrentCluster={setLastCluster}
+                    handleColor={handleColor}
                     updateClusterStatus={(clusterId, newStatus) =>
                         updateClusterStatus("lastSemester", clusterId, newStatus)
                     }
