@@ -6,7 +6,7 @@ export const LocationContext = createContext();
 const LocationProvider = ({children}) => {
     const [location, setLocation] = useState(null);
     const [availableLocations, setAvailableLocations] = useState([]);
-
+    
     return (
         <LocationContext.Provider value={{
             location, setLocation,

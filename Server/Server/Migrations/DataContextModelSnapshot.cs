@@ -17,7 +17,7 @@ namespace Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -315,6 +315,9 @@ namespace Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Almere")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("FirstSemester")
                         .HasColumnType("boolean");
 
@@ -343,6 +346,9 @@ namespace Server.Migrations
 
                     b.Property<int>("RetakenCount")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("Zwolle")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -392,6 +398,9 @@ namespace Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Almere")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("text");
@@ -403,6 +412,9 @@ namespace Server.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
+
+                    b.Property<bool>("Zwolle")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
