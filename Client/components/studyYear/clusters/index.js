@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
 import { useGraduateProfile } from "@/hooks";
 
-const Clusters = ({year, clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus, resetClustersMenu}) => {
+const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus, resetClustersMenu}) => {
   const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
   const [isAnimating, setIsAnimating] = useState(true);
   const { selectedGraduateProfile } = useGraduateProfile();
@@ -176,7 +176,7 @@ const Clusters = ({year, clusters, currentCluster, setCurrentCluster, handleColo
           </div>
         ) : (
           <Cluster
-            year={year}
+            cohort={cohort}
             clustersSize={clusters.length}
             setSelectedCluster={setCurrentCluster}
             clusterSelected={clusters[0]} // first cluster selected by default

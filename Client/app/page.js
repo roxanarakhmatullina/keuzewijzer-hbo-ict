@@ -603,6 +603,7 @@ useEffect(() => {
             <React.Fragment key={"study-year-" + index}>
               <StudyYear
                 year={studyYear?.year}
+                startedStudyYear={startedStudyYear?.id}
                 firstClusters={studyYear?.firstSemester}
                 secondClusters={studyYear?.lastSemester}
                 selectedGraduateProfile={selectedGraduateProfile}

@@ -1,8 +1,7 @@
 'use client'
 import React, { use, useState, useEffect, useRef, useLayoutEffect } from 'react';
 
-const SubMenu = ({ subMenu, setSubMenu, setSelected, menuHeight, setSubMenuHeight, subMenuHeight }) => {
-    const menuItems = ['test1', 'test2', 'test3', 'test4', 'test5', 'test6', 'test7', 'test8'];
+const SubMenu = ({ subMenu, setSubMenu, subMenuItems, setSelected, setSubMenuHeight }) => {
     const [title, setTitle] = useState(null);
 
     useEffect(() => {
@@ -41,7 +40,7 @@ const SubMenu = ({ subMenu, setSubMenu, setSelected, menuHeight, setSubMenuHeigh
     const hasMeasured = useRef(false); // Track if dimensions have already been measured
 
     useLayoutEffect(() => {
-        if (subMenuRef.current && subMenu && !hasMeasured.current) {
+        if (subMenuRef.current && subMenu && !hasMeasured.current && subMenuItems.length > 0) {
             const rect = subMenuRef.current.getBoundingClientRect();
             setSubMenuHeight(rect.height);
             hasMeasured.current = true; // Mark as measured
@@ -69,11 +68,11 @@ const SubMenu = ({ subMenu, setSubMenu, setSelected, menuHeight, setSubMenuHeigh
             <p className="text-left text-[20px] lg:text-[14px] font-bold">{title}</p>
 
             <div className="flex flex-col w-full h-auto gap-[10px] overflow-y-auto">
-                {menuItems.map((item) => (
-                    <div key={item} onClick={() => handleClick(item)} className="flex flex-row relative w-full lg:max-w-[250px] min-h-[75px] max-h-[75px] p-[20px] box-border rounded-[12px] bg-[#fff] justify-between align-middle items-center gap-[10px] hover: cursor-pointer cursor-auto">
+                {subMenuItems.map((item) => (
+                    <div key={item.id} onClick={() => handleClick(item)} className="flex flex-row relative w-full lg:max-w-[250px] min-h-[75px] max-h-[75px] p-[20px] box-border rounded-[12px] bg-[#fff] justify-between align-middle items-center gap-[10px] hover: cursor-pointer cursor-auto">
                         <h1
                             style={{ lineHeight: "1.25" }}
-                            className={"text-left flex-auto text-[14px] font-bold"}>{item}</h1>
+                            className={"text-left flex-auto text-[14px] font-bold"}>{item.name}</h1>
 
                         <div
                             onMouseEnter={handleHoverLink}

@@ -13,7 +13,7 @@ const Cluster = ({
   clustersSize,
   isFreeChoice,
   isRetaken,
-  year,
+  cohort,
   updateClusterStatus,
   initialStatus,
   handleMultipleClusters,
@@ -90,11 +90,12 @@ const Cluster = ({
 
   // Fetching the categories
   useEffect(() => {
-    // fetch categories
-    api.get("/Category").then(res => {
-      setMenuItems(res.data);
-    });
-    console.log("menuItems", menuItems);
+    if (cohort) {
+      // fetch categories
+      api.get(`/Category/cohort/${cohort}`).then(res => {
+        setMenuItems(res.data);
+      });
+    }
   }, []); // Removed the dependency array to trigger on every render
 
   const clusterRef = useRef(null);
@@ -373,7 +374,7 @@ const Cluster = ({
         </div>
 
       </div>
-      
+
       {/* Free Space Menu */}
       <div
         className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-[top] duration-500 ease-out' : ''}`}
@@ -402,7 +403,7 @@ const Cluster = ({
           setContainerHeight={setContainerHeight}
           subMenu={subMenu}
           setSubMenu={setSubMenu}
-          cohort={year}
+          cohort={cohort}
         />)}
       </div>
     </div>

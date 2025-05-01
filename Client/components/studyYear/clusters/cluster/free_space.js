@@ -5,18 +5,30 @@ import { api } from "@/hooks/api";
 
 const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu, cohort }) => {
     const [menuHeight, setMenuHeight] = useState(null);
-    const [subMenuHeight, setSubMenuHeight] = useState({});
+    const [subMenuHeight, setSubMenuHeight] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
     const [subMenuItems, setSubMenuItems] = useState([]);
 
-    // Fetch subMenu items from the API
-    //useEffect(() => {
-    //    // fetch categories
-    //    api.get("/Category").then(res => {
-    //      setSubMenuItems(res.data);
-    //    });
-    //    console.log("menuItems", menuItems);
-    //  }, []);
+    // Debugging
+    useEffect(() => {
+        console.log("subMenuItems", subMenuItems);
+    }, [subMenuItems]);
+
+    //Fetch subMenu items from the API
+    useEffect(() => {
+        if (subMenu) {
+            // fetch categories
+            api.get(`/Category/${subMenu.id}`).then(res => {
+                const cohortClusters = res.data.cohortClusters;
+                console.log("categoryClusters", cohortClusters);
+                cohortClusters.forEach(cc => {
+                    if (cc.cohortId === cohort) {
+                        setSubMenuItems(cc.clusters);
+                    }
+                });
+            });
+        }
+    }, [subMenu]);
 
     // Unmount the submenu with a 500ms delay
     useEffect(() => {
@@ -113,15 +125,14 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
             <div className={`absolute w-full h-full top-0 transition-transform duration-500 ease-out ${subMenu ? 'translate-x-0' : 'translate-x-full'}`}>
                 {isVisible && (<SubMenu
                     subMenu={subMenu}
-                    setSelected={handleSubMenuSelect}
                     setSubMenu={setSubMenu}
+                    subMenuItems={subMenuItems}
+                    setSelected={handleSubMenuSelect}
                     menuHeight={menuHeight}
                     setSubMenuHeight={setSubMenuHeight}
                     subMenuHeight={subMenuHeight}
                 />)}
             </div>
-
-            {/*<h1>menuHeight:{menuHeight} menuWidth:{menuWidth}</h1>*/}
         </div>
     )
 };
