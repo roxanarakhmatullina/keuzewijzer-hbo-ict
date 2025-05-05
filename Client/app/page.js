@@ -95,6 +95,27 @@ const Home = () => {
     }
   }, [studyYears]);
 
+  // Create clusterHolder and split into realClusterHolder and otherHolder
+  useEffect(() => {
+    if (studyYears && studyYears.length > 0) {
+      // Make a copy of clustersList
+      const clusterHolder = [];
+      studyYears.forEach(studyYear => {
+        if (studyYear.firstSemester) clusterHolder.push(...studyYear.firstSemester);
+        if (studyYear.lastSemester) clusterHolder.push(...studyYear.lastSemester);
+      });
+
+      // Split into realClusterHolder and otherHolder
+      const realClusterHolder = clusterHolder.filter(c => [1, 2, 3].includes(c.level));
+      const otherHolder = clusterHolder.filter(c => c.level === 0 || c.level === 4);
+
+      // Merge arrays
+      const newClustersList = [...realClusterHolder, ...otherHolder];
+
+      setClustersList(newClustersList);
+    }
+  }, [studyYears]);
+
   // Update displayedClustersList whenever displayedStudyYears changes
   const displayedClustersList = React.useMemo(() => {
     if (displayedStudyYears && displayedStudyYears.length > 0) {
@@ -303,12 +324,15 @@ const Home = () => {
           }
         }
 
+        if (foundFailedCluster) {
+          setAddSemester(true); // Trigger the effect to add a semester
+        };
+
         return prevDisplayedStudyYears;
       });
 
       // Reset the state after handling the logic
       setHasFailedCluster(false);
-      setAddSemester(true); // Trigger the effect to add a semester
     }
   }, [hasFailedCluster]);
 
@@ -347,203 +371,208 @@ const Home = () => {
       setPutBack(true); // Set putBack to true to trigger the effect
     }
   }, [addSemester]);
-// ...existing code...
 
-// Create clusterHolder and split into realClusterHolder and otherHolder
-useEffect(() => {
-  if (studyYears && studyYears.length > 0) {
-    // Make a copy of clustersList
-    const clusterHolder = [];
-    studyYears.forEach(studyYear => {
-      if (studyYear.firstSemester) clusterHolder.push(...studyYear.firstSemester);
-      if (studyYear.lastSemester) clusterHolder.push(...studyYear.lastSemester);
-    });
+  // Put back clusters
+  useEffect(() => {
+    if (putBack) {
+      console.log("putBack:", putBack);
 
-    // Split into realClusterHolder and otherHolder
-    const realClusterHolder = clusterHolder.filter(c => [1, 2, 3].includes(c.level));
-    const otherHolder = clusterHolder.filter(c => c.level === 0 || c.level === 4);
+      setDisplayedStudyYears(prevDisplayedStudyYears => {
+        let updatedStudyYears = [...prevDisplayedStudyYears];
+        let updatedDisplayedClustersList = [...displayedClustersList];
+        let movementPossible = true;
 
-    // Merge arrays
-    const newClustersList = [...realClusterHolder, ...otherHolder];
-
-    setClustersList(newClustersList);
-  }
-}, [studyYears]);
-
-// ...existing code...
-useEffect(() => {
-  if (putBack) {
-    console.log("putBack:", putBack);
-
-    setDisplayedStudyYears(prevDisplayedStudyYears => {
-      let updatedStudyYears = [...prevDisplayedStudyYears];
-      let updatedDisplayedClustersList = [...displayedClustersList];
-      let movementPossible = true;
-
-      for (let studyYear of updatedStudyYears) {
-        const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
-        if (isFirstSemesterEmpty) {
-          let clusterAdded = false;
-          for (let j = 0; j < clustersList.length; j++) {
-            const cluster = clustersList[j];
-            const nextCluster = clustersList[j + 1];
-            const nextNextCluster = clustersList[j + 2];
-            const isAlreadyDisplayed = updatedDisplayedClustersList.some(
-              displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
-            );
-            // --- NEW RULE: Level 4 cluster must be last ---
-            if (
-              !isAlreadyDisplayed &&
-              cluster.firstSemester &&
-              cluster.level === 4
-            ) {
-              const hasUnplacedLowerLevel = clustersList.some(
-                c =>
-                  c.level < 4 &&
-                  !updatedDisplayedClustersList.some(
-                    displayedCluster =>
-                      displayedCluster.id === c.id && displayedCluster.status !== "failed"
-                  )
+        for (let studyYear of updatedStudyYears) {
+          const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
+          if (isFirstSemesterEmpty) {
+            let clusterAdded = false;
+            for (let j = 0; j < clustersList.length; j++) {
+              const cluster = clustersList[j];
+              const nextCluster = clustersList[j + 1];
+              const nextNextCluster = clustersList[j + 2];
+              const isAlreadyDisplayed = updatedDisplayedClustersList.some(
+                displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
               );
-              if (hasUnplacedLowerLevel) {
-                continue;
+              // --- NEW RULE: Level 4 cluster must be last ---
+              if (
+                !isAlreadyDisplayed &&
+                cluster.firstSemester &&
+                cluster.level === 4
+              ) {
+                const hasUnplacedLowerLevel = clustersList.some(
+                  c =>
+                    c.level < 4 &&
+                    !updatedDisplayedClustersList.some(
+                      displayedCluster =>
+                        displayedCluster.id === c.id && displayedCluster.status !== "failed"
+                    )
+                );
+                if (hasUnplacedLowerLevel) {
+                  continue;
+                }
               }
-            }
-            if (!isAlreadyDisplayed && cluster.firstSemester) {
-              const prerequisites = cluster.prerequisites;
-              const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
-                updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
-              );
-              const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
-                displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
-              );
-              if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
-                studyYear.firstSemester = [{ ...cluster, status: null }];
-                updatedDisplayedClustersList.push({ ...cluster, status: null });
-                if (
-                  nextCluster &&
-                  nextCluster.level === cluster.level &&
-                  nextCluster.firstSemester &&
-                  !nextCluster.isLocked &&
-                  !cluster.isLocked &&
-                  !nextCluster.isFreeChoice &&
-                  !cluster.isFreeChoice
-                ) {
-                  studyYear.firstSemester.push({ ...nextCluster, status: null });
-                  updatedDisplayedClustersList.push({ ...nextCluster, status: null });
+              if (!isAlreadyDisplayed && cluster.firstSemester) {
+                const prerequisites = cluster.prerequisites;
+                const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
+                  updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
+                );
+                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                  displayedCluster => {
+                    if (clustersList[j-1] !== null && clustersList.level > 1) {
+                      if(clustersList[j-1]?.isFreeChoice) {
+                        return displayedCluster.level === (cluster.level - 1);
+                      } else {
+                        return displayedCluster.level === (cluster.level - 1) && displayedCluster.lastSemester;
+                      }
+                    } else {
+                      return true;
+                    }
+                  }
+                );
+                console.log("displayedClustersList", updatedDisplayedClustersList);
+                console.log("cluster first semester", cluster.name, (cluster.level -1), cluster.isFreeChoice);
+                console.log("isPreviousClusterInStudyRoute", isPreviousClusterInStudyRoute);
+
+                if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
+                  studyYear.firstSemester = [{ ...cluster, status: null }];
+                  updatedDisplayedClustersList.push({ ...cluster, status: null });
                   if (
-                    nextNextCluster &&
-                    nextNextCluster.level === cluster.level &&
-                    nextNextCluster.firstSemester &&
-                    !nextNextCluster.isLocked &&
+                    nextCluster &&
+                    nextCluster.level === cluster.level &&
+                    nextCluster.firstSemester &&
+                    !nextCluster.isLocked &&
                     !cluster.isLocked &&
-                    !nextNextCluster.isFreeChoice &&
+                    !nextCluster.isFreeChoice &&
                     !cluster.isFreeChoice
                   ) {
-                    studyYear.firstSemester.push({ ...nextNextCluster, status: null });
-                    updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
+                    studyYear.firstSemester.push({ ...nextCluster, status: null });
+                    updatedDisplayedClustersList.push({ ...nextCluster, status: null });
+                    if (
+                      nextNextCluster &&
+                      nextNextCluster.level === cluster.level &&
+                      nextNextCluster.firstSemester &&
+                      !nextNextCluster.isLocked &&
+                      !cluster.isLocked &&
+                      !nextNextCluster.isFreeChoice &&
+                      !cluster.isFreeChoice
+                    ) {
+                      studyYear.firstSemester.push({ ...nextNextCluster, status: null });
+                      updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
+                    }
                   }
+                  clusterAdded = true;
+                  break;
                 }
-                clusterAdded = true;
-                break;
               }
             }
+            if (!clusterAdded) {
+              movementPossible = false;
+              break;
+            }
           }
-          if (!clusterAdded) {
-            movementPossible = false;
-            break;
+
+          const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
+          if (isLastSemesterEmpty) {
+            let clusterAdded = false;
+            for (let j = 0; j < clustersList.length; j++) {
+              const cluster = clustersList[j];
+              const nextCluster = clustersList[j + 1];
+              const nextNextCluster = clustersList[j + 2];
+              const isAlreadyDisplayed = updatedDisplayedClustersList.some(
+                displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
+              );
+              // --- NEW RULE: Level 4 cluster must be last ---
+              if (
+                !isAlreadyDisplayed &&
+                cluster.lastSemester &&
+                cluster.level === 4
+              ) {
+                const hasUnplacedLowerLevel = clustersList.some(
+                  c =>
+                    c.level < 4 &&
+                    !updatedDisplayedClustersList.some(
+                      displayedCluster =>
+                        displayedCluster.id === c.id && displayedCluster.status !== "failed"
+                    )
+                );
+                if (hasUnplacedLowerLevel) {
+                  continue;
+                }
+              }
+
+              if (!isAlreadyDisplayed && cluster.lastSemester) {
+                const prerequisites = cluster.prerequisites;
+                const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
+                  updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
+                );
+                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                  displayedCluster => {
+                    if (clustersList[j-1] !== null && clustersList.level > 1) {
+                      if(clustersList[j-1]?.isFreeChoice) {
+                        return displayedCluster.level === (cluster.level - 1);
+                      } else {
+                        return displayedCluster.level === (cluster.level - 1) && displayedCluster.firstSemester;
+                      }
+                    } else {
+                      return true;
+                    }
+                  }
+                );
+                console.log("displayedClustersList", updatedDisplayedClustersList);
+                console.log("cluster last semester", cluster.name, cluster.level, cluster.isFreeChoice);
+                console.log("isPreviousClusterInStudyRoute", isPreviousClusterInStudyRoute);
+                if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
+                  studyYear.lastSemester = [{ ...cluster, status: null }];
+                  updatedDisplayedClustersList.push({ ...cluster, status: null });
+                  if (
+                    nextCluster &&
+                    nextCluster.level === cluster.level &&
+                    nextCluster.lastSemester &&
+                    !nextCluster.isLocked &&
+                    !cluster.isLocked &&
+                    !nextCluster.isFreeChoice &&
+                    !cluster.isFreeChoice
+                  ) {
+                    studyYear.lastSemester.push({ ...nextCluster, status: null });
+                    updatedDisplayedClustersList.push({ ...nextCluster, status: null });
+                    if (
+                      nextNextCluster &&
+                      nextNextCluster.level === cluster.level &&
+                      nextNextCluster.lastSemester &&
+                      !nextNextCluster.isLocked &&
+                      !cluster.isLocked &&
+                      !nextNextCluster.isFreeChoice &&
+                      !cluster.isFreeChoice
+                    ) {
+                      studyYear.lastSemester.push({ ...nextNextCluster, status: null });
+                      updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
+                    }
+                  }
+                  clusterAdded = true;
+                  break;
+                }
+              }
+            }
+            if (!clusterAdded) {
+              movementPossible = false;
+              break;
+            }
           }
         }
 
-        const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
-        if (isLastSemesterEmpty) {
-          let clusterAdded = false;
-          for (let j = 0; j < clustersList.length; j++) {
-            const cluster = clustersList[j];
-            const nextCluster = clustersList[j + 1];
-            const nextNextCluster = clustersList[j + 2];
-            const isAlreadyDisplayed = updatedDisplayedClustersList.some(
-              displayedCluster => displayedCluster.id === cluster.id && displayedCluster.status !== "failed"
-            );
-            // --- NEW RULE: Level 4 cluster must be last ---
-            if (
-              !isAlreadyDisplayed &&
-              cluster.lastSemester &&
-              cluster.level === 4
-            ) {
-              const hasUnplacedLowerLevel = clustersList.some(
-                c =>
-                  c.level < 4 &&
-                  !updatedDisplayedClustersList.some(
-                    displayedCluster =>
-                      displayedCluster.id === c.id && displayedCluster.status !== "failed"
-                  )
-              );
-              if (hasUnplacedLowerLevel) {
-                continue;
-              }
-            }
-        
-            if (!isAlreadyDisplayed && cluster.lastSemester) {
-              const prerequisites = cluster.prerequisites;
-              const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
-                updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
-              );
-              const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
-                displayedCluster => displayedCluster.name === clustersList[j - 1]?.name || clustersList[j - 1] == null
-              );
-              if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
-                studyYear.lastSemester = [{ ...cluster, status: null }];
-                updatedDisplayedClustersList.push({ ...cluster, status: null });
-                if (
-                  nextCluster &&
-                  nextCluster.level === cluster.level &&
-                  nextCluster.lastSemester &&
-                  !nextCluster.isLocked &&
-                  !cluster.isLocked &&
-                  !nextCluster.isFreeChoice &&
-                  !cluster.isFreeChoice
-                ) {
-                  studyYear.lastSemester.push({ ...nextCluster, status: null });
-                  updatedDisplayedClustersList.push({ ...nextCluster, status: null });
-                  if (
-                    nextNextCluster &&
-                    nextNextCluster.level === cluster.level &&
-                    nextNextCluster.lastSemester &&
-                    !nextNextCluster.isLocked &&
-                    !cluster.isLocked &&
-                    !nextNextCluster.isFreeChoice &&
-                    !cluster.isFreeChoice
-                  ) {
-                    studyYear.lastSemester.push({ ...nextNextCluster, status: null });
-                    updatedDisplayedClustersList.push({ ...nextNextCluster, status: null });
-                  }
-                }
-                clusterAdded = true;
-                break;
-              }
-            }
-          }
-          if (!clusterAdded) {
-            movementPossible = false;
-            break;
-          }
+        if (!movementPossible) {
+          setCallYourCoach(true);
+          handleReset();
+          return prevDisplayedStudyYears; // try to remove the visual flash when we move the clusters (not perfect yet)
         }
-      }
 
-      if (!movementPossible) {
-        setCallYourCoach(true);
-        handleReset();
-        return prevDisplayedStudyYears; // try to remove the visual flash when we move the clusters (not perfect yet)
-      }
+        return updatedStudyYears;
+      });
 
-      return updatedStudyYears;
-    });
-
-    setPutBack(false);
-  }
-}, [putBack]);
-// ...existing code...
+      setPutBack(false);
+    }
+  }, [putBack]);
+  // ...existing code...
 
   // Handle the confirmation dialog
   const handleConfirmationDialog = () => {
@@ -672,108 +701,108 @@ useEffect(() => {
         </button>
       </div>
 
-    {/* Confirmation button */}
-{showConfirmDialog && (
-  <div
-    className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50"
-    onClick={() => setShowConfirmDialog(false)}
-  >
-    <div
-      className="flex flex-col justify-center items-center w-[300px] bg-white rounded-[12px] p-[16px] shadow-lg relative"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Close button */}
-      <button
-        onClick={() => setShowConfirmDialog(false)}
-        className="absolute top-2 right-2 w-[30px] h-[30px] bg-transparent text-gray-500 hover:text-gray-700 flex justify-center items-center"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-5 h-5"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <p className="font-bold text-[20px] text-gray-800 mb-2">Alles resetten</p>
-      <p className="text-[14px] text-gray-600 text-center mb-4">
-        Weet je het zeker?
-      </p>
-      <div className="w-full flex gap-2">
-        <button
-          onClick={() => {
-            handleReset();
-            setShowConfirmDialog(false);
-          }}
-          className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
-        >
-          Ja
-        </button>
-        <button
+      {/* Confirmation button */}
+      {showConfirmDialog && (
+        <div
+          className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50"
           onClick={() => setShowConfirmDialog(false)}
-          className="w-full h-[36px] bg-gray-300 hover:bg-gray-400 rounded-[8px] text-gray-700 font-bold text-[14px]"
         >
-          Nee
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-  {/* Call your coach */}
-{callYourCoach && (
-  <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50">
-    <div
-      className="flex flex-col items-center w-[300px] bg-white rounded-[12px] p-[16px] shadow-lg relative"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Close button */}
-      <button
-        onClick={() => setCallYourCoach(false)}
-        className="absolute top-2 right-2 w-[30px] h-[30px] bg-transparent text-gray-500 hover:text-gray-700 flex justify-center items-center"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-5 h-5"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="#124477" 
-        className="h-[60px] w-[60px] mb-3"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.5m-9.75-6.5l9.75 6.5"
-        />
-      </svg>
-      <p className="text-[16px] font-bold text-center text-gray-800 mb-2">
-        Neem contact op met je studentbegeleider.
-      </p>
-      <p className="text-[14px] text-gray-600 text-center mb-4">
-        Het is niet gelukt om een passende studieroute te plannen.
-      </p>
-      <button
-        onClick={() => setCallYourCoach(false)}
-        className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
-      >
-        Ja
-      </button>
-    </div>
-  </div>
-)}
+          <div
+            className="flex flex-col justify-center items-center w-[300px] bg-white rounded-[12px] p-[16px] shadow-lg relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setShowConfirmDialog(false)}
+              className="absolute top-2 right-2 w-[30px] h-[30px] bg-transparent text-gray-500 hover:text-gray-700 flex justify-center items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <p className="font-bold text-[20px] text-gray-800 mb-2">Alles resetten</p>
+            <p className="text-[14px] text-gray-600 text-center mb-4">
+              Weet je het zeker?
+            </p>
+            <div className="w-full flex gap-2">
+              <button
+                onClick={() => {
+                  handleReset();
+                  setShowConfirmDialog(false);
+                }}
+                className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
+              >
+                Ja
+              </button>
+              <button
+                onClick={() => setShowConfirmDialog(false)}
+                className="w-full h-[36px] bg-gray-300 hover:bg-gray-400 rounded-[8px] text-gray-700 font-bold text-[14px]"
+              >
+                Nee
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Call your coach */}
+      {callYourCoach && (
+        <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50">
+          <div
+            className="flex flex-col items-center w-[300px] bg-white rounded-[12px] p-[16px] shadow-lg relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setCallYourCoach(false)}
+              className="absolute top-2 right-2 w-[30px] h-[30px] bg-transparent text-gray-500 hover:text-gray-700 flex justify-center items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="#124477"
+              className="h-[60px] w-[60px] mb-3"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.5m-9.75-6.5l9.75 6.5"
+              />
+            </svg>
+            <p className="text-[16px] font-bold text-center text-gray-800 mb-2">
+              Neem contact op met je studentbegeleider.
+            </p>
+            <p className="text-[14px] text-gray-600 text-center mb-4">
+              Het is niet gelukt om een passende studieroute te plannen.
+            </p>
+            <button
+              onClick={() => setCallYourCoach(false)}
+              className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
+            >
+              Ja
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

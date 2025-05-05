@@ -35,7 +35,7 @@ const Cluster = ({
 
   // Debugging
   useEffect(() => {
-    console.log("clustersList", clustersList);
+    //console.log("clustersList", clustersList);
   }, [clustersList]);
 
 
@@ -130,8 +130,8 @@ const Cluster = ({
 
   // Insert cluster when selected
   useEffect(() => {
-    console.log("selected", selected);
-    console.log("clusterId", clusterId);
+    //console.log("selected", selected);
+    //console.log("clusterId", clusterId);
     if (selected) {
       clustersList.forEach(c => {
         if (c.id === clusterId) {
@@ -139,7 +139,7 @@ const Cluster = ({
         }
       })
     }
-    console.log("clustersList", clustersList);
+    //console.log("clustersList", clustersList);
   }, [selected]);
 
   const clusterRef = useRef(null);
