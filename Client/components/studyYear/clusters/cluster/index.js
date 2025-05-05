@@ -21,6 +21,7 @@ const Cluster = ({
   menuDisabled,
   setShutDown,
   clustersList,
+  setRefresh,
 }) => {
   const [hoverLink, setHoverLink] = useState(false);
   const [hoverCluster, setHoverCluster] = useState(false);
@@ -138,6 +139,7 @@ const Cluster = ({
           Object.assign(c, selected);
         }
       })
+      setRefresh(true);
     }
     //console.log("clustersList", clustersList);
   }, [selected]);

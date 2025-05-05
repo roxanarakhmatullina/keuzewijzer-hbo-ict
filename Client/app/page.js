@@ -35,6 +35,9 @@ const Home = () => {
   // reset clusters menu
   const [resetClustersMenu, setResetClustersMenu] = useState(false);
 
+  // Refresh
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
       setShowConfirmDialog(false);
@@ -131,7 +134,7 @@ const Home = () => {
       return updatedClustersList;
     }
     return [];
-  }, [displayedStudyYears]);
+  }, [displayedStudyYears, hasFailedCluster, refresh]);
 
   // Update cluster status
   const updateClusterStatus = (studyYearIndex, semester, clusterId, newStatus) => {
@@ -238,8 +241,7 @@ const Home = () => {
 
   // Handle the logic when a cluster is failed
   useEffect(() => {
-    if (hasFailedCluster) {
-      console.log("hasFailedCluster:", hasFailedCluster);
+    if (hasFailedCluster || refresh) {
       setDisplayedStudyYears(prevDisplayedStudyYears => {
         let foundFailedCluster = false;
 
@@ -259,8 +261,6 @@ const Home = () => {
                 if (cluster.status === "failed") {
                   foundFailedCluster = true;
                 } else {
-                  cluster.id = `blank${j}`; // Replace the cluster with a blank placeholder
-                  //cluster.name = ""; // Replace the cluster with a blank placeholder
                   cluster.status = "failed"; // Set the status to false
                 }
               }
@@ -295,8 +295,6 @@ const Home = () => {
                 if (cluster.status === "failed") {
                   foundFailedCluster = true;
                 } else {
-                  cluster.id = `blank${j}`; // Replace the cluster with a blank placeholder
-                  //cluster.name = ""; // Replace the cluster with a blank placeholder
                   cluster.status = "failed"; // Set the status to false
                 }
               }
@@ -324,7 +322,9 @@ const Home = () => {
           }
         }
 
-        if (foundFailedCluster) {
+        if (refresh) {
+          setPutBack(true); // Set putBack to true to trigger the effect
+        } else {
           setAddSemester(true); // Trigger the effect to add a semester
         };
 
@@ -333,8 +333,9 @@ const Home = () => {
 
       // Reset the state after handling the logic
       setHasFailedCluster(false);
+      setRefresh(false);
     }
-  }, [hasFailedCluster]);
+  }, [hasFailedCluster, refresh]);
 
   // Handle the logic to add a semester
   useEffect(() => {
@@ -376,7 +377,6 @@ const Home = () => {
   useEffect(() => {
     if (putBack) {
       console.log("putBack:", putBack);
-
       setDisplayedStudyYears(prevDisplayedStudyYears => {
         let updatedStudyYears = [...prevDisplayedStudyYears];
         let updatedDisplayedClustersList = [...displayedClustersList];
@@ -385,6 +385,7 @@ const Home = () => {
         for (let studyYear of updatedStudyYears) {
           const isFirstSemesterEmpty = studyYear.firstSemester?.length === 0;
           if (isFirstSemesterEmpty) {
+            console.log(studyYear.year, "first semster");
             let clusterAdded = false;
             for (let j = 0; j < clustersList.length; j++) {
               const cluster = clustersList[j];
@@ -411,14 +412,16 @@ const Home = () => {
                   continue;
                 }
               }
+              console.log("cluster", cluster.name, isAlreadyDisplayed);
               if (!isAlreadyDisplayed && cluster.firstSemester) {
                 const prerequisites = cluster.prerequisites;
                 const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
                 );
-                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                console.log("condition", clustersList[j-1] !== null && cluster.level > 1);
+                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.lenght === 0 ? (updatedDisplayedClustersList.some(
                   displayedCluster => {
-                    if (clustersList[j-1] !== null && clustersList.level > 1) {
+                    if (clustersList[j-1] !== null && cluster.level > 1) {
                       if(clustersList[j-1]?.isFreeChoice) {
                         return displayedCluster.level === (cluster.level - 1);
                       } else {
@@ -428,9 +431,8 @@ const Home = () => {
                       return true;
                     }
                   }
-                );
-                console.log("displayedClustersList", updatedDisplayedClustersList);
-                console.log("cluster first semester", cluster.name, (cluster.level -1), cluster.isFreeChoice);
+                )): true;
+                //console.log("cluster first semester", cluster.name, (cluster.level -1), cluster.isFreeChoice);
                 console.log("isPreviousClusterInStudyRoute", isPreviousClusterInStudyRoute);
 
                 if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
@@ -461,6 +463,7 @@ const Home = () => {
                     }
                   }
                   clusterAdded = true;
+                  console.log("clusterAdded", clusterAdded);
                   break;
                 }
               }
@@ -473,6 +476,7 @@ const Home = () => {
 
           const isLastSemesterEmpty = studyYear.lastSemester?.length === 0;
           if (isLastSemesterEmpty) {
+            console.log(studyYear.year, "last semster");
             let clusterAdded = false;
             for (let j = 0; j < clustersList.length; j++) {
               const cluster = clustersList[j];
@@ -499,15 +503,16 @@ const Home = () => {
                   continue;
                 }
               }
-
+              console.log("cluster", cluster.name, isAlreadyDisplayed);
               if (!isAlreadyDisplayed && cluster.lastSemester) {
                 const prerequisites = cluster.prerequisites;
                 const prerequisitesMet = prerequisites.length === 0 || prerequisites.some(prerequisite =>
                   updatedDisplayedClustersList.some(displayedCluster => displayedCluster.id === prerequisite.id && displayedCluster.status !== "failed")
                 );
-                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.some(
+                console.log("condition", clustersList[j-1] !== null && cluster.level > 1);
+                const isPreviousClusterInStudyRoute = updatedDisplayedClustersList.lenght === 0 ? (updatedDisplayedClustersList.some(
                   displayedCluster => {
-                    if (clustersList[j-1] !== null && clustersList.level > 1) {
+                    if (clustersList[j-1] !== null && cluster.level > 1) {
                       if(clustersList[j-1]?.isFreeChoice) {
                         return displayedCluster.level === (cluster.level - 1);
                       } else {
@@ -517,9 +522,8 @@ const Home = () => {
                       return true;
                     }
                   }
-                );
-                console.log("displayedClustersList", updatedDisplayedClustersList);
-                console.log("cluster last semester", cluster.name, cluster.level, cluster.isFreeChoice);
+                )) : true;
+                //console.log("cluster last semester", cluster.name, cluster.level, cluster.isFreeChoice);
                 console.log("isPreviousClusterInStudyRoute", isPreviousClusterInStudyRoute);
                 if (prerequisitesMet && (isPreviousClusterInStudyRoute || cluster.isFreeChoice)) {
                   studyYear.lastSemester = [{ ...cluster, status: null }];
@@ -572,7 +576,6 @@ const Home = () => {
       setPutBack(false);
     }
   }, [putBack]);
-  // ...existing code...
 
   // Handle the confirmation dialog
   const handleConfirmationDialog = () => {
@@ -645,6 +648,7 @@ const Home = () => {
                 isLastOddStudyYear={isLastOddStudyYear}
                 resetClustersMenu={resetClustersMenu}
                 clustersList={clustersList}
+                setRefresh={setRefresh} // Pass hasFailedCluster as refresh
               >
                 {/* Line from right side to bottom */}
                 {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (
