@@ -120,13 +120,18 @@ const Cluster = ({
           if (cc.cohortId === cohort) {
             cc.clusters.forEach(c => {
               if (!clustersList.some(cluster => cluster.id === c.id)) {
-                setSubMenuItems(prev => [...prev, c]);
+                console.log("clusterList", clustersList);
+                console.log("c", c);
+                api.get(`/Cluster/${c.id}`).then(resc => {
+                  setSubMenuItems(prev => [...prev, resc.data]);
+                });
               }
             })
           }
         });
       });
     }
+    console.log("subMenuItems", subMenuItems);
   }, [subMenu]);
 
   // Insert cluster when selected

@@ -55,14 +55,16 @@ namespace Server.Controllers
 
         // GET: api/Cluster/{id}
         [HttpGet("{id}")]
-        [Authorize]
+        // The endpoint is commented out to allow access without authorization for client use
+        //[Authorize]
         public async Task<ActionResult<Cluster>> GetCluster(Guid id)
         {
-            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var currentUser = await _userManager.FindByEmailAsync(email);
-            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-            if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
-                return Forbid();
+            //TODO: Check if user is admin or maintainer
+            // var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            // var currentUser = await _userManager.FindByEmailAsync(email);
+            // var currentUserRole = await _userManager.GetRolesAsync(currentUser);
+            // if (!currentUserRole.Contains("Admin") && !currentUserRole.Contains("Maintainer"))
+            //     return Forbid();
 
             var cluster = await _context.Clusters
                 .Include(c => c.ClusterPrerequisites)
