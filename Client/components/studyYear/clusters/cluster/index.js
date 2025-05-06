@@ -17,7 +17,9 @@ const Cluster = ({
   cohort,
   updateClusterStatus,
   initialStatus,
-  handleMultipleClusters,
+  handleMultipleClustersDelayed,
+  multipleChoiceClustersOpen,
+  setMultipleChoicePopUp,
   menuDisabled,
   setShutDown,
   clustersList,
@@ -33,12 +35,6 @@ const Cluster = ({
   const [menuItems, setMenuItems] = useState([]);
   const [subMenu, setSubMenu] = useState(null);
   const [selected, setSelected] = useState(null);
-
-  // Debugging
-  useEffect(() => {
-    //console.log("clustersList", clustersList);
-  }, [clustersList]);
-
 
   const handleHoverLink = () => {
     setHoverLink(!hoverLink);
@@ -70,7 +66,11 @@ const Cluster = ({
   };
 
   const handleOpenRetakeMenu = () => {
-    setOpenRetakeMenu(!openRetakeMenu);
+    if (multipleChoiceClustersOpen) {
+      setMultipleChoicePopUp(true);
+    } else {
+      setOpenRetakeMenu(!openRetakeMenu);
+    }
   };
 
   const handleStatusChange = (newStatus) => {
@@ -262,7 +262,7 @@ const Cluster = ({
                   ? "transparent"
                   : "#ffffff",
         }}
-        className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice ? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[20px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
+        className={`relative w-full min-w-full sm:min-w-[250px] lg:max-w-[250px] ${!clusterSelected && clustersSize > 1 && "cursor-pointer hover:brightness-95 "} h-[75px] ${isFreeChoice ? `bg-transparent border-2 border-dashed border-[#424242] hover:border-dashed border-spacing-[10px] cursor-pointer` : "bg-[#fff]"} ${isFreeChoice ? 'cursor-pointer' : 'cursor-auto'} cursor-auto rounded-[12px] p-[10px] box-border flex justify-between align-middle items-center flex-row gap-[10px]`}>
 
         <h1
           style={{ lineHeight: "1.25" }}
@@ -316,7 +316,7 @@ const Cluster = ({
 
           {/*Retake Button*/}
           <div ref={retakeMenuRef} className="relative">
-            {!menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus == null && !handleMultipleClusters && (
+            {!menuDisabled && !isFreeChoice && clusterSelected?.level !== 4 && clusterStatus == null && !handleMultipleClustersDelayed && (
               <>
                 <button
                   onClick={(e) => {

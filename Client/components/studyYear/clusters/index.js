@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
 import { useGraduateProfile } from "@/hooks";
 
-const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus, resetClustersMenu, clustersList, setRefresh}) => {
+const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus, resetClustersMenu, clustersList, setRefresh, multipleChoiceClustersOpen, setMultipleChoiceClustersOpen, setMultipleChoicePopUp}) => {
   const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
   const [isAnimating, setIsAnimating] = useState(true);
   const { selectedGraduateProfile } = useGraduateProfile();
@@ -16,6 +16,9 @@ const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleCo
   }, [resetClustersMenu]);
 
   useEffect(() => {
+    if (multipleChoiceClustersOpen === true || multipleChoiceClustersOpen === false) {
+      setMultipleChoiceClustersOpen(handleMultipleClusters);
+    }
     if (!handleMultipleClusters) {
       const timeout = setTimeout(() => {
         setHandleMultipleClustersDelayed(false);
@@ -165,7 +168,7 @@ const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleCo
                         {...cluster}
                         initialStatus={cluster.status}
                         updateClusterStatus={newStatus => updateClusterStatus(cluster.id, newStatus)}
-                        handleMultipleClusters={handleMultipleClustersDelayed}
+                        handleMultipleClustersDelayed={handleMultipleClustersDelayed}
                         menuDisabled={cluster.menuDisabled} // transmiting the prop menuDisabled
                         setShutDown={setShutDown}
                       />
@@ -185,7 +188,9 @@ const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleCo
             {...clusters[0]}
             initialStatus={clusters[0].status}
             updateClusterStatus={newStatus => updateClusterStatus(clusters[0].id, newStatus)}
-            handleMultipleClusters={false}
+            handleMultipleClustersDelayed={false}
+            multipleChoiceClustersOpen={multipleChoiceClustersOpen}
+            setMultipleChoicePopUp={setMultipleChoicePopUp}
             menuDisabled={clusters[0].menuDisabled} // transmiting the prop menuDisabled
             setShutDown={setShutDown}
             clustersList={clustersList} // transmiting the prop clustersList

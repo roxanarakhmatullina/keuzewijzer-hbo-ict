@@ -38,6 +38,12 @@ const Home = () => {
   // Refresh
   const [refresh, setRefresh] = useState(false);
 
+  // Multiple choice clusters open
+  const [multipleChoiceClustersOpen, setMultipleChoiceClustersOpen] = useState(true);
+
+  // Multiple choice pop up
+  const [multipleChoicePopUp, setMultipleChoicePopUp] = useState(false);
+
   useEffect(() => {
     if (selectedGraduateProfile && selectedGraduateProfile?.id) {
       setShowConfirmDialog(false);
@@ -649,6 +655,9 @@ const Home = () => {
                 resetClustersMenu={resetClustersMenu}
                 clustersList={clustersList}
                 setRefresh={setRefresh} // Pass hasFailedCluster as refresh
+                multipleChoiceClustersOpen={multipleChoiceClustersOpen}
+                setMultipleChoiceClustersOpen={setMultipleChoiceClustersOpen}
+                setMultipleChoicePopUp={setMultipleChoicePopUp}
               >
                 {/* Line from right side to bottom */}
                 {index % 2 === 1 && index !== displayedStudyYears.length - 1 && (
@@ -705,7 +714,7 @@ const Home = () => {
         </button>
       </div>
 
-      {/* Confirmation button */}
+      {/* Reset Pop-Up */}
       {showConfirmDialog && (
         <div
           className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50"
@@ -800,6 +809,44 @@ const Home = () => {
             </p>
             <button
               onClick={() => setCallYourCoach(false)}
+              className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
+            >
+              Ja
+            </button>
+          </div>
+        </div>
+      )}
+      {/*Fucking Decide Pop-Up*/}
+      {multipleChoicePopUp && (
+        <div className="fixed lg:left-[250px] md:left-[250px] inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50">
+          <div
+            className="flex flex-col items-center w-[300px] bg-white rounded-[12px] p-[16px] shadow-lg relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setMultipleChoicePopUp(false)}
+              className="absolute top-2 right-2 w-[30px] h-[30px] bg-transparent text-gray-500 hover:text-gray-700 flex justify-center items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <p className="text-[16px] font-bold text-center text-gray-800 mb-2">
+              You dumb Fuck!!!
+            </p>
+            <p className="text-[14px] text-gray-600 text-center mb-4">
+              Decide between the clusters
+            </p>
+            <button
+              onClick={() => setMultipleChoicePopUp(false)}
               className="w-full h-[36px] bg-[#124477] rounded-[8px] text-white font-bold text-[14px]"
             >
               Ja
