@@ -35,7 +35,8 @@ const Cluster = ({
   const [menuItems, setMenuItems] = useState([]);
   const [subMenu, setSubMenu] = useState(null);
   const [selected, setSelected] = useState(null);
-
+ const [menuHeight, setMenuHeight] = useState('auto');
+ const menuContentRef = useRef(null);
   const handleHoverLink = () => {
     setHoverLink(!hoverLink);
   };
@@ -429,23 +430,35 @@ const Cluster = ({
 
       {/* Free Space Menu */}
       <div
-        className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-all duration-500 ease-out' : ''}`}
-        style={window.innerWidth >= 1024
-          ? {
-            left: distance.right < 290 ? -290 : 270,
-            top: distance.top < -half + 10 ? -distance.top + 10 : distance.bottom < -half + 10 ? window.innerHeight - containerHeight - 10 - distance.top : half,
-            transformOrigin: distance.right < 290 ? "center right" : "center left"
-          }
-          : {
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            transformOrigin: "center center",
-            zIndex: 1000
-          }
-        }>
+  className={`absolute z-[2] transition-transform ease-out duration-300 ${openFreeMenu ? 'scale-100 opacity-100' : 'scale-[1%] opacity-30 '} ${subMenuAnimation && openFreeMenu ? 'transition-all duration-500 ease-out' : ''}`}
+  style={{
+    ...(window.innerWidth >= 1024
+      ? {
+          left: distance.right < 290 ? -290 : 270,
+          top: distance.top < -half + 10
+            ? -distance.top + 10
+            : distance.bottom < -half + 10
+            ? window.innerHeight - containerHeight - 10 - distance.top
+            : half,
+          transformOrigin: distance.right < 290 ? "center right" : "center left"
+        }
+      : {
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          transformOrigin: "center center",
+          zIndex: 1000
+        }
+    ),
+    // Browser adaptability
+    transform: openFreeMenu ? "scale(1)" : "scale(0.01)",
+    opacity: openFreeMenu ? 1 : 0.3,
+    willChange: "transform, opacity",
+    transition: "transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s cubic-bezier(0.4,0,0.2,1)",
+  }}
+>
         {/*<div>{containerHeight}</div>*/}
         {isVisible && (<Free_Space_Menu
           selected={selected}
