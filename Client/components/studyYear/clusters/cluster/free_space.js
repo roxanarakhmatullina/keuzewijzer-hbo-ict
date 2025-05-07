@@ -3,7 +3,7 @@ import React, { use, useState, useEffect, useLayoutEffect, useRef } from 'react'
 import SubMenu from './submenu';
 import { api } from "@/hooks/api";
 
-const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu, subMenuItems, cohort }) => {
+const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu, menuItems, setContainerHeight, subMenu, setSubMenu, subMenuItems, cohort, clusterId, displayedClustersList, semester }) => {
     const [menuHeight, setMenuHeight] = useState(null);
     const [subMenuHeight, setSubMenuHeight] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
@@ -110,6 +110,9 @@ const Free_Space_Menu = ({ selected, setSelected, openFreeMenu, setOpenFreeMenu,
                     menuHeight={menuHeight}
                     setSubMenuHeight={setSubMenuHeight}
                     subMenuHeight={subMenuHeight}
+                    clusterId={clusterId}
+                    displayedClustersList={displayedClustersList}
+                    semester={semester}
                 />)}
             </div>
         </div>

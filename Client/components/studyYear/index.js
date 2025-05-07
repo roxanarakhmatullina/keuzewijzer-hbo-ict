@@ -5,7 +5,7 @@ import {useGraduateProfile} from "@/hooks";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, isLastOddStudyYear, resetClustersMenu, children, clustersList, setRefresh, multipleChoiceClustersOpen, setMultipleChoiceClustersOpen, setMultipleChoicePopUp}) => {
+const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, isLastOddStudyYear, resetClustersMenu, children, clustersList, displayedClustersList, setRefresh, multipleChoiceClustersOpen, setMultipleChoiceClustersOpen, setMultipleChoicePopUp}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -79,6 +79,8 @@ const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLas
                     }
                     resetClustersMenu={resetClustersMenu}
                     clustersList={clustersList}
+                    displayedClustersList={displayedClustersList}
+                    semester={"firstSemester"}
                     setRefresh={setRefresh}
                     multipleChoiceClustersOpen={multipleChoiceClustersOpen}
                     setMultipleChoiceClustersOpen={setMultipleChoiceClustersOpen}
@@ -99,6 +101,8 @@ const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLas
                     }
                     resetClustersMenu={resetClustersMenu}
                     clustersList={clustersList}
+                    displayedClustersList={displayedClustersList}
+                    semester={"lastSemester"}
                     setRefresh={setRefresh}
                     multipleChoiceClustersOpen={multipleChoiceClustersOpen}
                     setMultipleChoiceClustersOpen={setMultipleChoiceClustersOpen}

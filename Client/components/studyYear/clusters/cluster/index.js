@@ -23,6 +23,8 @@ const Cluster = ({
   menuDisabled,
   setShutDown,
   clustersList,
+  displayedClustersList,
+  semester,
   setRefresh,
 }) => {
   const [hoverLink, setHoverLink] = useState(false);
@@ -35,8 +37,8 @@ const Cluster = ({
   const [menuItems, setMenuItems] = useState([]);
   const [subMenu, setSubMenu] = useState(null);
   const [selected, setSelected] = useState(null);
- const [menuHeight, setMenuHeight] = useState('auto');
- const menuContentRef = useRef(null);
+  const [menuHeight, setMenuHeight] = useState('auto');
+  const menuContentRef = useRef(null);
   const handleHoverLink = () => {
     setHoverLink(!hoverLink);
   };
@@ -471,6 +473,9 @@ const Cluster = ({
           setSubMenu={setSubMenu}
           subMenuItems={subMenuItems}
           cohort={cohort}
+          clusterId={clusterId}
+          displayedClustersList={displayedClustersList}
+          semester={semester}
         />)}
       </div>
     </div>

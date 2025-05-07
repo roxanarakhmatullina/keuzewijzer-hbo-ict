@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Cluster from "@/components/studyYear/clusters/cluster";
 import { useGraduateProfile } from "@/hooks";
 
-const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus, resetClustersMenu, clustersList, setRefresh, multipleChoiceClustersOpen, setMultipleChoiceClustersOpen, setMultipleChoicePopUp}) => {
+const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleColor, updateClusterStatus, resetClustersMenu, clustersList, displayedClustersList, semester, setRefresh, multipleChoiceClustersOpen, setMultipleChoiceClustersOpen, setMultipleChoicePopUp}) => {
   const [handleMultipleClusters, setHandleMultipleClusters] = useState(true);
   const [isAnimating, setIsAnimating] = useState(true);
   const { selectedGraduateProfile } = useGraduateProfile();
@@ -194,6 +194,8 @@ const Clusters = ({cohort, clusters, currentCluster, setCurrentCluster, handleCo
             menuDisabled={clusters[0].menuDisabled} // transmiting the prop menuDisabled
             setShutDown={setShutDown}
             clustersList={clustersList} // transmiting the prop clustersList
+            displayedClustersList={displayedClustersList} // transmiting the prop displayedClustersList
+            semester={semester} // transmiting the prop semester
             setRefresh={setRefresh}
             />
         )

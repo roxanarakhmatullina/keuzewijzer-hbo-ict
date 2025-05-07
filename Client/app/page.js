@@ -654,6 +654,7 @@ const Home = () => {
                 isLastOddStudyYear={isLastOddStudyYear}
                 resetClustersMenu={resetClustersMenu}
                 clustersList={clustersList}
+                displayedClustersList={displayedClustersList}
                 setRefresh={setRefresh} // Pass hasFailedCluster as refresh
                 multipleChoiceClustersOpen={multipleChoiceClustersOpen}
                 setMultipleChoiceClustersOpen={setMultipleChoiceClustersOpen}

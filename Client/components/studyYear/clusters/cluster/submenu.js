@@ -1,7 +1,7 @@
 'use client'
 import React, { use, useState, useEffect, useRef, useLayoutEffect } from 'react';
 
-const SubMenu = ({ subMenu, setSubMenu, subMenuItems, setSelected, setSubMenuHeight }) => {
+const SubMenu = ({ subMenu, setSubMenu, subMenuItems, setSelected, setSubMenuHeight, clusterId, displayedClustersList, semester }) => {
     const [title, setTitle] = useState(null);
 
     useEffect(() => {
@@ -65,6 +65,29 @@ const SubMenu = ({ subMenu, setSubMenu, subMenuItems, setSelected, setSubMenuHei
         }
     }, [subMenu]);
 
+    const checkSemester = (item) => {
+        if ((semester === "firstSemester" && item.firstSemester === true) || (semester === "lastSemester" && item.lastSemester === true)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    const checkAttendancePrerequisite = (item) => {
+        let check = false;
+        displayedClustersList.forEach((cluster) => {
+            if (cluster.level === item.level) {
+                check = true;
+            }
+        });
+        return check;
+    };
+
+    const checkPrerequisite = (item) => {
+        return true;
+    };
+    
+
     return (
         <div ref={subMenuRef} className="flex flex-col relative w-full h-full lg:h-auto lg:max-h-[551px] py-[20px] px-[30px] lg:p-[10px] box-border lg:rounded-[12px] bg-[#D9D9D9] align-middle items-center gap-[20px] lg:gap-[10px]">
             <button
@@ -87,7 +110,8 @@ const SubMenu = ({ subMenu, setSubMenu, subMenuItems, setSelected, setSubMenuHei
 
             <div className="flex flex-col w-full h-auto gap-[10px] overflow-y-auto">
                 {subMenuItems.map((item) => (
-                    <div key={item.id} onClick={() => handleClick(item)} className="flex flex-row relative w-full lg:max-w-[250px] min-h-[75px] max-h-[75px] p-[20px] box-border rounded-[12px] bg-[#fff] justify-between align-middle items-center gap-[10px] hover: cursor-pointer cursor-auto">
+                    <div key={item.id} onClick={checkSemester(item) && checkAttendancePrerequisite(item) && checkPrerequisite(item) ? () => handleClick(item) : null} className="flex flex-row relative w-full lg:max-w-[250px] min-h-[75px] max-h-[75px] p-[20px] box-border rounded-[12px] bg-[#fff] justify-between align-middle items-center gap-[10px] hover: cursor-pointer cursor-auto">
+                        {console.log("attendance", item.name, checkAttendancePrerequisite(item))}
                         <h1
                             style={{ lineHeight: "1.25" }}
                             className={"text-left flex-auto text-[14px] font-bold"}>{item.name}</h1>
