@@ -6,8 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Server.Data;
 using Server.Services;
+using Server.Services.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using DotNetEnv;
+using Server.Repositories;
+using Server.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +37,7 @@ builder.Services.AddCors(options =>
                     "https://keuzewijzerhboict.nl:3000",
                     "http://keuzewijzerhboict.nl:3000",
                     "https://uat.keuzewijzerhboict.nl")
-                .WithMethods("GET", "POST", "DELETE")
+                .WithMethods("GET", "POST", "DELETE", "PUT")
                 .AllowAnyHeader()
                 .AllowCredentials(); // Enable credentials support
         });
@@ -73,6 +76,9 @@ builder.Services.AddAuthentication(options =>
 // Add services to the container
 builder.Services.AddScoped<UserSeeder>();
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Configure database connection string
 builder.Services.AddDbContext<DataContext>(options =>

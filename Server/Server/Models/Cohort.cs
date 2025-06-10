@@ -10,7 +10,6 @@ public class Cohort
     public Guid Id { get; set; }
 
     [Required]
-    [MinLength(1)]
     [MaxLength(128)]
     public string Name { get; set; } // The name of the cohort (e.g., "2024")
     

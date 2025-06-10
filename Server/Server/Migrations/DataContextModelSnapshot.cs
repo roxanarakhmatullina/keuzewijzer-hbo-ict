@@ -263,6 +263,52 @@ namespace Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Server.Models.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Server.Models.CategoryCohortCluster", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CohortId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClusterId");
+
+                    b.HasIndex("CohortId");
+
+                    b.HasIndex("CategoryId", "CohortId", "ClusterId")
+                        .IsUnique();
+
+                    b.ToTable("CategoryCohortClusters");
+                });
+
             modelBuilder.Entity("Server.Models.Cluster", b =>
                 {
                     b.Property<Guid>("Id")
@@ -462,6 +508,33 @@ namespace Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Server.Models.CategoryCohortCluster", b =>
+                {
+                    b.HasOne("Server.Models.Category", "Category")
+                        .WithMany("CategoryCohortClusters")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Cluster", "Cluster")
+                        .WithMany()
+                        .HasForeignKey("ClusterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Cohort", "Cohort")
+                        .WithMany()
+                        .HasForeignKey("CohortId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Cluster");
+
+                    b.Navigation("Cohort");
+                });
+
             modelBuilder.Entity("Server.Models.ClusterPrerequisite", b =>
                 {
                     b.HasOne("Server.Models.Cluster", "Cluster")
@@ -479,6 +552,11 @@ namespace Server.Migrations
                     b.Navigation("Cluster");
 
                     b.Navigation("Prerequisite");
+                });
+
+            modelBuilder.Entity("Server.Models.Category", b =>
+                {
+                    b.Navigation("CategoryCohortClusters");
                 });
 
             modelBuilder.Entity("Server.Models.Cluster", b =>

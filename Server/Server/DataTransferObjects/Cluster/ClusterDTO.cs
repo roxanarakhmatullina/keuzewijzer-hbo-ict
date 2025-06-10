@@ -35,5 +35,5 @@ public class ClusterDTO
     
     [Required]
     public List<Guid> GraduateProfileIds { get; set; }
-    
+    public Guid Id { get; internal set; }
 }
