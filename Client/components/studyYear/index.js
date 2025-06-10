@@ -5,7 +5,7 @@ import {useGraduateProfile} from "@/hooks";
 import Lock from "@/icons/lock";
 import Graduate from "@/icons/graduate";
 
-const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, isLastOddStudyYear, resetClustersMenu, children}) => {
+const StudyYear = ({year, startedStudyYear, firstClusters, secondClusters, isLastStudyYear, isEndOfRow, updateClusterStatus, isLastOddStudyYear, resetClustersMenu, children, clustersList, displayedClustersList, displayedStudyYears, setRefresh, multipleChoiceClustersOpen, setMultipleChoiceClustersOpen, setMultipleChoicePopUp, handleClusterInvalid, invalidRoute, setInvalidRoutePopUp}) => {
     const [isLocked, setIsLocked] = useState(false);
     const [firstCluster, setFirstCluster] = useState(null);
     const [lastCluster, setLastCluster] = useState(null);
@@ -68,21 +68,53 @@ const StudyYear = ({year, firstClusters, secondClusters, isLastStudyYear, isEndO
 
                 {/* First Cluster */}
                 {firstClusters && firstClusters.length > 0 && (
-                    <Clusters clusters={firstClusters} currentCluster={firstCluster} setCurrentCluster={setFirstCluster} handleColor={handleColor}
+                    <Clusters
+                    cohort={startedStudyYear}
+                    clusters={firstClusters}
+                    currentCluster={firstCluster}
+                    setCurrentCluster={setFirstCluster}
+                    handleColor={handleColor}
                     updateClusterStatus={(clusterId, newStatus) =>
                         updateClusterStatus("firstSemester", clusterId, newStatus)
                     }
                     resetClustersMenu={resetClustersMenu}
+                    clustersList={clustersList}
+                    displayedClustersList={displayedClustersList}
+                    displayedStudyYears={displayedStudyYears}
+                    semester={"firstSemester"}
+                    setRefresh={setRefresh}
+                    multipleChoiceClustersOpen={multipleChoiceClustersOpen}
+                    setMultipleChoiceClustersOpen={setMultipleChoiceClustersOpen}
+                    setMultipleChoicePopUp={setMultipleChoicePopUp}
+                    handleClusterInvalid={handleClusterInvalid}
+                    invalidRoute={invalidRoute}
+                    setInvalidRoutePopUp={setInvalidRoutePopUp}
                     />
                 )}
 
                 {/* Last Cluster */}
                 {secondClusters && secondClusters.length > 0 && (
-                    <Clusters clusters={secondClusters} currentCluster={lastCluster} setCurrentCluster={setLastCluster} handleColor={handleColor}
+                    <Clusters
+                    cohort={startedStudyYear}
+                    clusters={secondClusters}
+                    currentCluster={lastCluster}
+                    setCurrentCluster={setLastCluster}
+                    handleColor={handleColor}
                     updateClusterStatus={(clusterId, newStatus) =>
                         updateClusterStatus("lastSemester", clusterId, newStatus)
                     }
                     resetClustersMenu={resetClustersMenu}
+                    clustersList={clustersList}
+                    displayedClustersList={displayedClustersList}
+                    displayedStudyYears={displayedStudyYears}
+                    semester={"lastSemester"}
+                    setRefresh={setRefresh}
+                    multipleChoiceClustersOpen={multipleChoiceClustersOpen}
+                    setMultipleChoiceClustersOpen={setMultipleChoiceClustersOpen}
+                    setMultipleChoicePopUp={setMultipleChoicePopUp}
+                    handleClusterInvalid={handleClusterInvalid}
+                    invalidRoute={invalidRoute}
+                    setInvalidRoutePopUp={setInvalidRoutePopUp}
                     />
                 )}
 

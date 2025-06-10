@@ -61,6 +61,7 @@ public class Cluster
     public int RetakenCount { get; set; } = 0; // Used for frontend to show if the cluster is retaken
 
     // Navigation properties for many-to-many relationships
+    // TODO: why every model declares nav props as virtual (lazy loading) while it is not enabled in DataContext?
     public virtual ICollection<ClusterPrerequisite> ClusterPrerequisites { get; set; } = new List<ClusterPrerequisite>();
     public virtual ICollection<GraduateProfile> GraduateProfiles { get; set; } = new List<GraduateProfile>();
     public virtual ICollection<Cohort> Cohorts { get; set; } = new List<Cohort>();

@@ -5,6 +5,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import DateRange from "@mui/icons-material/DateRange";
 import School from "@mui/icons-material/School";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
+import ExtensionIcon from '@mui/icons-material/Extension';
 import People from "@mui/icons-material/People";
 import {useAuth} from "@/Providers/AuthProvider";
 
@@ -28,6 +29,7 @@ const Links = ({open, setOpen}) => {
                 <DateRange/>
             </NavLink>
 
+            {/* Graduation Profiles */}
             <NavLink title={"Afstudeerrichtingen"}>
                 <School/>
             </NavLink>
@@ -37,7 +39,12 @@ const Links = ({open, setOpen}) => {
                 <WorkspacesIcon/>
             </NavLink>
 
-            {/*  Clusters   */}
+            {/* Free Space Menu */}
+            <NavLink title={"Vrije ruimte"}>
+                <ExtensionIcon/>
+            </NavLink>
+
+            {/*  Users   */}
             {user && user.role === "Admin" && (
                 <NavLink title={"Gebruikers"}>
                     <People/>

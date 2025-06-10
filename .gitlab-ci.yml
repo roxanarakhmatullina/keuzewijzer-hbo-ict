@@ -1,5 +1,6 @@
 stages:
   - build
+  - test
   - deploy
 
 variables:
@@ -61,7 +62,6 @@ build-dashboard:
         - dashboard/*
         - dashboard/**/*
   
-
 build-server:
   stage: build
   environment:
@@ -82,6 +82,26 @@ build-server:
       changes:
         - Server/*
         - Server/**/*
+
+test-server:
+  stage: test
+  environment:
+    name: prod
+    url: https://keuzewijzerhboict.nl
+  tags:
+    - server-test
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  script:
+    - cd Server
+    - dotnet restore
+    - dotnet test Server.Tests/Server.Tests.csproj
+  dependencies:
+    - build-server
+  rules:
+  - if: $CI_COMMIT_BRANCH == "main"
+    changes: 
+      - Server/*
+      - Server/**/*
 
 deploy-client:
   stage: deploy
@@ -131,7 +151,6 @@ deploy-dashboard:
         - dashboard/*
         - dashboard/**/*
   
-
 deploy-server:
   stage: deploy
   environment:
@@ -218,6 +237,26 @@ build-server-uat:
       changes:
         - Server/*
         - Server/**/*
+
+test-server-uat:
+  stage: test
+  environment:
+    name: uat
+    url: https://uat.keuzewijzerhboict.nl
+  tags:
+    - server-test-uat
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  script:
+    - cd Server
+    - dotnet restore
+    - dotnet test Server.Tests/Server.Tests.csproj
+  dependencies:
+    - build-server-uat
+  rules:
+  - if: $CI_COMMIT_BRANCH == "uat"
+    changes: 
+      - Server/*
+      - Server/**/*
 
 deploy-client-uat:
   stage: deploy
