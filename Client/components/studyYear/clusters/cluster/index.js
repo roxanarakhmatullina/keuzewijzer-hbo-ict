@@ -294,24 +294,29 @@ const Cluster = ({
     }
   };
 
+
+
   const checkAttendancePrerequisite = (item) => {
-    let check = false;
     for (let i = 0; i < displayedClustersList.length; i++) {
       const displayedCluster = displayedClustersList[i];
       if (displayedCluster.id === cluster.id) {
         break;
       } else {
-        if (item.firstSemester && displayedCluster.lastSemester && displayedCluster.level === item.level - 1) {
-          check = true;
-        } else if (item.lastSemester && displayedCluster.firstSemester && displayedCluster.level === item.level) {
-          check = true;
-        } else if (item.level === 0) {
-          check = true;
+        if (item.attendancePrerequisiteIds?.length > 0) {
+          for (let j = 0; j < item.attendancePrerequisiteIds.length; j++) {
+            const prerequisiteId = item.attendancePrerequisiteIds[j];
+            if (displayedCluster.id == prerequisiteId && displayedCluster.status !== "failed") {
+              return true;
+            }
+          }
+        } else if (item.attendancePrerequisiteIds?.length === 0) {
+          return true;
         }
       }
     }
-    return check;
+    return false;
   };
+  
 
   const checkPrerequisite = (item) => {
     // const prerequisites = item.prerequisiteIds;
