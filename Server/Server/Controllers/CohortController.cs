@@ -80,8 +80,6 @@ namespace Server.Controllers
                     gp.Name,
                     gp.Color,
                     gp.Link,
-                    gp.Zwolle,
-                    gp.Almere,
                 })
                 .OrderBy(ch => ch.Name)
                 .ToListAsync();
@@ -112,8 +110,6 @@ namespace Server.Controllers
                     c.Name,
                     c.Link,
                     c.Level,
-                    c.Zwolle,
-                    c.Almere,
                 })
                 .OrderBy(c => c.Level)
                 .ThenBy(c => c.Name)

@@ -8,7 +8,7 @@ public class ClusterDTO
     [Required]
     [MinLength(1)]
     [MaxLength(128)]
-    public string? Name { get; set; }
+    public string Name { get; set; }
     
     public string? Link { get; set; }
     

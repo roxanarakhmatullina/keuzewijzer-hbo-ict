@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Server.Models;
 
-
 public enum ClusterLevel
 {
     [Description("Level 0")]
